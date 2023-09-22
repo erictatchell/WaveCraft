@@ -13,10 +13,21 @@ namespace Wave3931
 {
     public partial class Form1 : Form
     {
+        double[] generic_fsg(int N, double f)
+        {
+            double[] s = new double[N];
+
+            for (int t = 0; t < N; t++)
+            {
+                s[t] = (Math.Cos((2 * Math.PI) * ((double)t / N) * f));
+            }
+
+            return s;
+        }
         public Form1()
         {
             InitializeComponent();
-
+            plotFreqWaveChart(generic_fsg(100, 5));
             
         }
 
@@ -71,23 +82,24 @@ namespace Wave3931
         {
 
         }
+        public void plotFreqWaveChart(double[] freq)
+        {
+            chart1.Series[0].Points.Clear();
+            for (int m = 0; m < freq.Length; m++)
+            { chart1.Series[0].Points.AddXY(m, freq[m]); }
+            chart1.ChartAreas[0].AxisX.Minimum = 0;
+        }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Txt files for testing hahaha(*.txt)|*.txt|MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*"; // Filter for text files, but you can change it to match your file type
+                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    // User selected a file
                     string selectedFilePath = openFileDialog.FileName;
                     toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
-
-                    // Now you can open and read the file as needed
-                    // For example, you can display the content in a TextBox:
-                    //string fileContent = System.IO.File.ReadAllText(selectedFilePath);
-                    //textBox1.Text = fileContent; // Assuming you have a TextBox named textBox1
                 }
             }
         }
@@ -117,6 +129,21 @@ namespace Wave3931
         }
 
         private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint_1(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void chart1_Click_1(object sender, EventArgs e)
         {
 
         }
