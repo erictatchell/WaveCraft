@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,22 +14,68 @@ namespace Wave3931
 {
     public partial class Form1 : Form
     {
-        double[] generic_fsg(int N, double f)
-        {
-            double[] s = new double[N];
-
-            for (int t = 0; t < N; t++)
-            {
-                s[t] = (Math.Cos((2 * Math.PI) * ((double)t / N) * f));
-            }
-
-            return s;
-        }
+        wave_file_header header = new wave_file_header();
         public Form1()
         {
             InitializeComponent();
-            plotFreqWaveChart(generic_fsg(100, 5));
-            
+            header.initialize((uint)22050);
+
+        }
+
+        public double[] readingWave(String fileName)
+        {
+            List<double> outputList = new List<double>();
+            BinaryReader reader = new BinaryReader(File.OpenRead(fileName));
+            header.clear();
+            header.ChunkID = reader.ReadInt32();
+            header.ChunkSize = reader.ReadInt32();
+            header.Format = reader.ReadInt32();
+            header.SubChunk1ID = reader.ReadInt32();
+            header.SubChunk1Size = reader.ReadInt32();
+            header.AudioFormat = reader.ReadUInt16();
+            header.NumChannels = reader.ReadUInt16();
+            header.SampleRate = reader.ReadUInt32();
+            header.ByteRate = reader.ReadUInt32();
+            header.BlockAlign = reader.ReadUInt16();
+            header.BitsPerSample = reader.ReadUInt16();
+            header.SubChunk2ID = reader.ReadInt32();
+            header.SubChunk2Size = reader.ReadInt32();
+
+            int bytesPerSample = header.BitsPerSample / 8;
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+            {
+                if (bytesPerSample == 1) // 8-bit audio
+                {
+                    byte sample = reader.ReadByte();
+                    outputList.Add(sample / 128.0);
+                }
+                else if (bytesPerSample == 4) // 32-bit audio
+                {
+                    float sample = reader.ReadSingle();
+                    outputList.Add((double)sample);
+                }
+                else
+                {
+                    short sample = reader.ReadInt16(); // 16 bit audio
+                    outputList.Add(sample);
+                }
+            }
+            return outputList.ToArray();
+        }
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFilePath = openFileDialog.FileName;
+                    toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
+                    double[] freqs = readingWave(selectedFilePath);
+                    plotFreqWaveChart(freqs);
+                }
+            }
         }
 
         private DFT DFT;
@@ -82,27 +129,18 @@ namespace Wave3931
         {
 
         }
-        public void plotFreqWaveChart(double[] freq)
+
+        
+        public void plotFreqWaveChart(double[] audioData)
         {
             chart1.Series[0].Points.Clear();
-            for (int m = 0; m < freq.Length; m++)
-            { chart1.Series[0].Points.AddXY(m, freq[m]); }
+            for (int m = 0; m < audioData.Length; m++)
+            {
+                chart1.Series[0].Points.AddXY(m, audioData[m]);
+            }
             chart1.ChartAreas[0].AxisX.Minimum = 0;
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string selectedFilePath = openFileDialog.FileName;
-                    toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
-                }
-            }
-        }
 
         private void statusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
