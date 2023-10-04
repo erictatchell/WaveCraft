@@ -3,16 +3,77 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using NAudio;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using NAudio.Wave;
+using NAudio.Dsp;
 
 namespace Wave3931
 {
     public partial class Form1 : Form
     {
+        private double[] audioData;
+        struct WaveFileHeader
+        {
+            public int RIFF;
+            public int FileSizeMinus4;
+            public int WAVE;
+            public int Fmt_;
+            public int FmtSize;
+            public short FormatTag;
+            public short Channels;
+            public int SamplesPerSec;
+            public int AvgBytesPerSec;
+            public short BlockAlign;
+            public short BitsPerSample;
+            public int Data;
+            public int DataSize;
+        }
+
+        private WaveFileHeader ReadWaveHeader(string filePath)
+        {
+            WaveFileHeader header = new WaveFileHeader();
+
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using (BinaryReader reader = new BinaryReader(fs))
+            {
+                header.RIFF = reader.ReadInt32();
+                header.FileSizeMinus4 = reader.ReadInt32();
+                header.WAVE = reader.ReadInt32();
+                header.Fmt_ = reader.ReadInt32();
+                header.FmtSize = reader.ReadInt32();
+                header.FormatTag = reader.ReadInt16();
+                header.Channels = reader.ReadInt16();
+                header.SamplesPerSec = reader.ReadInt32();
+                header.AvgBytesPerSec = reader.ReadInt32();
+                header.BlockAlign = reader.ReadInt16();
+                header.BitsPerSample = reader.ReadInt16();
+                header.Data = reader.ReadInt32();
+                header.DataSize = reader.ReadInt32();
+            }
+            return header;
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFilePath = openFileDialog.FileName;
+                    toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
+                }
+            }
+        }
         double[] generic_fsg(int N, double f)
         {
             double[] s = new double[N];
@@ -27,7 +88,6 @@ namespace Wave3931
         public Form1()
         {
             InitializeComponent();
-            plotFreqWaveChart(generic_fsg(100, 5));
             
         }
 
@@ -90,19 +150,7 @@ namespace Wave3931
             chart1.ChartAreas[0].AxisX.Minimum = 0;
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string selectedFilePath = openFileDialog.FileName;
-                    toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
-                }
-            }
-        }
+        
 
         private void statusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
