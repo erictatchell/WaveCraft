@@ -9,11 +9,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
-using NAudio;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using NAudio.Wave;
-using NAudio.Dsp;
 
 namespace Wave3931
 {
@@ -23,7 +20,7 @@ namespace Wave3931
         public Form1()
         {
             InitializeComponent();
-            header.initialize((uint)22050);
+            header.initialize(22050);
 
         }
 
@@ -65,8 +62,10 @@ namespace Wave3931
                     outputList.Add(sample);
                 }
             }
+            DFT = new DFT(outputList.ToArray(), 100, header);
             return outputList.ToArray();
         }
+        private DFT DFT;
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -83,7 +82,6 @@ namespace Wave3931
             }
         }
 
-        private DFT DFT;
         private void Form1_Load(object sender, EventArgs e)
         {
         }
@@ -115,7 +113,6 @@ namespace Wave3931
 
         private void button3_Click(object sender, EventArgs e)
         {
-            DFT = new DFT(); // Create a new instance of the DFT form
             DFT.Owner = this; // Set the owner if needed
             DFT.Show();
         }
