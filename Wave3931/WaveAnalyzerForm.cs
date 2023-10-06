@@ -219,5 +219,20 @@ namespace Wave3931
         {
 
         }
+
+        private void TopMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnPlay_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
