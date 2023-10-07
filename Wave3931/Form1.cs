@@ -37,18 +37,17 @@ namespace Wave3931
 
         private void btnOpenFile_Click_1(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-
-            // Optional: Set some properties for the OpenFileDialog
-            openFileDialog.Title = "Select a file";
-            openFileDialog.Filter = "All Files (*.*)|*.*"; // Filter to show all files by default
-
-            // Display the file dialog and check if the user pressed OK
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                string selectedFilePath = openFileDialog.FileName;
-                // Do something with the selected file path, for example:
-                MessageBox.Show("Selected file: " + selectedFilePath);
+                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFilePath = openFileDialog.FileName;
+                    toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
+                    double[] freqs = readingWave(selectedFilePath);
+                    plotFreqWaveChart(freqs);
+                }
             }
         }
     }

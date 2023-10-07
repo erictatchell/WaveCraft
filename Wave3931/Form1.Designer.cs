@@ -148,6 +148,7 @@
             this.btNewFile.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btNewFile.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btNewFile.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btNewFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btNewFile.Location = new System.Drawing.Point(366, 236);
             this.btNewFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btNewFile.Name = "btNewFile";
@@ -160,13 +161,15 @@
             // btnOpenFile
             // 
             this.btnOpenFile.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnOpenFile.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btnOpenFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnOpenFile.Location = new System.Drawing.Point(366, 332);
             this.btnOpenFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(149, 75);
             this.btnOpenFile.TabIndex = 1;
             this.btnOpenFile.Text = "Open File";
-            this.btnOpenFile.UseVisualStyleBackColor = true;
+            this.btnOpenFile.UseVisualStyleBackColor = false;
             this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click_1);
             // 
             // Form1

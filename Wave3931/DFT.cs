@@ -36,13 +36,14 @@ namespace Wave3931
             }
             return A;
         }
-        public DFT()
+        public DFT(double[] freqs, int N, wave_file_header header)
         {
             InitializeComponent();
 
-            int N = 100;
-            double[] samples = generic_fsg(N, 5);
-            double[] freqs = dft(N, samples);
+            N = 22050;
+            int numSamples = header.SubChunk2Size / (header.NumChannels * (header.BitsPerSample / 8));
+            double[] s = generic_fsg(N, freqs);
+            freqs = dft((int)header.SampleRate, s);
 
             for (int i = 0; i < N; i++)
             {

@@ -5,15 +5,21 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Wave3931
 {
     public partial class WaveAnalyzerForm : Form
     {
+        wave_file_header header = new wave_file_header();
         private double[] audioData;
+
         struct WaveFileHeader
         {
             public int RIFF;
@@ -31,66 +37,58 @@ namespace Wave3931
             public int DataSize;
         }
 
-        private WaveFileHeader ReadWaveHeader(string filePath)
-        {
-            WaveFileHeader header = new WaveFileHeader();
-
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            using (BinaryReader reader = new BinaryReader(fs))
-            {
-                header.RIFF = reader.ReadInt32();
-                header.FileSizeMinus4 = reader.ReadInt32();
-                header.WAVE = reader.ReadInt32();
-                header.Fmt_ = reader.ReadInt32();
-                header.FmtSize = reader.ReadInt32();
-                header.FormatTag = reader.ReadInt16();
-                header.Channels = reader.ReadInt16();
-                header.SamplesPerSec = reader.ReadInt32();
-                header.AvgBytesPerSec = reader.ReadInt32();
-                header.BlockAlign = reader.ReadInt16();
-                header.BitsPerSample = reader.ReadInt16();
-                header.Data = reader.ReadInt32();
-                header.DataSize = reader.ReadInt32();
-            }
-            return header;
-        }
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string selectedFilePath = openFileDialog.FileName;
-                    toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
-                }
-            }
-        }
-        double[] generic_fsg(int N, double f)
-        {
-            double[] s = new double[N];
-
-            for (int t = 0; t < N; t++)
-            {
-                s[t] = (Math.Cos((2 * Math.PI) * ((double)t / N) * f));
-            }
-
-            return s;
-        }
         public WaveAnalyzerForm()
         {
             InitializeComponent();
+            header.initialize(22050);
 
+        }
+
+        public double[] readingWave(String fileName)
+        {
+            List<double> outputList = new List<double>();
+            BinaryReader reader = new BinaryReader(File.OpenRead(fileName));
+            header.clear();
+            header.ChunkID = reader.ReadInt32();
+            header.ChunkSize = reader.ReadInt32();
+            header.Format = reader.ReadInt32();
+            header.SubChunk1ID = reader.ReadInt32();
+            header.SubChunk1Size = reader.ReadInt32();
+            header.AudioFormat = reader.ReadUInt16();
+            header.NumChannels = reader.ReadUInt16();
+            header.SampleRate = reader.ReadUInt32();
+            header.ByteRate = reader.ReadUInt32();
+            header.BlockAlign = reader.ReadUInt16();
+            header.BitsPerSample = reader.ReadUInt16();
+            header.SubChunk2ID = reader.ReadInt32();
+            header.SubChunk2Size = reader.ReadInt32();
+
+            int bytesPerSample = header.BitsPerSample / 8;
+            while (reader.BaseStream.Position < reader.BaseStream.Length)
+            {
+                if (bytesPerSample == 1) // 8-bit audio
+                {
+                    byte sample = reader.ReadByte();
+                    outputList.Add(sample / 128.0);
+                }
+                else if (bytesPerSample == 4) // 32-bit audio
+                {
+                    float sample = reader.ReadSingle();
+                    outputList.Add((double)sample);
+                }
+                else
+                {
+                    short sample = reader.ReadInt16(); // 16 bit audio
+                    outputList.Add(sample);
+                }
+            }
+            DFT = new DFT(outputList.ToArray(), 100, header);
+            return outputList.ToArray();
         }
 
         private DFT DFT;
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        }
 
-        private void chart1_Click(object sender, EventArgs e)
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
@@ -100,48 +98,23 @@ namespace Wave3931
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void splitContainer2_Panel2_Paint(object sender, PaintEventArgs e)
         {
 
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            DFT = new DFT(); // Create a new instance of the DFT form
-            DFT.Owner = this; // Set the owner if needed
-            DFT.Show();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
         }
-
-        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        public void plotFreqWaveChart(double[] audioData)
         {
-
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-
-        }
-        public void plotFreqWaveChart(double[] freq)
-        {
-            LeftChannelChart.Series[0].Points.Clear();
-            for (int m = 0; m < freq.Length; m++)
-            { LeftChannelChart.Series[0].Points.AddXY(m, freq[m]); }
-            LeftChannelChart.ChartAreas[0].AxisX.Minimum = 0;
+            RightChannelChart.Series[0].Points.Clear();
+            for (int m = 0; m < audioData.Length; m++)
+            {
+                RightChannelChart.Series[0].Points.AddXY(m, audioData[m]);
+            }
+            RightChannelChart.ChartAreas[0].AxisX.Minimum = 0;
         }
 
 
@@ -153,11 +126,6 @@ namespace Wave3931
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void toolStripStatusLabel2_Click(object sender, EventArgs e)
-        {
             // Get the name of the selected file from toolStripStatusLabel1
             string selectedFileName = toolStripStatusLabel1.Text.Replace("Selected File: ", "");
 
@@ -166,11 +134,6 @@ namespace Wave3931
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
-
-        private void fileToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
@@ -185,32 +148,7 @@ namespace Wave3931
 
         }
 
-        private void chart1_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button9_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button10_Click(object sender, EventArgs e)
         {
 
         }
@@ -225,12 +163,85 @@ namespace Wave3931
 
         }
 
-        private void button8_Click(object sender, EventArgs e)
+        private void btnPlay_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void btnPlay_Click(object sender, EventArgs e)
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnRecord_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnDFT_Click(object sender, EventArgs e)
+        {
+            DFT.Owner = this; // Set the owner if needed
+            DFT.Show();
+        }
+
+        private void OptionsPanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void menuStrip1_ItemClicked_1(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void btnSamples_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnLength_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnThreading_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnFilter_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm();
+            waveAnalyzerForm.Show();
+        }
+
+        private void btnOpenFile_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFilePath = openFileDialog.FileName;
+                    toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
+                    double[] freqs = readingWave(selectedFilePath);
+                    plotFreqWaveChart(freqs);
+                }
+            }
+        }
+
+        private void btnSaveFile_Click(object sender, EventArgs e)
         {
 
         }
