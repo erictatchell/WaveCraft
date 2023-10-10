@@ -9,11 +9,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
-using NAudio;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using NAudio.Wave;
-using NAudio.Dsp;
 
 namespace Wave3931
 {
@@ -36,6 +33,13 @@ namespace Wave3931
         }
 
         private void btnOpenFile_Click_1(object sender, EventArgs e)
+        wave_file_header header = new wave_file_header();
+        public Form1()
+        {
+            InitializeComponent();
+            header.initialize(22050);
+
+        }
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
