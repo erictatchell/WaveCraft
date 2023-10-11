@@ -19,6 +19,7 @@ namespace Wave3931
     {
         wave_file_header header = new wave_file_header();
         private double[] audioData;
+        private readonly String file;
 
         struct WaveFileHeader
         {
@@ -37,17 +38,30 @@ namespace Wave3931
             public int DataSize;
         }
 
+        public WaveAnalyzerForm(String file)
+        {
+            InitializeComponent();
+            this.file = file;
+            header.initialize(22050);
+            double[] freqs = readingWave(file);
+            plotFreqWaveChart(freqs);
+            selectToolStripMenuItem.Checked = true;
+            zoomToolStripMenuItem.Checked = false;
+        }
         public WaveAnalyzerForm()
         {
             InitializeComponent();
             header.initialize(22050);
-
+            selectToolStripMenuItem.Checked = true;
+            zoomToolStripMenuItem.Checked = false;
+            /*double[] freqs = readingWave();
+            plotFreqWaveChart(freqs);*/
         }
 
-        public double[] readingWave(String fileName)
+        public double[] readingWave(String file)
         {
             List<double> outputList = new List<double>();
-            BinaryReader reader = new BinaryReader(File.OpenRead(fileName));
+            BinaryReader reader = new BinaryReader(File.OpenRead(file));
             header.clear();
             header.ChunkID = reader.ReadInt32();
             header.ChunkSize = reader.ReadInt32();
@@ -82,7 +96,8 @@ namespace Wave3931
                     outputList.Add(sample);
                 }
             }
-            DFT = new DFT(outputList.ToArray(), 100, header);
+            DFT = new DFT(outputList.ToArray());
+            toolStripStatusLabel1.Text = "File Path: " + file;
             return outputList.ToArray();
         }
 
@@ -115,6 +130,7 @@ namespace Wave3931
                 RightChannelChart.Series[0].Points.AddXY(m, audioData[m]);
             }
             RightChannelChart.ChartAreas[0].AxisX.Minimum = 0;
+
         }
 
 
@@ -124,14 +140,6 @@ namespace Wave3931
 
         }
 
-        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
-        {
-            // Get the name of the selected file from toolStripStatusLabel1
-            string selectedFileName = toolStripStatusLabel1.Text.Replace("Selected File: ", "");
-
-            // Use the selectedFileName as needed
-            MessageBox.Show("Selected File Name: " + selectedFileName);
-        }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -155,8 +163,17 @@ namespace Wave3931
 
         private void chart2_Click(object sender, EventArgs e)
         {
-
+            RightChannelChart.ChartAreas[0].CursorX.IsUserEnabled = true;
+            RightChannelChart.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
+            if (zoomToolStripMenuItem.Checked)
+            {
+                RightChannelChart.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+            } else
+            {
+                RightChannelChart.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
+            }
         }
+
 
         private void TopMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -225,6 +242,7 @@ namespace Wave3931
             waveAnalyzerForm.Show();
         }
 
+        // IGNORE
         private void btnOpenFile_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -244,6 +262,38 @@ namespace Wave3931
         private void btnSaveFile_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void LeftChannelChart_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void selectionOptionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void selectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            selectToolStripMenuItem.Checked = true;
+            zoomToolStripMenuItem.Checked = false;
+        }
+
+        private void zoomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            selectToolStripMenuItem.Checked = false;
+            zoomToolStripMenuItem.Checked = true;
+        }
+
+        private void resetZoomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RightChannelChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
         }
     }
 }

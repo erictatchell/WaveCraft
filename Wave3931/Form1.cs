@@ -45,8 +45,8 @@ namespace Wave3931
                 {
                     string selectedFilePath = openFileDialog.FileName;
                     toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
-                    double[] freqs = readingWave(selectedFilePath);
-                    plotFreqWaveChart(freqs);
+                    WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm(selectedFilePath);
+                    waveAnalyzerForm.Show();
                 }
             }
         }

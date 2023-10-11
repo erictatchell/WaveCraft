@@ -36,21 +36,19 @@ namespace Wave3931
             }
             return A;
         }
-        public DFT(double[] freqs, int N, wave_file_header header)
+       public DFT(double[] freqs)
         {
             InitializeComponent();
 
-            N = 22050;
-            int numSamples = header.SubChunk2Size / (header.NumChannels * (header.BitsPerSample / 8));
-            double[] s = generic_fsg(N, freqs);
-            freqs = dft((int)header.SampleRate, s);
+            /*int N = 200;
+            double[] dftResult = dft(N, freqs);
 
+            // Add data points to the chart
             for (int i = 0; i < N; i++)
             {
-                chart1.Series["1"].Points.AddXY(i, freqs[i]);
-            }
+                chart1.Series["DFT"].Points.AddXY(i, dftResult[i]);
+            }*/
         }
-
         private void chart1_Click(object sender, EventArgs e)
         {
 
