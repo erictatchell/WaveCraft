@@ -47,7 +47,112 @@ namespace Wave3931
             plotFreqWaveChart(freqs);
             selectToolStripMenuItem.Checked = true;
             zoomToolStripMenuItem.Checked = false;
+            ContextMenuStrip cm = new ContextMenuStrip();
+            ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
+            ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
+            ToolStripMenuItem paste = new ToolStripMenuItem("Paste", null, PasteSelected);
+            cm.Items.Add(copy);
+            cm.Items.Add(cut);
+            cm.Items.Add(paste);
+            RightChannelChart.ContextMenuStrip = cm;
         }
+        private void CopySelected(object sender, EventArgs e)
+        {
+            double start = RightChannelChart.ChartAreas[0].CursorX.SelectionStart;
+            double end = RightChannelChart.ChartAreas[0].CursorX.SelectionEnd;
+            int startIndex = (int)(start);
+            int endIndex = (int)(end);
+
+            if (startIndex < 0) { startIndex = 0; }
+            if (endIndex >= audioData.Length) { endIndex = audioData.Length - 1; }
+            if (startIndex >= endIndex) { return; }
+
+            int selectedDataLength = endIndex - startIndex + 1;
+            double[] selectedAudioData = new double[selectedDataLength];
+            Array.Copy(audioData, startIndex, selectedAudioData, 0, selectedDataLength);
+            byte[] byteData = new byte[selectedDataLength * sizeof(double)];
+            Buffer.BlockCopy(selectedAudioData, 0, byteData, 0, byteData.Length);
+            string base64Data = Convert.ToBase64String(byteData);
+            Clipboard.SetText(base64Data);
+        }
+        private void CutSelected(object sender, EventArgs e)
+        {
+            double start = RightChannelChart.ChartAreas[0].CursorX.SelectionStart;
+            double end = RightChannelChart.ChartAreas[0].CursorX.SelectionEnd;
+            int startIndex = (int)(start);
+            int endIndex = (int)(end);
+
+            if (startIndex < 0) { startIndex = 0; }
+            if (endIndex >= audioData.Length) { endIndex = audioData.Length - 1; }
+            if (startIndex >= endIndex) { return; }
+
+            int selectedDataLength = endIndex - startIndex + 1;
+
+            // Copy the selected data to the clipboard
+            double[] selectedAudioData = new double[selectedDataLength];
+            Array.Copy(audioData, startIndex, selectedAudioData, 0, selectedDataLength);
+            byte[] byteData = new byte[selectedDataLength * sizeof(double)];
+            Buffer.BlockCopy(selectedAudioData, 0, byteData, 0, byteData.Length);
+            string base64Data = Convert.ToBase64String(byteData);
+            Clipboard.SetText(base64Data);
+
+            // Remove the selected data from audioData
+            List<double> newDataList = new List<double>(audioData);
+            newDataList.RemoveRange(startIndex, selectedDataLength);
+            audioData = newDataList.ToArray();
+
+            // Clear the chart and update it with the modified data
+            RightChannelChart.Series[0].Points.Clear();
+            for (int i = 0; i < audioData.Length; i++)
+            {
+                RightChannelChart.Series[0].Points.AddXY(i, audioData[i]);
+            }
+
+            // Update other chart properties as needed
+        }
+
+
+
+        private void PasteSelected(object sender, EventArgs e)
+        {
+            double pos = RightChannelChart.ChartAreas[0].CursorX.SelectionStart;
+            string base64Data = Clipboard.GetText();
+            byte[] byteData = Convert.FromBase64String(base64Data);
+            int pasteIndex = (int)(pos);
+            if (pasteIndex < 0)
+            {
+                pasteIndex = 0;
+            }
+            else if (pasteIndex >= audioData.Length)
+            {
+                pasteIndex = audioData.Length;
+            }
+            int copiedDataLength = byteData.Length / sizeof(double);
+
+            // Expand the audioData array to accommodate the pasted data
+            List<double> newDataList = new List<double>(audioData);
+            newDataList.InsertRange(pasteIndex, new double[copiedDataLength]);
+            audioData = newDataList.ToArray();
+
+            // Copy the pasted data into audioData
+            double[] copiedAudioData = new double[copiedDataLength];
+            Buffer.BlockCopy(byteData, 0, copiedAudioData, 0, byteData.Length);
+            for (int i = 0; i < copiedDataLength; i++)
+            {
+                audioData[pasteIndex + i] = copiedAudioData[i];
+            }
+
+            // Clear the chart and update it with the modified data
+            RightChannelChart.Series[0].Points.Clear();
+            for (int i = 0; i < audioData.Length; i++)
+            {
+                RightChannelChart.Series[0].Points.AddXY(i, audioData[i]);
+            }
+        }
+
+
+
+
         public WaveAnalyzerForm()
         {
             InitializeComponent();
@@ -98,6 +203,7 @@ namespace Wave3931
             }
             DFT = new DFT(outputList.ToArray());
             toolStripStatusLabel1.Text = "File Path: " + file;
+            audioData = outputList.ToArray();
             return outputList.ToArray();
         }
 
