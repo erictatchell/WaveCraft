@@ -367,8 +367,62 @@ namespace Wave3931
 
         private void btnSaveFile_Click(object sender, EventArgs e)
         {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
 
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string saveFilePath = saveFileDialog.FileName;
+
+                    // Create a BinaryWriter to write the WAV file
+                    using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
+                    {
+                        // Write the WAV header
+                        writer.Write(header.ChunkID);
+                        writer.Write(header.ChunkSize);
+                        writer.Write(header.Format);
+                        writer.Write(header.SubChunk1ID);
+                        writer.Write(header.SubChunk1Size);
+                        writer.Write(header.AudioFormat);
+                        writer.Write(header.NumChannels);
+                        writer.Write(header.SampleRate);
+                        writer.Write(header.ByteRate);
+                        writer.Write(header.BlockAlign);
+                        writer.Write(header.BitsPerSample);
+                        writer.Write(header.SubChunk2ID);
+                        writer.Write(header.SubChunk2Size);
+
+                        // Write the audio data
+                        for (int i = 0; i < audioData.Length; i++)
+                        {
+                            if (header.BitsPerSample == 8)
+                            {
+                                // 8-bit audio (convert to bytes)
+                                byte sample = (byte)(audioData[i] * 128.0);
+                                writer.Write(sample);
+                            }
+                            else if (header.BitsPerSample == 16)
+                            {
+                                // 16-bit audio (short)
+                                short sample = (short)audioData[i];
+                                writer.Write(sample);
+                            }
+                            else if (header.BitsPerSample == 32)
+                            {
+                                // 32-bit audio (float)
+                                float sample = (float)audioData[i];
+                                writer.Write(sample);
+                            }
+                            // Add support for other bit depths if needed
+                        }
+                    }
+
+                    toolStripStatusLabel1.Text = "Saved File: " + System.IO.Path.GetFileName(saveFilePath);
+                }
+            }
         }
+
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
         {
