@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Wave3931
 {
-    internal class wave_file_header
+    public class wave_file_header
     {
             [DllImport("winmm.dll")]
             public static extern int mmioStringToFOURCC([MarshalAs(UnmanagedType.LPStr)] String s, int flags);
@@ -24,6 +24,7 @@ namespace Wave3931
             public ushort BitsPerSample;
             public int SubChunk2ID;
             public int SubChunk2Size;
+
             public void clear()
             {
                 ChunkID = 0;

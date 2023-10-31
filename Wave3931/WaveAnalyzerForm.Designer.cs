@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.LineAnnotation lineAnnotation1 = new System.Windows.Forms.DataVisualization.Charting.LineAnnotation();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -35,9 +37,9 @@
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WaveAnalyzerForm));
             this.btnDFT = new System.Windows.Forms.Button();
-            this.btnRecord = new System.Windows.Forms.Button();
+            this.btnStopRecord = new System.Windows.Forms.Button();
             this.btnPlay = new System.Windows.Forms.Button();
-            this.btnStop = new System.Windows.Forms.Button();
+            this.btnRecord = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.OptionsPanel = new System.Windows.Forms.Panel();
             this.btnClear = new System.Windows.Forms.Button();
@@ -62,6 +64,7 @@
             this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetZoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panel2.SuspendLayout();
             this.OptionsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -82,29 +85,29 @@
             this.btnDFT.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnDFT.FlatAppearance.BorderSize = 2;
             this.btnDFT.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnDFT.Location = new System.Drawing.Point(4, 140);
-            this.btnDFT.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.btnDFT.Location = new System.Drawing.Point(3, 93);
+            this.btnDFT.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnDFT.Name = "btnDFT";
-            this.btnDFT.Size = new System.Drawing.Size(144, 40);
+            this.btnDFT.Size = new System.Drawing.Size(96, 27);
             this.btnDFT.TabIndex = 4;
             this.btnDFT.Text = "DFT";
             this.btnDFT.UseVisualStyleBackColor = false;
             this.btnDFT.Click += new System.EventHandler(this.btnDFT_Click);
             // 
-            // btnRecord
+            // btnStopRecord
             // 
-            this.btnRecord.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.btnRecord.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnRecord.FlatAppearance.BorderSize = 2;
-            this.btnRecord.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnRecord.Location = new System.Drawing.Point(4, 94);
-            this.btnRecord.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.btnRecord.Name = "btnRecord";
-            this.btnRecord.Size = new System.Drawing.Size(144, 40);
-            this.btnRecord.TabIndex = 5;
-            this.btnRecord.Text = "Record";
-            this.btnRecord.UseVisualStyleBackColor = false;
-            this.btnRecord.Click += new System.EventHandler(this.btnRecord_Click);
+            this.btnStopRecord.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btnStopRecord.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnStopRecord.FlatAppearance.BorderSize = 2;
+            this.btnStopRecord.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnStopRecord.Location = new System.Drawing.Point(3, 63);
+            this.btnStopRecord.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.btnStopRecord.Name = "btnStopRecord";
+            this.btnStopRecord.Size = new System.Drawing.Size(96, 27);
+            this.btnStopRecord.TabIndex = 5;
+            this.btnStopRecord.Text = "Record";
+            this.btnStopRecord.UseVisualStyleBackColor = false;
+            this.btnStopRecord.Click += new System.EventHandler(this.btnRecord_Click);
             // 
             // btnPlay
             // 
@@ -114,29 +117,29 @@
             this.btnPlay.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnPlay.FlatAppearance.BorderSize = 2;
             this.btnPlay.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnPlay.Location = new System.Drawing.Point(4, 2);
-            this.btnPlay.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.btnPlay.Location = new System.Drawing.Point(3, 1);
+            this.btnPlay.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnPlay.Name = "btnPlay";
-            this.btnPlay.Size = new System.Drawing.Size(144, 40);
+            this.btnPlay.Size = new System.Drawing.Size(96, 27);
             this.btnPlay.TabIndex = 0;
             this.btnPlay.Text = "Play";
             this.btnPlay.UseVisualStyleBackColor = false;
             this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
             // 
-            // btnStop
+            // btnRecord
             // 
-            this.btnStop.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.btnStop.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnStop.FlatAppearance.BorderSize = 2;
-            this.btnStop.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnStop.Location = new System.Drawing.Point(4, 48);
-            this.btnStop.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(144, 40);
-            this.btnStop.TabIndex = 3;
-            this.btnStop.Text = "Stop";
-            this.btnStop.UseVisualStyleBackColor = false;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            this.btnRecord.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btnRecord.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnRecord.FlatAppearance.BorderSize = 2;
+            this.btnRecord.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnRecord.Location = new System.Drawing.Point(3, 32);
+            this.btnRecord.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.btnRecord.Name = "btnRecord";
+            this.btnRecord.Size = new System.Drawing.Size(96, 27);
+            this.btnRecord.TabIndex = 3;
+            this.btnRecord.Text = "Stop Recording";
+            this.btnRecord.UseVisualStyleBackColor = false;
+            this.btnRecord.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // panel2
             // 
@@ -147,10 +150,9 @@
             this.panel2.Controls.Add(this.splitContainer2);
             this.panel2.Controls.Add(this.splitContainer1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 30);
-            this.panel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel2.Location = new System.Drawing.Point(0, 24);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1514, 663);
+            this.panel2.Size = new System.Drawing.Size(1009, 435);
             this.panel2.TabIndex = 11;
             // 
             // OptionsPanel
@@ -165,15 +167,14 @@
             this.OptionsPanel.Controls.Add(this.btnLength);
             this.OptionsPanel.Controls.Add(this.btnSamples);
             this.OptionsPanel.Controls.Add(this.btnDFT);
-            this.OptionsPanel.Controls.Add(this.btnRecord);
+            this.OptionsPanel.Controls.Add(this.btnStopRecord);
             this.OptionsPanel.Controls.Add(this.btnPlay);
-            this.OptionsPanel.Controls.Add(this.btnStop);
+            this.OptionsPanel.Controls.Add(this.btnRecord);
             this.OptionsPanel.Cursor = System.Windows.Forms.Cursors.Default;
             this.OptionsPanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.OptionsPanel.Location = new System.Drawing.Point(1362, 0);
-            this.OptionsPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OptionsPanel.Location = new System.Drawing.Point(908, 0);
             this.OptionsPanel.Name = "OptionsPanel";
-            this.OptionsPanel.Size = new System.Drawing.Size(152, 663);
+            this.OptionsPanel.Size = new System.Drawing.Size(101, 435);
             this.OptionsPanel.TabIndex = 8;
             this.OptionsPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.OptionsPanel_Paint);
             // 
@@ -183,10 +184,10 @@
             this.btnClear.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnClear.FlatAppearance.BorderSize = 2;
             this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnClear.Location = new System.Drawing.Point(4, 602);
-            this.btnClear.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.btnClear.Location = new System.Drawing.Point(3, 401);
+            this.btnClear.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(144, 40);
+            this.btnClear.Size = new System.Drawing.Size(96, 27);
             this.btnClear.TabIndex = 10;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = false;
@@ -198,10 +199,10 @@
             this.btnFilter.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnFilter.FlatAppearance.BorderSize = 2;
             this.btnFilter.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnFilter.Location = new System.Drawing.Point(4, 486);
-            this.btnFilter.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.btnFilter.Location = new System.Drawing.Point(3, 324);
+            this.btnFilter.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnFilter.Name = "btnFilter";
-            this.btnFilter.Size = new System.Drawing.Size(144, 46);
+            this.btnFilter.Size = new System.Drawing.Size(96, 31);
             this.btnFilter.TabIndex = 9;
             this.btnFilter.Text = "Filter";
             this.btnFilter.UseVisualStyleBackColor = false;
@@ -213,10 +214,10 @@
             this.btnThreading.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnThreading.FlatAppearance.BorderSize = 2;
             this.btnThreading.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnThreading.Location = new System.Drawing.Point(4, 440);
-            this.btnThreading.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.btnThreading.Location = new System.Drawing.Point(3, 293);
+            this.btnThreading.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnThreading.Name = "btnThreading";
-            this.btnThreading.Size = new System.Drawing.Size(144, 40);
+            this.btnThreading.Size = new System.Drawing.Size(96, 27);
             this.btnThreading.TabIndex = 8;
             this.btnThreading.Text = "Threading";
             this.btnThreading.UseVisualStyleBackColor = false;
@@ -228,10 +229,10 @@
             this.btnLength.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnLength.FlatAppearance.BorderSize = 2;
             this.btnLength.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnLength.Location = new System.Drawing.Point(4, 302);
-            this.btnLength.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.btnLength.Location = new System.Drawing.Point(3, 201);
+            this.btnLength.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnLength.Name = "btnLength";
-            this.btnLength.Size = new System.Drawing.Size(144, 40);
+            this.btnLength.Size = new System.Drawing.Size(96, 27);
             this.btnLength.TabIndex = 7;
             this.btnLength.Text = "Length";
             this.btnLength.UseVisualStyleBackColor = false;
@@ -243,10 +244,10 @@
             this.btnSamples.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnSamples.FlatAppearance.BorderSize = 2;
             this.btnSamples.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnSamples.Location = new System.Drawing.Point(4, 256);
-            this.btnSamples.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.btnSamples.Location = new System.Drawing.Point(3, 171);
+            this.btnSamples.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnSamples.Name = "btnSamples";
-            this.btnSamples.Size = new System.Drawing.Size(144, 40);
+            this.btnSamples.Size = new System.Drawing.Size(96, 27);
             this.btnSamples.TabIndex = 6;
             this.btnSamples.Text = "Samples";
             this.btnSamples.UseVisualStyleBackColor = false;
@@ -260,7 +261,6 @@
             this.splitContainer2.BackColor = System.Drawing.Color.Black;
             this.splitContainer2.IsSplitterFixed = true;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -271,9 +271,9 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.LeftChannelChart);
-            this.splitContainer2.Size = new System.Drawing.Size(1362, 652);
-            this.splitContainer2.SplitterDistance = 299;
-            this.splitContainer2.SplitterWidth = 2;
+            this.splitContainer2.Size = new System.Drawing.Size(908, 435);
+            this.splitContainer2.SplitterDistance = 199;
+            this.splitContainer2.SplitterWidth = 1;
             this.splitContainer2.TabIndex = 10;
             // 
             // RightChannelChart
@@ -281,6 +281,8 @@
             this.RightChannelChart.AccessibleDescription = "Left Channel";
             this.RightChannelChart.AccessibleName = "Left Channel";
             this.RightChannelChart.AccessibleRole = System.Windows.Forms.AccessibleRole.Chart;
+            lineAnnotation1.Name = "LineAnnotation1";
+            this.RightChannelChart.Annotations.Add(lineAnnotation1);
             this.RightChannelChart.BackColor = System.Drawing.Color.Black;
             this.RightChannelChart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.RightChannelChart.BackSecondaryColor = System.Drawing.Color.WhiteSmoke;
@@ -320,7 +322,6 @@
             legend1.Title = "L";
             this.RightChannelChart.Legends.Add(legend1);
             this.RightChannelChart.Location = new System.Drawing.Point(0, 0);
-            this.RightChannelChart.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.RightChannelChart.Name = "RightChannelChart";
             series1.BackImage = "C:\\Users\\brend\\OneDrive - BCIT\\Pictures\\Saved Pictures\\vaporWaveBG.jpg";
             series1.ChartArea = "LeftChannelChartArea";
@@ -329,7 +330,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.RightChannelChart.Series.Add(series1);
-            this.RightChannelChart.Size = new System.Drawing.Size(1362, 299);
+            this.RightChannelChart.Size = new System.Drawing.Size(908, 199);
             this.RightChannelChart.TabIndex = 1;
             this.RightChannelChart.Text = "Left Channel";
             this.RightChannelChart.Click += new System.EventHandler(this.chart2_Click);
@@ -362,31 +363,30 @@
             this.LeftChannelChart.ChartAreas.Add(chartArea2);
             this.LeftChannelChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftChannelChart.Location = new System.Drawing.Point(0, 0);
-            this.LeftChannelChart.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.LeftChannelChart.Name = "LeftChannelChart";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series2.Name = "Series1";
             this.LeftChannelChart.Series.Add(series2);
-            this.LeftChannelChart.Size = new System.Drawing.Size(1362, 351);
+            this.LeftChannelChart.Size = new System.Drawing.Size(908, 235);
             this.LeftChannelChart.TabIndex = 0;
             this.LeftChannelChart.Text = "Right Channel";
             this.LeftChannelChart.Click += new System.EventHandler(this.LeftChannelChart_Click);
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Location = new System.Drawing.Point(-34, -100);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer1.Location = new System.Drawing.Point(-23, -67);
             this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Size = new System.Drawing.Size(180, 120);
-            this.splitContainer1.SplitterDistance = 60;
+            this.splitContainer1.Size = new System.Drawing.Size(120, 80);
+            this.splitContainer1.SplitterDistance = 40;
+            this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 9;
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 22);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
             // BottomStatusStrip
             // 
@@ -401,17 +401,17 @@
             this.BottomStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel2,
             this.toolStripStatusLabel1});
-            this.BottomStatusStrip.Location = new System.Drawing.Point(0, 693);
+            this.BottomStatusStrip.Location = new System.Drawing.Point(0, 459);
             this.BottomStatusStrip.Name = "BottomStatusStrip";
-            this.BottomStatusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 20, 0);
-            this.BottomStatusStrip.Size = new System.Drawing.Size(1514, 29);
+            this.BottomStatusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 13, 0);
+            this.BottomStatusStrip.Size = new System.Drawing.Size(1009, 22);
             this.BottomStatusStrip.TabIndex = 9;
             this.BottomStatusStrip.Text = "bottomStatusStrip";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(164, 22);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(109, 17);
             this.toolStripStatusLabel1.Text = "toolStripStatusabel1";
             this.toolStripStatusLabel1.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
             // 
@@ -422,34 +422,34 @@
             this.openFileMenu,
             this.saveFileMenu});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(55, 26);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // newFileMenu
             // 
             this.newFileMenu.Name = "newFileMenu";
-            this.newFileMenu.Size = new System.Drawing.Size(270, 34);
+            this.newFileMenu.Size = new System.Drawing.Size(104, 22);
             this.newFileMenu.Text = "New";
             this.newFileMenu.Click += new System.EventHandler(this.btnNew_Click);
             // 
             // openFileMenu
             // 
             this.openFileMenu.Name = "openFileMenu";
-            this.openFileMenu.Size = new System.Drawing.Size(270, 34);
+            this.openFileMenu.Size = new System.Drawing.Size(104, 22);
             this.openFileMenu.Text = "Open";
             this.openFileMenu.Click += new System.EventHandler(this.btnOpenFile_Click);
             // 
             // saveFileMenu
             // 
             this.saveFileMenu.Name = "saveFileMenu";
-            this.saveFileMenu.Size = new System.Drawing.Size(270, 34);
+            this.saveFileMenu.Size = new System.Drawing.Size(104, 22);
             this.saveFileMenu.Text = "Save";
             this.saveFileMenu.Click += new System.EventHandler(this.btnSaveFile_Click);
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(64, 26);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(45, 22);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // TopMenuStrip
@@ -460,7 +460,6 @@
             this.TopMenuStrip.AllowMerge = false;
             this.TopMenuStrip.BackColor = System.Drawing.Color.WhiteSmoke;
             this.TopMenuStrip.Font = new System.Drawing.Font("Constantia", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TopMenuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.TopMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.TopMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
@@ -468,8 +467,8 @@
             this.selectionOptionsToolStripMenuItem});
             this.TopMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.TopMenuStrip.Name = "TopMenuStrip";
-            this.TopMenuStrip.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.TopMenuStrip.Size = new System.Drawing.Size(1514, 30);
+            this.TopMenuStrip.Padding = new System.Windows.Forms.Padding(3, 1, 0, 1);
+            this.TopMenuStrip.Size = new System.Drawing.Size(1009, 24);
             this.TopMenuStrip.TabIndex = 10;
             this.TopMenuStrip.Text = "TopMenuStrip";
             this.TopMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.TopMenuStrip_ItemClicked);
@@ -481,7 +480,7 @@
             this.zoomToolStripMenuItem,
             this.resetZoomToolStripMenuItem});
             this.selectionOptionsToolStripMenuItem.Name = "selectionOptionsToolStripMenuItem";
-            this.selectionOptionsToolStripMenuItem.Size = new System.Drawing.Size(164, 26);
+            this.selectionOptionsToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.selectionOptionsToolStripMenuItem.Text = "Selection Options";
             this.selectionOptionsToolStripMenuItem.Click += new System.EventHandler(this.selectionOptionsToolStripMenuItem_Click);
             // 
@@ -491,7 +490,7 @@
             this.selectToolStripMenuItem.CheckOnClick = true;
             this.selectToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
-            this.selectToolStripMenuItem.Size = new System.Drawing.Size(203, 34);
+            this.selectToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.selectToolStripMenuItem.Text = "Select";
             this.selectToolStripMenuItem.Click += new System.EventHandler(this.selectToolStripMenuItem_Click);
             // 
@@ -501,29 +500,33 @@
             this.zoomToolStripMenuItem.CheckOnClick = true;
             this.zoomToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(203, 34);
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.zoomToolStripMenuItem.Text = "Zoom";
             this.zoomToolStripMenuItem.Click += new System.EventHandler(this.zoomToolStripMenuItem_Click);
             // 
             // resetZoomToolStripMenuItem
             // 
             this.resetZoomToolStripMenuItem.Name = "resetZoomToolStripMenuItem";
-            this.resetZoomToolStripMenuItem.Size = new System.Drawing.Size(203, 34);
+            this.resetZoomToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.resetZoomToolStripMenuItem.Text = "Reset Zoom";
             this.resetZoomToolStripMenuItem.Click += new System.EventHandler(this.resetZoomToolStripMenuItem_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // WaveAnalyzerForm
             // 
             this.AccessibleDescription = "Charts to analyze sound waves";
             this.AccessibleName = "Wave Analyzer";
             this.AccessibleRole = System.Windows.Forms.AccessibleRole.Application;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1514, 722);
+            this.ClientSize = new System.Drawing.Size(1009, 481);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.BottomStatusStrip);
             this.Controls.Add(this.TopMenuStrip);
@@ -531,7 +534,6 @@
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "WaveAnalyzerForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Wave Analyzer";
@@ -556,9 +558,9 @@
 
         #endregion
         private System.Windows.Forms.Button btnDFT;
-        private System.Windows.Forms.Button btnRecord;
+        private System.Windows.Forms.Button btnStopRecord;
         private System.Windows.Forms.Button btnPlay;
-        private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.Button btnRecord;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel OptionsPanel;
         private System.Windows.Forms.Button btnLength;
@@ -583,5 +585,6 @@
         private System.Windows.Forms.ToolStripMenuItem selectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetZoomToolStripMenuItem;
+        private System.Windows.Forms.Timer timer1;
     }
 }
