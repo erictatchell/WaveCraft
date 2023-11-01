@@ -14,6 +14,8 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Windows.Forms.DataVisualization.Charting;
 using static Wave3931.WavePlayer;
 using System.Threading;
+using System.Diagnostics;
+
 namespace Wave3931
 {
     public partial class WaveAnalyzerForm : Form
@@ -21,6 +23,9 @@ namespace Wave3931
         wave_file_header header = new wave_file_header();
         private double[] audioData;
         private readonly String file;
+        ChartArea CA;
+        Series S1;
+        VerticalLineAnnotation VA;
         public double[] getAudioData()
         {
             return audioData;
@@ -43,7 +48,45 @@ namespace Wave3931
             cm.Items.Add(cut);
             cm.Items.Add(paste);
             RightChannelChart.ContextMenuStrip = cm;
-
+            CA = RightChannelChart.ChartAreas[0];  // pick the right ChartArea..
+            S1 = RightChannelChart.Series[0];
+            VA = new VerticalLineAnnotation();
+            VA.AxisX = CA.AxisX;
+            VA.AllowMoving = true;
+            VA.IsInfinitive = true;
+            VA.ClipToChartArea = CA.Name;
+            VA.Name = "myLine";
+            VA.LineColor = Color.Gold;
+            VA.LineWidth = 2;         // use your numbers!
+            VA.X = 1;
+            RightChannelChart.Annotations.Add(VA);
+        }
+        public WaveAnalyzerForm()
+        {
+            InitializeComponent();
+            header.initialize(22050);
+            selectToolStripMenuItem.Checked = true;
+            zoomToolStripMenuItem.Checked = false;
+            ContextMenuStrip cm = new ContextMenuStrip();
+            ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
+            ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
+            ToolStripMenuItem paste = new ToolStripMenuItem("Paste", null, PasteSelected);
+            cm.Items.Add(copy);
+            cm.Items.Add(cut);
+            cm.Items.Add(paste);
+            RightChannelChart.ContextMenuStrip = cm;
+            CA = RightChannelChart.ChartAreas[0];  // pick the right ChartArea..
+            S1 = RightChannelChart.Series[0];
+            VA = new VerticalLineAnnotation();
+            VA.AxisX = CA.AxisX;
+            VA.AllowMoving = true;
+            VA.IsInfinitive = true;
+            VA.ClipToChartArea = CA.Name;
+            VA.Name = "myLine";
+            VA.LineColor = Color.Gold;
+            VA.LineWidth = 2;         // use your numbers!
+            VA.X = 1;
+            RightChannelChart.Annotations.Add(VA);
         }
         private void CopySelected(object sender, EventArgs e)
         {
@@ -137,19 +180,6 @@ namespace Wave3931
             {
                 RightChannelChart.Series[0].Points.AddXY(i, audioData[i]);
             }
-        }
-
-
-
-
-        public WaveAnalyzerForm()
-        {
-            InitializeComponent();
-            header.initialize(22050);
-            selectToolStripMenuItem.Checked = true;
-            zoomToolStripMenuItem.Checked = false;
-            /*double[] freqs = readingWave();
-            plotFreqWaveChart(freqs);*/
         }
 
         public double[] readingWave(String file)
@@ -283,68 +313,57 @@ namespace Wave3931
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            if (audioData == null)
-            {
-                MessageBox.Show("No audio data available.");
-                return;
-            }
-            byte[] audioBytes = new byte[audioData.Length * 2];
-            for (int i = 0; i < audioData.Length; i++)
-            {
-                short sample = (short)(audioData[i] * short.MaxValue);
-                byte[] sampleBytes = BitConverter.GetBytes(sample);
-                Array.Copy(sampleBytes, 0, audioBytes, i, 2);
-            }
-            
-            WAVEFORMATEX format = new WAVEFORMATEX
-            {
-                wFormatTag = header.AudioFormat,
-                nChannels = header.NumChannels,
-                nSamplesPerSec = (uint)header.SampleRate,
-                wBitsPerSample = header.BitsPerSample,
-                nBlockAlign = (ushort)(header.NumChannels * header.BitsPerSample / 8),
-                nAvgBytesPerSec = (uint)(header.SampleRate * header.NumChannels * header.BitsPerSample / 8),
-                cbSize = 0
-            };
-
-            IntPtr hWaveOut = IntPtr.Zero;
-            int result = waveOutOpen(out hWaveOut, 0, ref format, null, IntPtr.Zero, 0);
-
-            if (result != 0)
-            {
-                MessageBox.Show("Failed to open the audio device.");
-                return;
-            }
-            WAVEHDR waveHeader = new WAVEHDR
-            {
-                lpData = Marshal.AllocHGlobal(audioBytes.Length),
-                dwBufferLength = (uint)audioBytes.Length,
-                dwFlags = 0
-            };
-
-            Marshal.Copy(audioBytes, 0, waveHeader.lpData, audioBytes.Length);
-            waveOutPrepareHeader(hWaveOut, ref waveHeader, (uint)Marshal.SizeOf(waveHeader));
-            waveOutWrite(hWaveOut, ref waveHeader, (uint)Marshal.SizeOf(waveHeader));
-
-            // Clean up
-            waveOutUnprepareHeader(hWaveOut, ref waveHeader, (uint)Marshal.SizeOf(waveHeader));
-            waveOutClose(hWaveOut);
-            Marshal.FreeHGlobal(waveHeader.lpData);
+            StartPlaying();
+            timer1.Start();
         }
 
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            int len = GetDataLength();
+            double currentPosition = VA.X;
+
+            // Determine the duration of the audio in milliseconds (adjust this as needed)
+            int audioDurationMs = 5000; // 5 seconds in this example
+
+            // Calculate the new X-coordinate based on time
+            int newX = (int)((double)currentPosition + timer1.Interval / (double)audioDurationMs * len);
+
+            // Check if the line has reached the end
+            if (newX >= len)
+            {
+                newX = len; // Ensure the line doesn't go beyond the end
+                timer1.Stop(); // Stop the timer when the line reaches the end
+            }
+
+            VA.X = newX; // Update the line's X-coordinate
         }
-        `
+
         private void btnStop_Click(object sender, EventArgs e)
         {
+            unsafe
+            {
+                StopRecording();
+                IntPtr pb = GetPBuffer();
+                int dl = GetDataLength();
+                double[] data = new double[dl];
+                for (int i = 0; i < dl; i++)
+                {
+                    byte sample = Marshal.ReadByte(pb, i);
+                                                          
+                    data[i] = ((sample / 127.5) - 1.0);
+                }
+                audioData = data;
+                plotFreqWaveChart(audioData);
 
+            }
         }
+
+
 
         private void btnRecord_Click(object sender, EventArgs e)
         {
-
+            StartRecording();
         }
 
         private void btnDFT_Click(object sender, EventArgs e)
