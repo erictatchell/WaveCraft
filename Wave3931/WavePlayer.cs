@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Forms;
+
 namespace Wave3931
 {
     public class WavePlayer
@@ -22,56 +24,13 @@ namespace Wave3931
         [DllImport("WaveAnalyserDLL.dll")]
         public static extern void StartPlaying();
         [DllImport("WaveAnalyserDLL.dll")]
+        public static extern void Init();
+        [DllImport("WaveAnalyserDLL.dll")]
         public static extern void StopPlaying();
         [DllImport("WaveAnalyserDLL.dll")]
-
         public static extern void PausePlaying();
-
-
-
-        [DllImport("winmm.dll")]
-        public static extern int waveOutOpen(out IntPtr hWaveOut, uint uDeviceID, ref WAVEFORMATEX lpFormat, WaveCallback dwCallback, IntPtr dwInstance, uint dwFlags);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveOutPrepareHeader(IntPtr hWaveOut, ref WAVEHDR lpWaveOutHdr, uint uSize);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveOutWrite(IntPtr hWaveOut, ref WAVEHDR lpWaveOutHdr, uint uSize);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveOutReset(IntPtr hWaveOut);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveOutClose(IntPtr hWaveOut);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveOutUnprepareHeader(IntPtr hWaveOut, ref WAVEHDR lpWaveOutHdr, uint uSize);
-/*        [DllImport("winmm.dll")]
-*         public static extern int waveInOpen(out IntPtr hWaveIn, int uDeviceID, ref WAVEFORMATEX lpFormat, WaveInProc dwCallback, int dwInstance, int dwFlags);
-*/
-        [DllImport("winmm.dll")]
-        public static extern int waveInStart(IntPtr hWaveIn);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveInStop(IntPtr hWaveIn);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveInClose(IntPtr hWaveIn);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveInAddBuffer(IntPtr hWaveIn, ref WAVEHDR pWaveHdr, int uSize);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveInPrepareHeader(IntPtr hWaveIn, ref WAVEHDR pWaveHdr, int uSize);
-
-        [DllImport("winmm.dll")]
-        public static extern int waveInUnprepareHeader(IntPtr hWaveIn, ref WAVEHDR pWaveHdr, int uSize);
-/*        [DllImport("winmm.dll")]
-*//*        public static extern int waveInOpen(out IntPtr hWaveIn, int uDeviceID, ref WAVEFORMATEX lpFormat, WaveInProc dwCallback, int dwInstance, int dwFlags);
-*/        public delegate void WaveCallback(IntPtr hWaveOut, uint uMsg, IntPtr dwInstance, IntPtr dwParam1, IntPtr dwParam2);
-
-        // Define the WAVEFORMATEX structure
-        [StructLayout(LayoutKind.Sequential)]
+        [DllImport("WaveAnalyserDLL.dll")]
+        public static extern void Box();
         public struct WAVEFORMATEX
         {
             public ushort wFormatTag;

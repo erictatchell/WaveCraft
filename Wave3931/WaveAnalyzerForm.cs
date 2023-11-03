@@ -314,13 +314,13 @@ namespace Wave3931
         private void btnPlay_Click(object sender, EventArgs e)
         {
             StartPlaying();
-            timer1.Start();
-        }
+/*            timer1.Start();
+*/        }
 
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            int len = GetDataLength();
+            /*int len = GetDataLength();
             double currentPosition = VA.X;
 
             // Determine the duration of the audio in milliseconds (adjust this as needed)
@@ -336,7 +336,7 @@ namespace Wave3931
                 timer1.Stop(); // Stop the timer when the line reaches the end
             }
 
-            VA.X = newX; // Update the line's X-coordinate
+            VA.X = newX; // Update the line's X-coordinate*/
         }
 
         private void btnStop_Click(object sender, EventArgs e)
@@ -346,6 +346,8 @@ namespace Wave3931
                 StopRecording();
                 IntPtr pb = GetPBuffer();
                 int dl = GetDataLength();
+                Debug.WriteLine(dl);
+
                 double[] data = new double[dl];
                 for (int i = 0; i < dl; i++)
                 {
@@ -363,11 +365,13 @@ namespace Wave3931
 
         private void btnRecord_Click(object sender, EventArgs e)
         {
+            Init();
             StartRecording();
         }
 
         private void btnDFT_Click(object sender, EventArgs e)
         {
+            DFT = new DFT(audioData);
             DFT.Owner = this; // Set the owner if needed
             DFT.Show();
         }

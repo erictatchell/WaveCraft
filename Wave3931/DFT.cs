@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NAudio.Dsp;
+using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -31,23 +33,28 @@ namespace Wave3931
             {
                 for (int t = 0; t < N; t++)
                 {
-                    A[f] += s[t] * Math.Cos(2 * Math.PI * t * f / N);
+                    double re = Math.Cos(2 * Math.PI * t * f / N);
+                    double im = Math.Sin(2 * Math.PI * t * f / N);
+                    Complex reMinusim = new Complex(re, im);
+                    A[f] += s[t] * (re - im);
                 }
+                A[f] /= N; // Normalize by dividing by N
             }
             return A;
         }
-       public DFT(double[] freqs)
+
+        public DFT(double[] s)
         {
             InitializeComponent();
 
-            /*int N = 200;
-            double[] dftResult = dft(N, freqs);
+            int N = s.Length / 2;
+            double[] dftResult = dft(N, s);
 
             // Add data points to the chart
             for (int i = 0; i < N; i++)
             {
-                chart1.Series["DFT"].Points.AddXY(i, dftResult[i]);
-            }*/
+                chart1.Series[0].Points.AddXY(i, dftResult[i]);
+            }
         }
         private void chart1_Click(object sender, EventArgs e)
         {
