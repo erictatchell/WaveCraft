@@ -245,8 +245,6 @@ namespace Wave3931
                     outputList.Add(sample);
                 }
             }
-
-            DFT = new DFT(outputList.ToArray());
             toolStripStatusLabel1.Text = "File Path: " + file;
             audioData = outputList.ToArray();
             double gain = 100.0;
@@ -422,7 +420,7 @@ namespace Wave3931
 
         private void btnDFT_Click(object sender, EventArgs e)
         {
-            DFT = new DFT(audioData);
+            DFT = new DFT(audioData, GetSampleRate());
             DFT.Owner = this; // Set the owner if needed
             DFT.Show();
         }

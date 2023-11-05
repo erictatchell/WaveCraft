@@ -9,11 +9,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
-using NAudio;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using NAudio.Wave;
-using NAudio.Dsp;
 
 namespace Wave3931
 {

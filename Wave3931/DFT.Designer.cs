@@ -36,8 +36,10 @@
             // 
             // chart1
             // 
-            this.chart1.BackColor = System.Drawing.Color.DarkGray;
-            chartArea1.BackColor = System.Drawing.Color.Black;
+            this.chart1.BackColor = System.Drawing.Color.Black;
+            chartArea1.BackColor = System.Drawing.Color.White;
+            chartArea1.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea1.BorderColor = System.Drawing.Color.White;
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.DataSource = this.chart1.Images;
@@ -47,12 +49,13 @@
             this.chart1.Name = "chart1";
             series1.BackImageTransparentColor = System.Drawing.Color.White;
             series1.ChartArea = "ChartArea1";
-            series1.Color = System.Drawing.Color.Yellow;
+            series1.Color = System.Drawing.Color.White;
+            series1.LabelForeColor = System.Drawing.Color.White;
             series1.Name = "1";
             series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
             series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(918, 518);
+            this.chart1.Size = new System.Drawing.Size(588, 352);
             this.chart1.TabIndex = 1;
             this.chart1.Text = "chart1";
             this.chart1.Click += new System.EventHandler(this.chart1_Click);
@@ -61,7 +64,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(918, 518);
+            this.ClientSize = new System.Drawing.Size(588, 352);
             this.Controls.Add(this.chart1);
             this.Name = "DFT";
             this.Text = "DFT";
