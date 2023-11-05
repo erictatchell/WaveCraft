@@ -15,6 +15,8 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static Wave3931.WavePlayer;
 using System.Threading;
 using System.Diagnostics;
+using MathNet.Numerics.Optimization;
+using System.Collections;
 
 namespace Wave3931
 {
@@ -64,6 +66,7 @@ namespace Wave3931
         public WaveAnalyzerForm()
         {
             InitializeComponent();
+            Box(this.Handle);
             header.initialize(22050);
             selectToolStripMenuItem.Checked = true;
             zoomToolStripMenuItem.Checked = false;
@@ -133,6 +136,7 @@ namespace Wave3931
             newDataList.RemoveRange(startIndex, selectedDataLength);
             audioData = newDataList.ToArray();
 
+
             // Clear the chart and update it with the modified data
             RightChannelChart.Series[0].Points.Clear();
             for (int i = 0; i < audioData.Length; i++)
@@ -151,14 +155,16 @@ namespace Wave3931
             string base64Data = Clipboard.GetText();
             byte[] byteData = Convert.FromBase64String(base64Data);
             int pasteIndex = (int)(pos);
+
             if (pasteIndex < 0)
             {
                 pasteIndex = 0;
             }
-            else if (pasteIndex >= audioData.Length)
+            else if (pasteIndex > audioData.Length)
             {
                 pasteIndex = audioData.Length;
             }
+
             int copiedDataLength = byteData.Length / sizeof(double);
 
             // Expand the audioData array to accommodate the pasted data
@@ -173,15 +179,34 @@ namespace Wave3931
             {
                 audioData[pasteIndex + i] = copiedAudioData[i];
             }
-
-            // Clear the chart and update it with the modified data
+            
             RightChannelChart.Series[0].Points.Clear();
             for (int i = 0; i < audioData.Length; i++)
             {
                 RightChannelChart.Series[0].Points.AddXY(i, audioData[i]);
             }
-        }
 
+            byte[] byteArray = new byte[audioData.Length];
+
+            for (int i = 0; i < audioData.Length; i++)
+            {
+                double sample = audioData[i];
+                byte byteValue = (byte)((sample + 1) * 127.5);
+
+                byteArray[i] = byteValue;
+            }
+            IntPtr pSaveBuffer = IntPtr.Zero;
+            pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
+            Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
+
+            UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
+
+            /*SetDWDataLength((uint)byteArray.Length);
+            SetPSaveBuffer(pSaveBuffer);*/
+
+            Marshal.FreeHGlobal(pSaveBuffer);
+
+        }
         public double[] readingWave(String file)
         {
             List<double> outputList = new List<double>();
@@ -313,18 +338,27 @@ namespace Wave3931
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            StartPlaying();
-/*            timer1.Start();
-*/        }
+            IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
+
+            if (hWnd != IntPtr.Zero)
+            {
+                SendMessage(hWnd, 0x0111, 1002, 0);
+            }
+            else
+            {
+                Debug.WriteLine("WTF");
+            }
+            timer1.Start();
+        }
 
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            /*int len = GetDataLength();
+            int len = GetDataLength();
             double currentPosition = VA.X;
 
             // Determine the duration of the audio in milliseconds (adjust this as needed)
-            int audioDurationMs = 5000; // 5 seconds in this example
+            int audioDurationMs = len / GetSampleRate(); // 5 seconds in this example
 
             // Calculate the new X-coordinate based on time
             int newX = (int)((double)currentPosition + timer1.Interval / (double)audioDurationMs * len);
@@ -336,14 +370,24 @@ namespace Wave3931
                 timer1.Stop(); // Stop the timer when the line reaches the end
             }
 
-            VA.X = newX; // Update the line's X-coordinate*/
+            VA.X = newX; // Update the line's X-coordinate
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
+            
+            IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
+
+            if (hWnd != IntPtr.Zero)
+            {
+                SendMessage(hWnd, 0x0111, 1001, 0);
+            }
+            else
+            {
+                Debug.WriteLine("WTF");
+            }
             unsafe
             {
-                StopRecording();
                 IntPtr pb = GetPBuffer();
                 int dl = GetDataLength();
                 Debug.WriteLine(dl);
@@ -352,8 +396,8 @@ namespace Wave3931
                 for (int i = 0; i < dl; i++)
                 {
                     byte sample = Marshal.ReadByte(pb, i);
-                                                          
-                    data[i] = ((sample / 127.5) - 1.0);
+
+                    data[i] = ((sample / 127.5) - 1);
                 }
                 audioData = data;
                 plotFreqWaveChart(audioData);
@@ -365,8 +409,15 @@ namespace Wave3931
 
         private void btnRecord_Click(object sender, EventArgs e)
         {
-            Init();
-            StartRecording();
+            IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
+
+            if (hWnd != IntPtr.Zero)
+            {
+                SendMessage(hWnd, 0x0111, 1000, 0);
+            } else
+            {
+                Debug.WriteLine("WTF");
+            }
         }
 
         private void btnDFT_Click(object sender, EventArgs e)

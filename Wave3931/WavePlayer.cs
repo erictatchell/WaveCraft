@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
@@ -7,30 +8,50 @@ namespace Wave3931
 {
     public class WavePlayer
     {
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern void InitializeAudio(uint SampleRate, int channels);
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern void SetPBuffer(IntPtr pb);
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern int GetDataLength();
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern IntPtr GetPBuffer();
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern void CleanupAudio();
-        [DllImport("WaveAnalyserDLL.dll")]
-        public static extern void StartRecording();
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
+        public static extern void StartRecording(IntPtr hwnd);
+        [DllImport("WaveDLL.dll")]
         public static extern void StopRecording();
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern void StartPlaying();
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern void Init();
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern void StopPlaying();
-        [DllImport("WaveAnalyserDLL.dll")]
+        [DllImport("WaveDLL.dll")]
         public static extern void PausePlaying();
-        [DllImport("WaveAnalyserDLL.dll")]
-        public static extern void Box();
+        [DllImport("WaveDLL.dll")]
+        public static extern void Box(IntPtr hwnd);
+        [DllImport("WaveDLL.dll")]
+        public static extern void SetPSaveBuffer(IntPtr ps);
+        [DllImport("WaveDLL.dll")]
+        public static extern void SetDWDataLength(uint dl);
+        [DllImport("WaveDLL.dll")]
+        public static extern void UpdatePSaveBuffer(IntPtr ps, int dl);
+
+        [DllImport("WaveDLL.dll")]
+        public static extern IntPtr GetWaveHdrLPData();
+        [DllImport("WaveDLL.dll")]
+        public static extern int GetWaveHdrBUFLEN();
+        [DllImport("WaveDLL.dll")]
+        public static extern void SetWaveHdr(IntPtr lpData, int dwBufferLength);
+        [DllImport("WaveDLL.dll")]
+        public static extern int GetSampleRate();
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         public struct WAVEFORMATEX
         {
             public ushort wFormatTag;

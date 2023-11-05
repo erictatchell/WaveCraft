@@ -35,8 +35,8 @@ namespace Wave3931
                 {
                     double re = Math.Cos(2 * Math.PI * t * f / N);
                     double im = Math.Sin(2 * Math.PI * t * f / N);
-                    Complex reMinusim = new Complex(re, im);
-                    A[f] += s[t] * (re - im);
+/*                    Complex reMinusim = new Complex(re, im);
+*/                    A[f] += s[t] * (re - im);
                 }
                 A[f] /= N; // Normalize by dividing by N
             }

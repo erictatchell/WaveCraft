@@ -298,7 +298,7 @@
             chartArea1.AxisX.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
             chartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
             chartArea1.BackColor = System.Drawing.Color.Black;
-            chartArea1.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea1.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
             chartArea1.CursorX.LineColor = System.Drawing.Color.Black;
             chartArea1.CursorX.SelectionColor = System.Drawing.Color.LightGreen;
             chartArea1.CursorY.LineColor = System.Drawing.Color.Black;
@@ -357,7 +357,7 @@
             chartArea2.AxisY.LabelStyle.Font = new System.Drawing.Font("Constantia", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisY.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
             chartArea2.BackColor = System.Drawing.Color.Black;
-            chartArea2.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea2.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
             chartArea2.IsSameFontSizeForAllAxes = true;
             chartArea2.Name = "ChartArea1";
             this.LeftChannelChart.ChartAreas.Add(chartArea2);
