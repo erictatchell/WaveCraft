@@ -47,6 +47,8 @@ namespace Wave3931
         public static extern void SetWaveHdr(IntPtr lpData, int dwBufferLength);
         [DllImport("WaveDLL.dll")]
         public static extern int GetSampleRate();
+        [DllImport("WaveDLL.dll")]
+        public static extern int SetSampleRate(uint sr);
 
         [DllImport("user32.dll")]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);

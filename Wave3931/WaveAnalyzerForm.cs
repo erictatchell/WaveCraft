@@ -37,10 +37,29 @@ namespace Wave3931
         {
             InitializeComponent();
             this.file = file;
+            Box(this.Handle);
+
             header.initialize(22050);
             double[] freqs = readingWave(file);
             plotFreqWaveChart(freqs);
+            byte[] byteArray = new byte[audioData.Length];
+
+            for (int i = 0; i < audioData.Length; i++)
+            {
+                double sample = audioData[i];
+                byte byteValue = (byte)((sample + 1) * 127.5);
+
+                byteArray[i] = byteValue;
+            }
+            IntPtr pSaveBuffer = IntPtr.Zero;
+            pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
+            Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
+
+            UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
+
+            Marshal.FreeHGlobal(pSaveBuffer);
             selectToolStripMenuItem.Checked = true;
+            hzToolStripMenuItem.Checked = true;
             zoomToolStripMenuItem.Checked = false;
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
@@ -68,8 +87,10 @@ namespace Wave3931
             InitializeComponent();
             Box(this.Handle);
             header.initialize(22050);
+            hzToolStripMenuItem.Checked = true;
             selectToolStripMenuItem.Checked = true;
             zoomToolStripMenuItem.Checked = false;
+            Info.Visible = false;
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
             ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
@@ -87,7 +108,7 @@ namespace Wave3931
             VA.ClipToChartArea = CA.Name;
             VA.Name = "myLine";
             VA.LineColor = Color.Gold;
-            VA.LineWidth = 2;         // use your numbers!
+            VA.LineWidth = 2;
             VA.X = 1;
             RightChannelChart.Annotations.Add(VA);
         }
@@ -201,9 +222,6 @@ namespace Wave3931
 
             UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
 
-            /*SetDWDataLength((uint)byteArray.Length);
-            SetPSaveBuffer(pSaveBuffer);*/
-
             Marshal.FreeHGlobal(pSaveBuffer);
 
         }
@@ -245,13 +263,8 @@ namespace Wave3931
                     outputList.Add(sample);
                 }
             }
-            toolStripStatusLabel1.Text = "File Path: " + file;
+            Info.Text = "File Path: " + file;
             audioData = outputList.ToArray();
-            double gain = 100.0;
-            for (int i = 0; i < audioData.Length; i++)
-            {
-                audioData[i] *= gain;
-            }
             return outputList.ToArray();
         }
 
@@ -284,7 +297,7 @@ namespace Wave3931
                 RightChannelChart.Series[0].Points.AddXY(m, audioData[m]);
             }
             RightChannelChart.ChartAreas[0].AxisX.Minimum = 0;
-
+            toolStripStatusLabel1.Text = "Length: " + audioData.Length + "s, Sampled at " + GetSampleRate() + " Hz";
         }
 
 
@@ -356,7 +369,7 @@ namespace Wave3931
             double currentPosition = VA.X;
 
             // Determine the duration of the audio in milliseconds (adjust this as needed)
-            int audioDurationMs = len / GetSampleRate(); // 5 seconds in this example
+            int audioDurationMs = 1; // 5 seconds in this example
 
             // Calculate the new X-coordinate based on time
             int newX = (int)((double)currentPosition + timer1.Interval / (double)audioDurationMs * len);
@@ -375,21 +388,12 @@ namespace Wave3931
         {
             
             IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
-
-            if (hWnd != IntPtr.Zero)
+            SendMessage(hWnd, 0x0111, 1001, 0);
+            IntPtr pb = GetPBuffer();
+            int dl = GetDataLength();
+            Debug.WriteLine(dl);
+            if (dl != 0)
             {
-                SendMessage(hWnd, 0x0111, 1001, 0);
-            }
-            else
-            {
-                Debug.WriteLine("WTF");
-            }
-            unsafe
-            {
-                IntPtr pb = GetPBuffer();
-                int dl = GetDataLength();
-                Debug.WriteLine(dl);
-
                 double[] data = new double[dl];
                 for (int i = 0; i < dl; i++)
                 {
@@ -401,8 +405,8 @@ namespace Wave3931
                 plotFreqWaveChart(audioData);
 
             }
+            
         }
-
 
 
         private void btnRecord_Click(object sender, EventArgs e)
@@ -476,7 +480,7 @@ namespace Wave3931
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string selectedFilePath = openFileDialog.FileName;
-                    toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
+                    Info.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
                     double[] freqs = readingWave(selectedFilePath);
                     plotFreqWaveChart(freqs);
                 }
@@ -536,7 +540,7 @@ namespace Wave3931
                         }
                     }
 
-                    toolStripStatusLabel1.Text = "Saved File: " + System.IO.Path.GetFileName(saveFilePath);
+                    Info.Text = "Saved File: " + System.IO.Path.GetFileName(saveFilePath);
                 }
             }
         }
@@ -572,6 +576,43 @@ namespace Wave3931
         private void resetZoomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RightChannelChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // 11025
+        private void hzToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            hzToolStripMenuItem1.Checked = false;
+            hzToolStripMenuItem2.Checked = false;
+            hzToolStripMenuItem.Checked = true;
+            SetSampleRate(11025);
+        }
+
+        // 22050
+        private void hzToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            hzToolStripMenuItem.Checked = false;
+            hzToolStripMenuItem2.Checked = false;
+            hzToolStripMenuItem1.Checked = true;
+            SetSampleRate(22050);
+        }
+
+        // 44100
+        private void hzToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            hzToolStripMenuItem.Checked = false;
+            hzToolStripMenuItem1.Checked = false;
+            hzToolStripMenuItem2.Checked = true;
+            SetSampleRate(44100);
+        }
+
+        private void toolStripStatusLabel1_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

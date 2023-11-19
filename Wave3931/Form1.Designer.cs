@@ -59,13 +59,11 @@
             // 
             // toolStripStatusLabel2
             // 
-            this.toolStripStatusLabel2.Margin = new System.Windows.Forms.Padding(0, 3, 0, 2);
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(23, 23);
             // 
             // toolStripStatusLabel1
             // 
-            this.toolStripStatusLabel1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 2);
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(23, 23);
             // 
@@ -149,7 +147,8 @@
             this.btNewFile.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btNewFile.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btNewFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btNewFile.Location = new System.Drawing.Point(366, 236);
+            this.btNewFile.Font = new System.Drawing.Font("Constantia", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btNewFile.Location = new System.Drawing.Point(93, 50);
             this.btNewFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btNewFile.Name = "btNewFile";
             this.btNewFile.Size = new System.Drawing.Size(149, 75);
@@ -163,7 +162,8 @@
             this.btnOpenFile.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnOpenFile.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btnOpenFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnOpenFile.Location = new System.Drawing.Point(366, 332);
+            this.btnOpenFile.Font = new System.Drawing.Font("Constantia", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnOpenFile.Location = new System.Drawing.Point(93, 146);
             this.btnOpenFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(149, 75);
@@ -174,12 +174,12 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DarkGray;
             this.BackgroundImage = global::Wave3931.Properties.Resources.StartScreen;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(880, 676);
+            this.ClientSize = new System.Drawing.Size(334, 304);
             this.Controls.Add(this.btnOpenFile);
             this.Controls.Add(this.btNewFile);
             this.Font = new System.Drawing.Font("Constantia", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

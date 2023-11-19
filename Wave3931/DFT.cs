@@ -38,25 +38,25 @@ namespace Wave3931
             }
         }
 
-        public ComplexNumber[] dft(int N, double[] s)
+        public Complex[] dft(int N, double[] s)
         {
-            ComplexNumber[] A = new ComplexNumber[N];
+            Complex[] A = new Complex[N];
+
             for (int f = 0; f < N; f++)
             {
-                A[f] = new ComplexNumber(0, 0); // Initialize to (0, 0)
+                A[f] = new Complex(0, 0);
+
                 for (int t = 0; t < N; t++)
                 {
-                    double re = Math.Cos(2 * Math.PI * t * f / N);
-                    double im = Math.Sin(2 * Math.PI * t * f / N);
+                    double angle = 2 * Math.PI * t * f / N;
 
-                    A[f].Real += s[t] * (re - im);
-                    A[f].Imaginary += s[t] * (re + im);
+                    A[f] = Complex.Add(A[f], new Complex(s[t] * Math.Cos(angle), -s[t] * Math.Sin(angle)));
                 }
-                A[f].Real /= N; // Normalize by dividing by N
-                A[f].Imaginary /= N; // Normalize by dividing by N
             }
             return A;
         }
+
+
 
 
         public DFT(double[] s, double sampleRate)
@@ -64,31 +64,30 @@ namespace Wave3931
             InitializeComponent();
 
             int N = s.Length;
-            ComplexNumber[] dftResult = dft(N, s);
-
-            // Calculate the frequencies for each bin
+            Complex[] dftResult = dft(N, s);
             double[] frequencies = new double[N];
             for (int i = 0; i < N; i++)
             {
                 frequencies[i] = i * sampleRate / N;
             }
 
-            // Add data points to the chart with frequencies on the y-axis and amplitudes on the x-axis
-            for (int i = 0; i < N; i++) // N / 2 to consider only the positive frequencies
+            for (int i = 0; i < N; i++)
             {
-                double amplitude = Math.Sqrt(dftResult[i].Real * dftResult[i].Real + dftResult[i].Imaginary * dftResult[i].Imaginary);
-                chart1.Series[0].Points.AddXY((int)frequencies[i], amplitude);
+                chart1.Series[0].Points.AddXY((int)frequencies[i], dftResult[i].Magnitude);
             }
+            chart1.ChartAreas[0].AxisX.Minimum = 0;
+            chart1.ChartAreas[0].AxisX.Maximum = sampleRate;
+
             chart1.ChartAreas[0].AxisY.Title = "Amplitude";
             chart1.ChartAreas[0].AxisX.Title = "Frequency (Hz)";
             chart1.ChartAreas[0].AxisX.TitleForeColor = Color.White;
             chart1.ChartAreas[0].AxisX.LabelStyle.ForeColor = Color.White; 
             chart1.ChartAreas[0].AxisY.TitleForeColor = Color.White;
             chart1.ChartAreas[0].AxisY.LabelStyle.ForeColor = Color.White;
+            chart1.ChartAreas[0].CursorX.IsUserEnabled = true;
+            chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
+            chart1.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
         }
-
-
-
 
         private void chart1_Click(object sender, EventArgs e)
         {
