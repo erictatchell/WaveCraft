@@ -18,6 +18,7 @@ namespace Wave3931
             InitializeComponent();
 
             this.windowType = windowType;
+            this.Text = "DFT - " + windowType + " Windowing";
 
             int N = s.Length;
             Complex[] dftResult = threadedDFTFunc(s, N, threads);

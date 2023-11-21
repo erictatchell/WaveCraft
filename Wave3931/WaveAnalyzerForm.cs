@@ -27,6 +27,7 @@ namespace Wave3931
         private double[] audioData;
         private readonly String file;
         private string WINDOW_TYPE;
+        private bool SELECT;
 
         private int NUM_THREADS;
         public double[] getAudioData()
@@ -59,14 +60,20 @@ namespace Wave3931
             UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
 
             Marshal.FreeHGlobal(pSaveBuffer);
+
+            titleLeft.Visible = false;
+            titleRight.Visible = false;
             hzToolStripMenuItem.Checked = true;
             threads_1.Checked = true;
             NUM_THREADS = 1;
             rectangleToolStripMenuItem.Checked = true;
             WINDOW_TYPE = "Rectangle";
-            selectToolStripMenuItem.Checked = true;
-            zoomToolStripMenuItem.Checked = false;
-
+            SELECT = true;
+            selectRadio.Checked = true;
+            btnPlay.Enabled = false;
+            btnRecord.Enabled = false;
+            btnDFT.Enabled = false;
+            btnClear.Enabled = false;
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
             ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
@@ -74,27 +81,28 @@ namespace Wave3931
             cm.Items.Add(copy);
             cm.Items.Add(cut);
             cm.Items.Add(paste);
-            RightChannelChart.ContextMenuStrip = cm;
+            LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
         }
         public WaveAnalyzerForm()
         {
             InitializeComponent();
             Box(this.Handle);
-            header.initialize(22050);
+
+            titleLeft.Visible = false;
+            titleRight.Visible = false;
 
             hzToolStripMenuItem.Checked = true;
             threads_1.Checked = true;
             NUM_THREADS = 1;
             rectangleToolStripMenuItem.Checked = true;
             WINDOW_TYPE = "Rectangle";
-            selectToolStripMenuItem.Checked = true;
-            zoomToolStripMenuItem.Checked = false;
+            SELECT = true;
+            selectRadio.Checked = true;
             btnPlay.Enabled = false;
             btnRecord.Enabled = false;
             btnDFT.Enabled = false;
             btnClear.Enabled = false;
 
-            Info.Visible = false;
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
             ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
@@ -102,12 +110,13 @@ namespace Wave3931
             cm.Items.Add(copy);
             cm.Items.Add(cut);
             cm.Items.Add(paste);
-            RightChannelChart.ContextMenuStrip = cm;
+            LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
+
         }
         private void CopySelected(object sender, EventArgs e)
         {
-            double start = RightChannelChart.ChartAreas[0].CursorX.SelectionStart;
-            double end = RightChannelChart.ChartAreas[0].CursorX.SelectionEnd;
+            double start = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
+            double end = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
             int startIndex = (int)(start);
             int endIndex = (int)(end);
 
@@ -125,8 +134,8 @@ namespace Wave3931
         }
         private void CutSelected(object sender, EventArgs e)
         {
-            double start = RightChannelChart.ChartAreas[0].CursorX.SelectionStart;
-            double end = RightChannelChart.ChartAreas[0].CursorX.SelectionEnd;
+            double start = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
+            double end = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
             int startIndex = (int)(start);
             int endIndex = (int)(end);
 
@@ -151,10 +160,10 @@ namespace Wave3931
 
 
             // Clear the chart and update it with the modified data
-            RightChannelChart.Series[0].Points.Clear();
+            LEFT_CHANNEL_CHART.Series[0].Points.Clear();
             for (int i = 0; i < audioData.Length; i++)
             {
-                RightChannelChart.Series[0].Points.AddXY(i, audioData[i]);
+                LEFT_CHANNEL_CHART.Series[0].Points.AddXY(i, audioData[i]);
             }
 
             // Update other chart properties as needed
@@ -164,7 +173,7 @@ namespace Wave3931
 
         private void PasteSelected(object sender, EventArgs e)
         {
-            double pos = RightChannelChart.ChartAreas[0].CursorX.SelectionStart;
+            double pos = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
             string base64Data = Clipboard.GetText();
             byte[] byteData = Convert.FromBase64String(base64Data);
             int pasteIndex = (int)(pos);
@@ -193,10 +202,10 @@ namespace Wave3931
                 audioData[pasteIndex + i] = copiedAudioData[i];
             }
 
-            RightChannelChart.Series[0].Points.Clear();
+            LEFT_CHANNEL_CHART.Series[0].Points.Clear();
             for (int i = 0; i < audioData.Length; i++)
             {
-                RightChannelChart.Series[0].Points.AddXY(i, audioData[i]);
+                LEFT_CHANNEL_CHART.Series[0].Points.AddXY(i, audioData[i]);
             }
 
             byte[] byteArray = new byte[audioData.Length];
@@ -255,7 +264,6 @@ namespace Wave3931
                     outputList.Add(sample);
                 }
             }
-            Info.Text = "File Path: " + file;
             audioData = outputList.ToArray();
             return outputList.ToArray();
         }
@@ -283,13 +291,24 @@ namespace Wave3931
         }
         public void plotFreqWaveChart(double[] audioData)
         {
-            RightChannelChart.Series[0].Points.Clear();
+
+            LEFT_CHANNEL_CHART.Series[0].Points.Clear();
             for (int m = 0; m < audioData.Length; m++)
             {
-                RightChannelChart.Series[0].Points.AddXY(m, audioData[m]);
+                LEFT_CHANNEL_CHART.Series[0].Points.AddXY(m, audioData[m]);
             }
-            RightChannelChart.ChartAreas[0].AxisX.Minimum = 0;
-            toolStripStatusLabel1.Text = "Length: " + audioData.Length / 11025 + "s, Sampled at " + GetSampleRate() + " Hz";
+            LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.Minimum = 0;
+            toolStripStatusLabel1.Text = string.Format("{0:F2}s at {1} Hz", (double)audioData.Length / GetSampleRate(), GetSampleRate());
+            LEFT_CHANNEL_CHART.Visible = true;
+            RIGHT_CHANNEL_CHART.Visible = true;
+            double[] rightData = new double[audioData.Length];
+            for (int m = 0; m < audioData.Length; m++)
+            {
+                rightData[m] = 0;
+                RIGHT_CHANNEL_CHART.Series[0].Points.AddXY(m, rightData[m]);
+            }
+            titleLeft.Visible = true;
+
         }
 
 
@@ -322,14 +341,14 @@ namespace Wave3931
 
         private void chart2_Click(object sender, EventArgs e)
         {
-            RightChannelChart.ChartAreas[0].CursorX.IsUserEnabled = true;
-            RightChannelChart.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            if (zoomToolStripMenuItem.Checked)
+            LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserEnabled = true;
+            LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
+            if (!SELECT)
             {
-                RightChannelChart.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+                LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
             } else
             {
-                RightChannelChart.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
+                LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
             }
         }
 
@@ -430,18 +449,29 @@ namespace Wave3931
             btnPlay.Enabled = false;
             btnRecord.Enabled = true;
             btnStopRecord.Enabled = false;
+            btnClear.Enabled = false;
+            btnDFT.Enabled = false; 
             
             btnRecord.BackColor = Color.FromArgb(250, 14, 79);
             btnRecord.ForeColor = Color.White;
 
             btnStopRecord.BackColor = Color.White;
-            btnRecord.ForeColor = Color.Black;
+            btnStopRecord.ForeColor = Color.Black;
+
+            btnPlay.BackColor = Color.White;
+            btnPlay.ForeColor = Color.Black;
+
+            btnDFT.BackColor = Color.White;
+            btnDFT.ForeColor = Color.Black;
+
+            btnClear.BackColor = Color.White;
+            btnClear.ForeColor = Color.Black;
         }
 
         private void btnDFT_Click(object sender, EventArgs e)
         {
-            int start = (int)RightChannelChart.ChartAreas[0].CursorX.SelectionStart;
-            int end = (int)RightChannelChart.ChartAreas[0].CursorX.SelectionEnd;
+            int start = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
+            int end = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
             if (start >= end)
             {
                 DFT = new DFT(audioData, GetSampleRate(), NUM_THREADS, WINDOW_TYPE);
@@ -575,8 +605,6 @@ namespace Wave3931
                             // Add support for other bit depths if needed
                         }
                     }
-
-                    Info.Text = "Saved File: " + System.IO.Path.GetFileName(saveFilePath);
                 }
             }
         }
@@ -597,21 +625,9 @@ namespace Wave3931
 
         }
 
-        private void selectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            selectToolStripMenuItem.Checked = true;
-            zoomToolStripMenuItem.Checked = false;
-        }
-
-        private void zoomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            selectToolStripMenuItem.Checked = false;
-            zoomToolStripMenuItem.Checked = true;
-        }
-
         private void resetZoomToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RightChannelChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+            LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.ZoomReset();
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -622,6 +638,8 @@ namespace Wave3931
         // 11025
         void hzToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            sampleRateToolStripMenuItem.Text = "Sample Rate: 11025 Hz";
+            sampleRateToolStripMenuItem.ForeColor = Color.Black;
             hzToolStripMenuItem1.Checked = false;
             hzToolStripMenuItem2.Checked = false;
             hzToolStripMenuItem.Checked = true;
@@ -631,6 +649,8 @@ namespace Wave3931
         // 22050
         private void hzToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            sampleRateToolStripMenuItem.Text = "Sample Rate: 22050 Hz";
+            sampleRateToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
             hzToolStripMenuItem.Checked = false;
             hzToolStripMenuItem2.Checked = false;
             hzToolStripMenuItem1.Checked = true;
@@ -640,6 +660,8 @@ namespace Wave3931
         // 44100
         private void hzToolStripMenuItem2_Click(object sender, EventArgs e)
         {
+            sampleRateToolStripMenuItem.Text = "Sample Rate: 44100 Hz";
+            sampleRateToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
             hzToolStripMenuItem.Checked = false;
             hzToolStripMenuItem1.Checked = false;
             hzToolStripMenuItem2.Checked = true;
@@ -654,6 +676,8 @@ namespace Wave3931
         private void toolStripMenuItem2_Click_1(object sender, EventArgs e)
         {
             NUM_THREADS = 1;
+            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 1";
+            dFTThreadsToolStripMenuItem.ForeColor = Color.Black;
             threads_2.Checked = false;
             threads_4.Checked = false;
             threads_15.Checked = false;
@@ -663,6 +687,8 @@ namespace Wave3931
         private void toolStripMenuItem6_Click(object sender, EventArgs e)
         {
             NUM_THREADS = 50;
+            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 50";
+            dFTThreadsToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
             threads_1.Checked = false;
             threads_2.Checked = false;
             threads_4.Checked = false;
@@ -672,6 +698,8 @@ namespace Wave3931
         private void threads_2_Click(object sender, EventArgs e)
         {
             NUM_THREADS = 2;
+            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 2";
+            dFTThreadsToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
             threads_1.Checked = false;
             threads_4.Checked = false;
             threads_15.Checked = false;
@@ -681,6 +709,8 @@ namespace Wave3931
         private void threads_4_Click(object sender, EventArgs e)
         {
             NUM_THREADS = 4;
+            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 4";
+            dFTThreadsToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
             threads_1.Checked = false;
             threads_2.Checked = false;
             threads_15.Checked = false;
@@ -691,6 +721,8 @@ namespace Wave3931
         private void threads_15_Click(object sender, EventArgs e)
         {
             NUM_THREADS = 15;
+            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 15";
+            dFTThreadsToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
             threads_1.Checked = false;
             threads_2.Checked = false;
             threads_4.Checked = false;
@@ -704,21 +736,64 @@ namespace Wave3931
 
         private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            triangleToolStripMenuItem.Checked = false;
+            windowingToolStripMenuItem.Text = "Windowing: Rectangle";
             WINDOW_TYPE = "Rectangle";
+            windowingToolStripMenuItem.ForeColor = Color.Black;
+            triangleToolStripMenuItem.Checked = false;
+            hammingToolStripMenuItem.Checked = false;
         }
 
         private void triangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            rectangleToolStripMenuItem.Checked = false;
+            windowingToolStripMenuItem.Text = "Windowing: Triangle";
             WINDOW_TYPE = "Triangle";
+            windowingToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
+            rectangleToolStripMenuItem.Checked = false;
+            hammingToolStripMenuItem.Checked = false;
         }
 
         private void hammingToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            windowingToolStripMenuItem.Text = "Windowing: Hamming";
+            WINDOW_TYPE = "Hamming";
+            windowingToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
             rectangleToolStripMenuItem.Checked = false;
             triangleToolStripMenuItem.Checked = false;
-            WINDOW_TYPE = "Hamming";
+        }
+
+        private void sampleRateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void windowingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            SELECT = false;
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            SELECT = true;
+        }
+
+        private void selectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void zoomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
