@@ -1,23 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Windows.Forms.DataVisualization.Charting;
 using static Wave3931.WavePlayer;
-using System.Threading;
-using System.Diagnostics;
-using MathNet.Numerics.Optimization;
-using System.Collections;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace Wave3931
 {
@@ -165,18 +154,15 @@ namespace Wave3931
             {
                 LEFT_CHANNEL_CHART.Series[0].Points.AddXY(i, audioData[i]);
             }
-
-            // Update other chart properties as needed
         }
 
 
 
         private void PasteSelected(object sender, EventArgs e)
         {
-            double pos = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
             string base64Data = Clipboard.GetText();
             byte[] byteData = Convert.FromBase64String(base64Data);
-            int pasteIndex = (int)(pos);
+            int pasteIndex = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
 
             if (pasteIndex < 0)
             {
@@ -188,13 +174,9 @@ namespace Wave3931
             }
 
             int copiedDataLength = byteData.Length / sizeof(double);
-
-            // Expand the audioData array to accommodate the pasted data
             List<double> newDataList = new List<double>(audioData);
             newDataList.InsertRange(pasteIndex, new double[copiedDataLength]);
             audioData = newDataList.ToArray();
-
-            // Copy the pasted data into audioData
             double[] copiedAudioData = new double[copiedDataLength];
             Buffer.BlockCopy(byteData, 0, copiedAudioData, 0, byteData.Length);
             for (int i = 0; i < copiedDataLength; i++)
@@ -220,11 +202,8 @@ namespace Wave3931
             IntPtr pSaveBuffer = IntPtr.Zero;
             pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
-
             UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
-
             Marshal.FreeHGlobal(pSaveBuffer);
-
         }
         public double[] readingWave(String file)
         {
