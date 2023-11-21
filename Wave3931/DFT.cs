@@ -31,11 +31,10 @@ namespace Wave3931
 
             for (int i = 0; i < N; i++)
             {
-                chart1.Series[0].Points.AddXY(frequencies[i], dftResult[i].Magnitude);
+                chart1.Series[0].Points.AddXY(i, dftResult[i].Magnitude);
             }
 
             chart1.ChartAreas[0].AxisX.Minimum = 0;
-            chart1.ChartAreas[0].AxisX.Maximum = sampleRate;
 
             chart1.ChartAreas[0].AxisY.Title = "Amplitude";
             chart1.ChartAreas[0].AxisX.Title = "Frequency (Hz)";

@@ -40,12 +40,19 @@
             this.btnRecord = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.OptionsPanel = new System.Windows.Forms.Panel();
+            this.zoomRadio = new System.Windows.Forms.RadioButton();
+            this.selectRadio = new System.Windows.Forms.RadioButton();
             this.btnClear = new System.Windows.Forms.Button();
+            this.BottomStatusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.Info = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.titleLeft = new System.Windows.Forms.TextBox();
             this.LEFT_CHANNEL_CHART = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.titleRight = new System.Windows.Forms.TextBox();
             this.RIGHT_CHANNEL_CHART = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.BottomStatusStrip = new System.Windows.Forms.StatusStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,15 +71,9 @@
             this.triangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hammingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TopMenuStrip = new System.Windows.Forms.MenuStrip();
-            this.titleLeft = new System.Windows.Forms.TextBox();
-            this.titleRight = new System.Windows.Forms.TextBox();
-            this.selectRadio = new System.Windows.Forms.RadioButton();
-            this.zoomRadio = new System.Windows.Forms.RadioButton();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.Info = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel2.SuspendLayout();
             this.OptionsPanel.SuspendLayout();
+            this.BottomStatusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -81,7 +82,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.RIGHT_CHANNEL_CHART)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
-            this.BottomStatusStrip.SuspendLayout();
             this.TopMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -167,7 +167,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 24);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1156, 497);
+            this.panel2.Size = new System.Drawing.Size(1304, 568);
             this.panel2.TabIndex = 11;
             // 
             // OptionsPanel
@@ -185,11 +185,38 @@
             this.OptionsPanel.Controls.Add(this.btnRecord);
             this.OptionsPanel.Cursor = System.Windows.Forms.Cursors.Default;
             this.OptionsPanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.OptionsPanel.Location = new System.Drawing.Point(1055, 0);
+            this.OptionsPanel.Location = new System.Drawing.Point(1203, 0);
             this.OptionsPanel.Name = "OptionsPanel";
-            this.OptionsPanel.Size = new System.Drawing.Size(101, 475);
+            this.OptionsPanel.Size = new System.Drawing.Size(101, 546);
             this.OptionsPanel.TabIndex = 8;
             this.OptionsPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.OptionsPanel_Paint);
+            // 
+            // zoomRadio
+            // 
+            this.zoomRadio.AutoSize = true;
+            this.zoomRadio.ForeColor = System.Drawing.SystemColors.Control;
+            this.zoomRadio.Location = new System.Drawing.Point(15, 160);
+            this.zoomRadio.Name = "zoomRadio";
+            this.zoomRadio.Size = new System.Drawing.Size(53, 17);
+            this.zoomRadio.TabIndex = 12;
+            this.zoomRadio.TabStop = true;
+            this.zoomRadio.Text = "Zoom";
+            this.zoomRadio.UseVisualStyleBackColor = true;
+            this.zoomRadio.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // selectRadio
+            // 
+            this.selectRadio.AutoSize = true;
+            this.selectRadio.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.selectRadio.ForeColor = System.Drawing.SystemColors.Control;
+            this.selectRadio.Location = new System.Drawing.Point(15, 138);
+            this.selectRadio.Name = "selectRadio";
+            this.selectRadio.Size = new System.Drawing.Size(65, 15);
+            this.selectRadio.TabIndex = 11;
+            this.selectRadio.TabStop = true;
+            this.selectRadio.Text = "Select";
+            this.selectRadio.UseVisualStyleBackColor = true;
+            this.selectRadio.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // btnClear
             // 
@@ -207,6 +234,48 @@
             this.btnClear.Text = "CLEAR";
             this.btnClear.UseVisualStyleBackColor = false;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // BottomStatusStrip
+            // 
+            this.BottomStatusStrip.AccessibleDescription = "Bottom window status strip";
+            this.BottomStatusStrip.AccessibleName = "StatusStrip";
+            this.BottomStatusStrip.AccessibleRole = System.Windows.Forms.AccessibleRole.StatusBar;
+            this.BottomStatusStrip.AllowItemReorder = true;
+            this.BottomStatusStrip.AllowMerge = false;
+            this.BottomStatusStrip.BackColor = System.Drawing.Color.Black;
+            this.BottomStatusStrip.Font = new System.Drawing.Font("Constantia", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BottomStatusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.BottomStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel2,
+            this.Info,
+            this.toolStripStatusLabel1});
+            this.BottomStatusStrip.Location = new System.Drawing.Point(0, 546);
+            this.BottomStatusStrip.Name = "BottomStatusStrip";
+            this.BottomStatusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 13, 0);
+            this.BottomStatusStrip.Size = new System.Drawing.Size(1304, 22);
+            this.BottomStatusStrip.TabIndex = 9;
+            this.BottomStatusStrip.Text = "bottomStatusStrip";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
+            // 
+            // Info
+            // 
+            this.Info.Name = "Info";
+            this.Info.Size = new System.Drawing.Size(0, 17);
+            this.Info.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toolStripStatusLabel1.ForeColor = System.Drawing.SystemColors.Control;
+            this.toolStripStatusLabel1.Margin = new System.Windows.Forms.Padding(460, 3, 0, 2);
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+            this.toolStripStatusLabel1.Click += new System.EventHandler(this.toolStripStatusLabel1_Click_1);
             // 
             // splitContainer2
             // 
@@ -228,10 +297,24 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.titleRight);
             this.splitContainer2.Panel2.Controls.Add(this.RIGHT_CHANNEL_CHART);
-            this.splitContainer2.Size = new System.Drawing.Size(1049, 456);
-            this.splitContainer2.SplitterDistance = 207;
+            this.splitContainer2.Size = new System.Drawing.Size(1200, 527);
+            this.splitContainer2.SplitterDistance = 239;
             this.splitContainer2.SplitterWidth = 1;
             this.splitContainer2.TabIndex = 10;
+            // 
+            // titleLeft
+            // 
+            this.titleLeft.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.titleLeft.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.titleLeft.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.titleLeft.ForeColor = System.Drawing.Color.Gold;
+            this.titleLeft.Location = new System.Drawing.Point(32, 93);
+            this.titleLeft.Name = "titleLeft";
+            this.titleLeft.ReadOnly = true;
+            this.titleLeft.Size = new System.Drawing.Size(14, 19);
+            this.titleLeft.TabIndex = 2;
+            this.titleLeft.Text = "L";
+            this.titleLeft.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // LEFT_CHANNEL_CHART
             // 
@@ -267,7 +350,7 @@
             chartArea1.AxisY.TitleFont = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea1.AxisY.TitleForeColor = System.Drawing.Color.Gold;
             chartArea1.BackColor = System.Drawing.Color.Black;
-            chartArea1.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea1.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
             chartArea1.CursorX.LineColor = System.Drawing.Color.Black;
             chartArea1.CursorX.SelectionColor = System.Drawing.Color.LightGreen;
             chartArea1.CursorY.LineColor = System.Drawing.Color.Black;
@@ -285,10 +368,23 @@
             series1.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             series1.Name = "Series1";
             this.LEFT_CHANNEL_CHART.Series.Add(series1);
-            this.LEFT_CHANNEL_CHART.Size = new System.Drawing.Size(1049, 207);
+            this.LEFT_CHANNEL_CHART.Size = new System.Drawing.Size(1200, 239);
             this.LEFT_CHANNEL_CHART.TabIndex = 1;
             this.LEFT_CHANNEL_CHART.Text = "Left Channel";
             this.LEFT_CHANNEL_CHART.Click += new System.EventHandler(this.chart2_Click);
+            // 
+            // titleRight
+            // 
+            this.titleRight.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.titleRight.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.titleRight.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.titleRight.ForeColor = System.Drawing.Color.Gold;
+            this.titleRight.Location = new System.Drawing.Point(32, 107);
+            this.titleRight.Name = "titleRight";
+            this.titleRight.ReadOnly = true;
+            this.titleRight.Size = new System.Drawing.Size(14, 19);
+            this.titleRight.TabIndex = 3;
+            this.titleRight.Text = "R";
             // 
             // RIGHT_CHANNEL_CHART
             // 
@@ -314,7 +410,7 @@
             chartArea2.AxisY.TitleFont = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisY.TitleForeColor = System.Drawing.Color.Gold;
             chartArea2.BackColor = System.Drawing.Color.Black;
-            chartArea2.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea2.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
             chartArea2.IsSameFontSizeForAllAxes = true;
             chartArea2.Name = "ChartArea1";
             this.RIGHT_CHANNEL_CHART.ChartAreas.Add(chartArea2);
@@ -326,7 +422,7 @@
             series2.Color = System.Drawing.Color.White;
             series2.Name = "Series1";
             this.RIGHT_CHANNEL_CHART.Series.Add(series2);
-            this.RIGHT_CHANNEL_CHART.Size = new System.Drawing.Size(1049, 248);
+            this.RIGHT_CHANNEL_CHART.Size = new System.Drawing.Size(1200, 287);
             this.RIGHT_CHANNEL_CHART.TabIndex = 0;
             this.RIGHT_CHANNEL_CHART.Text = "Right Channel";
             this.RIGHT_CHANNEL_CHART.Click += new System.EventHandler(this.LeftChannelChart_Click);
@@ -339,27 +435,6 @@
             this.splitContainer1.SplitterDistance = 40;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 9;
-            // 
-            // BottomStatusStrip
-            // 
-            this.BottomStatusStrip.AccessibleDescription = "Bottom window status strip";
-            this.BottomStatusStrip.AccessibleName = "StatusStrip";
-            this.BottomStatusStrip.AccessibleRole = System.Windows.Forms.AccessibleRole.StatusBar;
-            this.BottomStatusStrip.AllowItemReorder = true;
-            this.BottomStatusStrip.AllowMerge = false;
-            this.BottomStatusStrip.BackColor = System.Drawing.Color.Black;
-            this.BottomStatusStrip.Font = new System.Drawing.Font("Constantia", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BottomStatusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.BottomStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel2,
-            this.Info,
-            this.toolStripStatusLabel1});
-            this.BottomStatusStrip.Location = new System.Drawing.Point(0, 475);
-            this.BottomStatusStrip.Name = "BottomStatusStrip";
-            this.BottomStatusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 13, 0);
-            this.BottomStatusStrip.Size = new System.Drawing.Size(1156, 22);
-            this.BottomStatusStrip.TabIndex = 9;
-            this.BottomStatusStrip.Text = "bottomStatusStrip";
             // 
             // fileToolStripMenuItem
             // 
@@ -401,7 +476,7 @@
             // 
             this.hzToolStripMenuItem.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.hzToolStripMenuItem.Name = "hzToolStripMenuItem";
-            this.hzToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hzToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.hzToolStripMenuItem.Text = "11025 Hz";
             this.hzToolStripMenuItem.Click += new System.EventHandler(this.hzToolStripMenuItem_Click);
             // 
@@ -409,7 +484,7 @@
             // 
             this.hzToolStripMenuItem1.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.hzToolStripMenuItem1.Name = "hzToolStripMenuItem1";
-            this.hzToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.hzToolStripMenuItem1.Size = new System.Drawing.Size(126, 22);
             this.hzToolStripMenuItem1.Text = "22050 Hz";
             this.hzToolStripMenuItem1.Click += new System.EventHandler(this.hzToolStripMenuItem1_Click);
             // 
@@ -417,7 +492,7 @@
             // 
             this.hzToolStripMenuItem2.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.hzToolStripMenuItem2.Name = "hzToolStripMenuItem2";
-            this.hzToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.hzToolStripMenuItem2.Size = new System.Drawing.Size(126, 22);
             this.hzToolStripMenuItem2.Text = "44100 Hz";
             this.hzToolStripMenuItem2.Click += new System.EventHandler(this.hzToolStripMenuItem2_Click);
             // 
@@ -533,85 +608,10 @@
             this.TopMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.TopMenuStrip.Name = "TopMenuStrip";
             this.TopMenuStrip.Padding = new System.Windows.Forms.Padding(3, 1, 0, 1);
-            this.TopMenuStrip.Size = new System.Drawing.Size(1156, 24);
+            this.TopMenuStrip.Size = new System.Drawing.Size(1304, 24);
             this.TopMenuStrip.TabIndex = 10;
             this.TopMenuStrip.Text = "TopMenuStrip";
             this.TopMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.TopMenuStrip_ItemClicked);
-            // 
-            // titleLeft
-            // 
-            this.titleLeft.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.titleLeft.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.titleLeft.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleLeft.ForeColor = System.Drawing.Color.Gold;
-            this.titleLeft.Location = new System.Drawing.Point(32, 93);
-            this.titleLeft.Name = "titleLeft";
-            this.titleLeft.ReadOnly = true;
-            this.titleLeft.Size = new System.Drawing.Size(14, 19);
-            this.titleLeft.TabIndex = 2;
-            this.titleLeft.Text = "L";
-            this.titleLeft.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // titleRight
-            // 
-            this.titleRight.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.titleRight.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.titleRight.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleRight.ForeColor = System.Drawing.Color.Gold;
-            this.titleRight.Location = new System.Drawing.Point(32, 107);
-            this.titleRight.Name = "titleRight";
-            this.titleRight.ReadOnly = true;
-            this.titleRight.Size = new System.Drawing.Size(14, 19);
-            this.titleRight.TabIndex = 3;
-            this.titleRight.Text = "R";
-            // 
-            // selectRadio
-            // 
-            this.selectRadio.AutoSize = true;
-            this.selectRadio.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.selectRadio.ForeColor = System.Drawing.SystemColors.Control;
-            this.selectRadio.Location = new System.Drawing.Point(15, 138);
-            this.selectRadio.Name = "selectRadio";
-            this.selectRadio.Size = new System.Drawing.Size(65, 15);
-            this.selectRadio.TabIndex = 11;
-            this.selectRadio.TabStop = true;
-            this.selectRadio.Text = "Select";
-            this.selectRadio.UseVisualStyleBackColor = true;
-            this.selectRadio.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // zoomRadio
-            // 
-            this.zoomRadio.AutoSize = true;
-            this.zoomRadio.ForeColor = System.Drawing.SystemColors.Control;
-            this.zoomRadio.Location = new System.Drawing.Point(15, 160);
-            this.zoomRadio.Name = "zoomRadio";
-            this.zoomRadio.Size = new System.Drawing.Size(53, 17);
-            this.zoomRadio.TabIndex = 12;
-            this.zoomRadio.TabStop = true;
-            this.zoomRadio.Text = "Zoom";
-            this.zoomRadio.UseVisualStyleBackColor = true;
-            this.zoomRadio.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toolStripStatusLabel1.ForeColor = System.Drawing.SystemColors.Control;
-            this.toolStripStatusLabel1.Margin = new System.Windows.Forms.Padding(460, 3, 0, 2);
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
-            this.toolStripStatusLabel1.Click += new System.EventHandler(this.toolStripStatusLabel1_Click_1);
-            // 
-            // Info
-            // 
-            this.Info.Name = "Info";
-            this.Info.Size = new System.Drawing.Size(0, 17);
-            this.Info.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
             // WaveAnalyzerForm
             // 
@@ -624,7 +624,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1156, 521);
+            this.ClientSize = new System.Drawing.Size(1304, 592);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.TopMenuStrip);
             this.Font = new System.Drawing.Font("Constantia", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -638,6 +638,8 @@
             this.panel2.PerformLayout();
             this.OptionsPanel.ResumeLayout(false);
             this.OptionsPanel.PerformLayout();
+            this.BottomStatusStrip.ResumeLayout(false);
+            this.BottomStatusStrip.PerformLayout();
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel1.PerformLayout();
             this.splitContainer2.Panel2.ResumeLayout(false);
@@ -648,8 +650,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.RIGHT_CHANNEL_CHART)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.BottomStatusStrip.ResumeLayout(false);
-            this.BottomStatusStrip.PerformLayout();
             this.TopMenuStrip.ResumeLayout(false);
             this.TopMenuStrip.PerformLayout();
             this.ResumeLayout(false);

@@ -424,7 +424,7 @@ namespace Wave3931
                         for (int i = 0; i < dl; i++)
                         {
                             byte sample = Marshal.ReadByte(pb, i);
-                            data[i] = 2 * (((double)sample / 127.5) - 1);
+                            data[i] = (((double)sample / 127.5) - 1);
                         }
                         return data;
                     }

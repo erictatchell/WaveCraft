@@ -128,7 +128,9 @@
   <ItemGroup>
     <None Include="Resources\audio-waves.png" />
     <None Include="Resources\SoundWaveIcon.ico" />
-    <None Include="Resources\vaporWaveBG.jpg" />
+    <None Include="Resources\vaporWaveBG.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\StartScreen.jpg" />
     <None Include="Resources\StartScreenBG.bmp" />
     <Content Include="soundwave-square.ico" />
