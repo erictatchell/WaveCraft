@@ -28,8 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.LineAnnotation lineAnnotation1 = new System.Windows.Forms.DataVisualization.Charting.LineAnnotation();
+            System.Windows.Forms.DataVisualization.Charting.VerticalLineAnnotation verticalLineAnnotation1 = new System.Windows.Forms.DataVisualization.Charting.VerticalLineAnnotation();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -43,9 +42,6 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.OptionsPanel = new System.Windows.Forms.Panel();
             this.btnClear = new System.Windows.Forms.Button();
-            this.btnFilter = new System.Windows.Forms.Button();
-            this.btnThreading = new System.Windows.Forms.Button();
-            this.btnLength = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.RightChannelChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.LeftChannelChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -53,22 +49,31 @@
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.BottomStatusStrip = new System.Windows.Forms.StatusStrip();
             this.Info = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.TopMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectionOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetZoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.sampleRateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hzToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hzToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.hzToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.dFTThreadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.threads_1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.threads_2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.threads_4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.threads_15 = new System.Windows.Forms.ToolStripMenuItem();
+            this.threads_50 = new System.Windows.Forms.ToolStripMenuItem();
+            this.windowingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rectangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.triangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hammingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2.SuspendLayout();
             this.OptionsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -85,7 +90,7 @@
             // 
             // btnDFT
             // 
-            this.btnDFT.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btnDFT.BackColor = System.Drawing.Color.White;
             this.btnDFT.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnDFT.FlatAppearance.BorderSize = 2;
             this.btnDFT.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
@@ -100,10 +105,12 @@
             // 
             // btnStopRecord
             // 
-            this.btnStopRecord.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btnStopRecord.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(14)))), ((int)(((byte)(79)))));
             this.btnStopRecord.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnStopRecord.FlatAppearance.BorderSize = 2;
             this.btnStopRecord.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnStopRecord.Font = new System.Drawing.Font("Constantia", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnStopRecord.ForeColor = System.Drawing.Color.White;
             this.btnStopRecord.Location = new System.Drawing.Point(3, 63);
             this.btnStopRecord.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnStopRecord.Name = "btnStopRecord";
@@ -117,7 +124,7 @@
             // 
             this.btnPlay.AccessibleDescription = "Play currently open sound file";
             this.btnPlay.AccessibleName = "Play Button";
-            this.btnPlay.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btnPlay.BackColor = System.Drawing.Color.White;
             this.btnPlay.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnPlay.FlatAppearance.BorderSize = 2;
             this.btnPlay.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
@@ -132,7 +139,7 @@
             // 
             // btnRecord
             // 
-            this.btnRecord.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btnRecord.BackColor = System.Drawing.Color.White;
             this.btnRecord.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnRecord.FlatAppearance.BorderSize = 2;
             this.btnRecord.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
@@ -166,9 +173,6 @@
             this.OptionsPanel.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu;
             this.OptionsPanel.BackColor = System.Drawing.Color.Black;
             this.OptionsPanel.Controls.Add(this.btnClear);
-            this.OptionsPanel.Controls.Add(this.btnFilter);
-            this.OptionsPanel.Controls.Add(this.btnThreading);
-            this.OptionsPanel.Controls.Add(this.btnLength);
             this.OptionsPanel.Controls.Add(this.btnDFT);
             this.OptionsPanel.Controls.Add(this.btnStopRecord);
             this.OptionsPanel.Controls.Add(this.btnPlay);
@@ -195,51 +199,6 @@
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = false;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // btnFilter
-            // 
-            this.btnFilter.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.btnFilter.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnFilter.FlatAppearance.BorderSize = 2;
-            this.btnFilter.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnFilter.Location = new System.Drawing.Point(3, 324);
-            this.btnFilter.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.btnFilter.Name = "btnFilter";
-            this.btnFilter.Size = new System.Drawing.Size(96, 31);
-            this.btnFilter.TabIndex = 9;
-            this.btnFilter.Text = "Filter";
-            this.btnFilter.UseVisualStyleBackColor = false;
-            this.btnFilter.Click += new System.EventHandler(this.btnFilter_Click);
-            // 
-            // btnThreading
-            // 
-            this.btnThreading.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.btnThreading.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnThreading.FlatAppearance.BorderSize = 2;
-            this.btnThreading.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnThreading.Location = new System.Drawing.Point(3, 293);
-            this.btnThreading.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.btnThreading.Name = "btnThreading";
-            this.btnThreading.Size = new System.Drawing.Size(96, 27);
-            this.btnThreading.TabIndex = 8;
-            this.btnThreading.Text = "Threading";
-            this.btnThreading.UseVisualStyleBackColor = false;
-            this.btnThreading.Click += new System.EventHandler(this.btnThreading_Click);
-            // 
-            // btnLength
-            // 
-            this.btnLength.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.btnLength.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnLength.FlatAppearance.BorderSize = 2;
-            this.btnLength.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnLength.Location = new System.Drawing.Point(3, 201);
-            this.btnLength.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.btnLength.Name = "btnLength";
-            this.btnLength.Size = new System.Drawing.Size(96, 27);
-            this.btnLength.TabIndex = 7;
-            this.btnLength.Text = "Length";
-            this.btnLength.UseVisualStyleBackColor = false;
-            this.btnLength.Click += new System.EventHandler(this.btnLength_Click);
             // 
             // splitContainer2
             // 
@@ -269,8 +228,10 @@
             this.RightChannelChart.AccessibleDescription = "Left Channel";
             this.RightChannelChart.AccessibleName = "Left Channel";
             this.RightChannelChart.AccessibleRole = System.Windows.Forms.AccessibleRole.Chart;
-            lineAnnotation1.Name = "LineAnnotation1";
-            this.RightChannelChart.Annotations.Add(lineAnnotation1);
+            verticalLineAnnotation1.AllowMoving = true;
+            verticalLineAnnotation1.LineColor = System.Drawing.Color.Gold;
+            verticalLineAnnotation1.Name = "Line";
+            this.RightChannelChart.Annotations.Add(verticalLineAnnotation1);
             this.RightChannelChart.BackColor = System.Drawing.Color.Black;
             this.RightChannelChart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.RightChannelChart.BackSecondaryColor = System.Drawing.Color.WhiteSmoke;
@@ -286,7 +247,7 @@
             chartArea1.AxisX.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
             chartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
             chartArea1.BackColor = System.Drawing.Color.Black;
-            chartArea1.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea1.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
             chartArea1.CursorX.LineColor = System.Drawing.Color.Black;
             chartArea1.CursorX.SelectionColor = System.Drawing.Color.LightGreen;
             chartArea1.CursorY.LineColor = System.Drawing.Color.Black;
@@ -345,7 +306,7 @@
             chartArea2.AxisY.LabelStyle.Font = new System.Drawing.Font("Constantia", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisY.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
             chartArea2.BackColor = System.Drawing.Color.Black;
-            chartArea2.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea2.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
             chartArea2.IsSameFontSizeForAllAxes = true;
             chartArea2.Name = "ChartArea1";
             this.LeftChannelChart.ChartAreas.Add(chartArea2);
@@ -403,6 +364,13 @@
             this.Info.Size = new System.Drawing.Size(0, 17);
             this.Info.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
             // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(116, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Click += new System.EventHandler(this.toolStripStatusLabel1_Click_1);
+            // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -416,21 +384,19 @@
             // newFileMenu
             // 
             this.newFileMenu.Name = "newFileMenu";
-            this.newFileMenu.Size = new System.Drawing.Size(180, 22);
+            this.newFileMenu.Size = new System.Drawing.Size(98, 22);
             this.newFileMenu.Text = "New";
             this.newFileMenu.Click += new System.EventHandler(this.btnNew_Click);
             // 
             // openFileMenu
             // 
             this.openFileMenu.Name = "openFileMenu";
-            this.openFileMenu.Size = new System.Drawing.Size(180, 22);
-            this.openFileMenu.Text = "Open";
-            this.openFileMenu.Click += new System.EventHandler(this.btnOpenFile_Click);
+            this.openFileMenu.Size = new System.Drawing.Size(98, 22);
             // 
             // saveFileMenu
             // 
             this.saveFileMenu.Name = "saveFileMenu";
-            this.saveFileMenu.Size = new System.Drawing.Size(180, 22);
+            this.saveFileMenu.Size = new System.Drawing.Size(98, 22);
             this.saveFileMenu.Text = "Save";
             this.saveFileMenu.Click += new System.EventHandler(this.btnSaveFile_Click);
             // 
@@ -447,7 +413,9 @@
             this.fileToolStripMenuItem,
             this.helpToolStripMenuItem,
             this.selectionOptionsToolStripMenuItem,
-            this.sampleRateToolStripMenuItem});
+            this.sampleRateToolStripMenuItem,
+            this.dFTThreadsToolStripMenuItem,
+            this.windowingToolStripMenuItem});
             this.TopMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.TopMenuStrip.Name = "TopMenuStrip";
             this.TopMenuStrip.Padding = new System.Windows.Forms.Padding(3, 1, 0, 1);
@@ -455,6 +423,12 @@
             this.TopMenuStrip.TabIndex = 10;
             this.TopMenuStrip.Text = "TopMenuStrip";
             this.TopMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.TopMenuStrip_ItemClicked);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(45, 22);
+            this.helpToolStripMenuItem.Text = "Help";
             // 
             // selectionOptionsToolStripMenuItem
             // 
@@ -473,7 +447,7 @@
             this.selectToolStripMenuItem.CheckOnClick = true;
             this.selectToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
-            this.selectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.selectToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.selectToolStripMenuItem.Text = "Select";
             this.selectToolStripMenuItem.Click += new System.EventHandler(this.selectToolStripMenuItem_Click);
             // 
@@ -483,20 +457,16 @@
             this.zoomToolStripMenuItem.CheckOnClick = true;
             this.zoomToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.zoomToolStripMenuItem.Text = "Zoom";
             this.zoomToolStripMenuItem.Click += new System.EventHandler(this.zoomToolStripMenuItem_Click);
             // 
             // resetZoomToolStripMenuItem
             // 
             this.resetZoomToolStripMenuItem.Name = "resetZoomToolStripMenuItem";
-            this.resetZoomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.resetZoomToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.resetZoomToolStripMenuItem.Text = "Reset Zoom";
             this.resetZoomToolStripMenuItem.Click += new System.EventHandler(this.resetZoomToolStripMenuItem_Click);
-            // 
-            // timer1
-            // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // sampleRateToolStripMenuItem
             // 
@@ -512,7 +482,7 @@
             // 
             this.hzToolStripMenuItem.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.hzToolStripMenuItem.Name = "hzToolStripMenuItem";
-            this.hzToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hzToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
             this.hzToolStripMenuItem.Text = "11025 Hz";
             this.hzToolStripMenuItem.Click += new System.EventHandler(this.hzToolStripMenuItem_Click);
             // 
@@ -520,7 +490,7 @@
             // 
             this.hzToolStripMenuItem1.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.hzToolStripMenuItem1.Name = "hzToolStripMenuItem1";
-            this.hzToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.hzToolStripMenuItem1.Size = new System.Drawing.Size(120, 22);
             this.hzToolStripMenuItem1.Text = "22050 Hz";
             this.hzToolStripMenuItem1.Click += new System.EventHandler(this.hzToolStripMenuItem1_Click);
             // 
@@ -528,22 +498,101 @@
             // 
             this.hzToolStripMenuItem2.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.hzToolStripMenuItem2.Name = "hzToolStripMenuItem2";
-            this.hzToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.hzToolStripMenuItem2.Size = new System.Drawing.Size(120, 22);
             this.hzToolStripMenuItem2.Text = "44100 Hz";
             this.hzToolStripMenuItem2.Click += new System.EventHandler(this.hzToolStripMenuItem2_Click);
             // 
-            // helpToolStripMenuItem
+            // dFTThreadsToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(45, 22);
-            this.helpToolStripMenuItem.Text = "Help";
+            this.dFTThreadsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.threads_1,
+            this.threads_2,
+            this.threads_4,
+            this.threads_15,
+            this.threads_50});
+            this.dFTThreadsToolStripMenuItem.Name = "dFTThreadsToolStripMenuItem";
+            this.dFTThreadsToolStripMenuItem.Size = new System.Drawing.Size(87, 22);
+            this.dFTThreadsToolStripMenuItem.Text = "DFT Threads";
+            this.dFTThreadsToolStripMenuItem.Click += new System.EventHandler(this.dFTThreadsToolStripMenuItem_Click);
             // 
-            // toolStripStatusLabel1
+            // threads_1
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(116, 17);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Click += new System.EventHandler(this.toolStripStatusLabel1_Click_1);
+            this.threads_1.CheckOnClick = true;
+            this.threads_1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.threads_1.Name = "threads_1";
+            this.threads_1.Size = new System.Drawing.Size(88, 22);
+            this.threads_1.Text = "1";
+            this.threads_1.Click += new System.EventHandler(this.toolStripMenuItem2_Click_1);
+            // 
+            // threads_2
+            // 
+            this.threads_2.CheckOnClick = true;
+            this.threads_2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.threads_2.Name = "threads_2";
+            this.threads_2.Size = new System.Drawing.Size(88, 22);
+            this.threads_2.Text = "2";
+            this.threads_2.Click += new System.EventHandler(this.threads_2_Click);
+            // 
+            // threads_4
+            // 
+            this.threads_4.CheckOnClick = true;
+            this.threads_4.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.threads_4.Name = "threads_4";
+            this.threads_4.Size = new System.Drawing.Size(88, 22);
+            this.threads_4.Text = "4";
+            this.threads_4.Click += new System.EventHandler(this.threads_4_Click);
+            // 
+            // threads_15
+            // 
+            this.threads_15.CheckOnClick = true;
+            this.threads_15.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.threads_15.Name = "threads_15";
+            this.threads_15.Size = new System.Drawing.Size(88, 22);
+            this.threads_15.Text = "15";
+            this.threads_15.Click += new System.EventHandler(this.threads_15_Click);
+            // 
+            // threads_50
+            // 
+            this.threads_50.CheckOnClick = true;
+            this.threads_50.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.threads_50.Name = "threads_50";
+            this.threads_50.Size = new System.Drawing.Size(88, 22);
+            this.threads_50.Text = "50";
+            this.threads_50.Click += new System.EventHandler(this.toolStripMenuItem6_Click);
+            // 
+            // windowingToolStripMenuItem
+            // 
+            this.windowingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rectangleToolStripMenuItem,
+            this.triangleToolStripMenuItem,
+            this.hammingToolStripMenuItem});
+            this.windowingToolStripMenuItem.Name = "windowingToolStripMenuItem";
+            this.windowingToolStripMenuItem.Size = new System.Drawing.Size(79, 22);
+            this.windowingToolStripMenuItem.Text = "Windowing";
+            // 
+            // rectangleToolStripMenuItem
+            // 
+            this.rectangleToolStripMenuItem.CheckOnClick = true;
+            this.rectangleToolStripMenuItem.Name = "rectangleToolStripMenuItem";
+            this.rectangleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rectangleToolStripMenuItem.Text = "Rectangle";
+            this.rectangleToolStripMenuItem.Click += new System.EventHandler(this.rectangleToolStripMenuItem_Click);
+            // 
+            // triangleToolStripMenuItem
+            // 
+            this.triangleToolStripMenuItem.CheckOnClick = true;
+            this.triangleToolStripMenuItem.Name = "triangleToolStripMenuItem";
+            this.triangleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.triangleToolStripMenuItem.Text = "Triangle";
+            this.triangleToolStripMenuItem.Click += new System.EventHandler(this.triangleToolStripMenuItem_Click);
+            // 
+            // hammingToolStripMenuItem
+            // 
+            this.hammingToolStripMenuItem.CheckOnClick = true;
+            this.hammingToolStripMenuItem.Name = "hammingToolStripMenuItem";
+            this.hammingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hammingToolStripMenuItem.Text = "Hamming";
+            this.hammingToolStripMenuItem.Click += new System.EventHandler(this.hammingToolStripMenuItem_Click);
             // 
             // WaveAnalyzerForm
             // 
@@ -593,9 +642,6 @@
         private System.Windows.Forms.Button btnRecord;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel OptionsPanel;
-        private System.Windows.Forms.Button btnLength;
-        private System.Windows.Forms.Button btnFilter;
-        private System.Windows.Forms.Button btnThreading;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer1;
@@ -613,12 +659,21 @@
         private System.Windows.Forms.ToolStripMenuItem selectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetZoomToolStripMenuItem;
-        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripMenuItem sampleRateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hzToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hzToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem hzToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripMenuItem dFTThreadsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem threads_1;
+        private System.Windows.Forms.ToolStripMenuItem threads_2;
+        private System.Windows.Forms.ToolStripMenuItem threads_4;
+        private System.Windows.Forms.ToolStripMenuItem threads_15;
+        private System.Windows.Forms.ToolStripMenuItem threads_50;
+        private System.Windows.Forms.ToolStripMenuItem windowingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rectangleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem triangleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hammingToolStripMenuItem;
     }
 }

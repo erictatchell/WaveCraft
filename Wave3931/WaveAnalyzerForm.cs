@@ -17,6 +17,7 @@ using System.Threading;
 using System.Diagnostics;
 using MathNet.Numerics.Optimization;
 using System.Collections;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Wave3931
 {
@@ -25,9 +26,9 @@ namespace Wave3931
         wave_file_header header = new wave_file_header();
         private double[] audioData;
         private readonly String file;
-        ChartArea CA;
-        Series S1;
-        VerticalLineAnnotation VA;
+        private string WINDOW_TYPE;
+
+        private int NUM_THREADS;
         public double[] getAudioData()
         {
             return audioData;
@@ -39,7 +40,7 @@ namespace Wave3931
             this.file = file;
             Box(this.Handle);
 
-            header.initialize(22050);
+            header.initialize(11025);
             double[] freqs = readingWave(file);
             plotFreqWaveChart(freqs);
             byte[] byteArray = new byte[audioData.Length];
@@ -58,9 +59,14 @@ namespace Wave3931
             UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
 
             Marshal.FreeHGlobal(pSaveBuffer);
-            selectToolStripMenuItem.Checked = true;
             hzToolStripMenuItem.Checked = true;
+            threads_1.Checked = true;
+            NUM_THREADS = 1;
+            rectangleToolStripMenuItem.Checked = true;
+            WINDOW_TYPE = "Rectangle";
+            selectToolStripMenuItem.Checked = true;
             zoomToolStripMenuItem.Checked = false;
+
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
             ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
@@ -69,27 +75,25 @@ namespace Wave3931
             cm.Items.Add(cut);
             cm.Items.Add(paste);
             RightChannelChart.ContextMenuStrip = cm;
-            CA = RightChannelChart.ChartAreas[0];  // pick the right ChartArea..
-            S1 = RightChannelChart.Series[0];
-            VA = new VerticalLineAnnotation();
-            VA.AxisX = CA.AxisX;
-            VA.AllowMoving = true;
-            VA.IsInfinitive = true;
-            VA.ClipToChartArea = CA.Name;
-            VA.Name = "myLine";
-            VA.LineColor = Color.Gold;
-            VA.LineWidth = 2;         // use your numbers!
-            VA.X = 1;
-            RightChannelChart.Annotations.Add(VA);
         }
         public WaveAnalyzerForm()
         {
             InitializeComponent();
             Box(this.Handle);
             header.initialize(22050);
+
             hzToolStripMenuItem.Checked = true;
+            threads_1.Checked = true;
+            NUM_THREADS = 1;
+            rectangleToolStripMenuItem.Checked = true;
+            WINDOW_TYPE = "Rectangle";
             selectToolStripMenuItem.Checked = true;
             zoomToolStripMenuItem.Checked = false;
+            btnPlay.Enabled = false;
+            btnRecord.Enabled = false;
+            btnDFT.Enabled = false;
+            btnClear.Enabled = false;
+
             Info.Visible = false;
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
@@ -99,18 +103,6 @@ namespace Wave3931
             cm.Items.Add(cut);
             cm.Items.Add(paste);
             RightChannelChart.ContextMenuStrip = cm;
-            CA = RightChannelChart.ChartAreas[0];  // pick the right ChartArea..
-            S1 = RightChannelChart.Series[0];
-            VA = new VerticalLineAnnotation();
-            VA.AxisX = CA.AxisX;
-            VA.AllowMoving = true;
-            VA.IsInfinitive = true;
-            VA.ClipToChartArea = CA.Name;
-            VA.Name = "myLine";
-            VA.LineColor = Color.Gold;
-            VA.LineWidth = 2;
-            VA.X = 1;
-            RightChannelChart.Annotations.Add(VA);
         }
         private void CopySelected(object sender, EventArgs e)
         {
@@ -200,7 +192,7 @@ namespace Wave3931
             {
                 audioData[pasteIndex + i] = copiedAudioData[i];
             }
-            
+
             RightChannelChart.Series[0].Points.Clear();
             for (int i = 0; i < audioData.Length; i++)
             {
@@ -297,7 +289,7 @@ namespace Wave3931
                 RightChannelChart.Series[0].Points.AddXY(m, audioData[m]);
             }
             RightChannelChart.ChartAreas[0].AxisX.Minimum = 0;
-            toolStripStatusLabel1.Text = "Length: " + audioData.Length + "s, Sampled at " + GetSampleRate() + " Hz";
+            toolStripStatusLabel1.Text = "Length: " + audioData.Length / 11025 + "s, Sampled at " + GetSampleRate() + " Hz";
         }
 
 
@@ -355,58 +347,76 @@ namespace Wave3931
             {
                 SendMessage(hWnd, 0x0111, 1002, 0);
             }
-            else
-            {
-                Debug.WriteLine("WTF");
-            }
-            timer1.Start();
         }
 
 
-        private void timer1_Tick(object sender, EventArgs e)
+
+
+        private async void btnStop_Click(object sender, EventArgs e)
         {
-            int len = GetDataLength();
-            double currentPosition = VA.X;
-
-            // Determine the duration of the audio in milliseconds (adjust this as needed)
-            int audioDurationMs = 1; // 5 seconds in this example
-
-            // Calculate the new X-coordinate based on time
-            int newX = (int)((double)currentPosition + timer1.Interval / (double)audioDurationMs * len);
-
-            // Check if the line has reached the end
-            if (newX >= len)
-            {
-                newX = len; // Ensure the line doesn't go beyond the end
-                timer1.Stop(); // Stop the timer when the line reaches the end
-            }
-
-            VA.X = newX; // Update the line's X-coordinate
-        }
-
-        private void btnStop_Click(object sender, EventArgs e)
-        {
-            
             IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
-            SendMessage(hWnd, 0x0111, 1001, 0);
-            IntPtr pb = GetPBuffer();
-            int dl = GetDataLength();
-            Debug.WriteLine(dl);
-            if (dl != 0)
+            if (hWnd != IntPtr.Zero)
             {
-                double[] data = new double[dl];
-                for (int i = 0; i < dl; i++)
-                {
-                    byte sample = Marshal.ReadByte(pb, i);
-
-                    data[i] = ((sample / 127.5) - 1);
-                }
-                audioData = data;
-                plotFreqWaveChart(audioData);
-
+                SendMessage(hWnd, 0x0111, 1001, 0);
             }
-            
+            double[] data = await WaitForDataAsync();
+            audioData = data;
+            plotFreqWaveChart(data);
+            btnPlay.Enabled = true;
+            btnRecord.Enabled = false;
+            btnStopRecord.Enabled = true;
+            btnDFT.Enabled = true;
+            btnClear.Enabled = true;
+
+            btnPlay.BackColor = Color.FromArgb(250, 14, 79);
+            btnPlay.ForeColor = Color.White;
+
+            btnStopRecord.BackColor = Color.FromArgb(250, 14, 79);
+            btnStopRecord.ForeColor = Color.White;
+
+            btnRecord.BackColor = Color.White;
+            btnRecord.ForeColor = Color.Black;
+
+            btnDFT.BackColor = Color.FromArgb(250, 14, 79);
+            btnDFT.ForeColor = Color.White;
+
+            btnClear.BackColor = Color.FromArgb(250, 14, 79);
+            btnClear.ForeColor = Color.White;
         }
+
+        private Task<double[]> WaitForDataAsync()
+        {
+            return Task.Run(() =>
+            {
+                int maxAttempts = 10;
+
+                IntPtr pb;
+                int dl;
+
+                for (int attempt = 0; attempt < maxAttempts; attempt++)
+                {
+                    dl = GetDataLength();
+
+                    if (dl > 0)
+                    {
+                        // normal
+                        pb = GetPBuffer();
+                        double[] data = new double[dl];
+                        for (int i = 0; i < dl; i++)
+                        {
+                            byte sample = Marshal.ReadByte(pb, i);
+                            data[i] = 2 * (((double)sample / 127.5) - 1);
+                        }
+                        return data;
+                    }
+                    Thread.Sleep(1);
+                }
+                // worst case
+                return new double[0];
+            });
+        }
+
+
 
 
         private void btnRecord_Click(object sender, EventArgs e)
@@ -416,28 +426,58 @@ namespace Wave3931
             if (hWnd != IntPtr.Zero)
             {
                 SendMessage(hWnd, 0x0111, 1000, 0);
-            } else
-            {
-                Debug.WriteLine("WTF");
             }
+            btnPlay.Enabled = false;
+            btnRecord.Enabled = true;
+            btnStopRecord.Enabled = false;
+            
+            btnRecord.BackColor = Color.FromArgb(250, 14, 79);
+            btnRecord.ForeColor = Color.White;
+
+            btnStopRecord.BackColor = Color.White;
+            btnRecord.ForeColor = Color.Black;
         }
 
         private void btnDFT_Click(object sender, EventArgs e)
         {
-            DFT = new DFT(audioData, GetSampleRate());
+            int start = (int)RightChannelChart.ChartAreas[0].CursorX.SelectionStart;
+            int end = (int)RightChannelChart.ChartAreas[0].CursorX.SelectionEnd;
+            if (start >= end)
+            {
+                DFT = new DFT(audioData, GetSampleRate(), NUM_THREADS, WINDOW_TYPE);
+                DFT.Owner = this; // Set the owner if needed
+                DFT.Show();
+                return;
+            }
+            
+
+            if (start < 0) start = 0;
+            if (end >= audioData.Length) end = audioData.Length - 1;
+            if (start >= end)
+            {
+                int temp = start;
+                start = end;
+                end = temp;
+            }
+
+            double[] selected = new double[end - start + 1];
+            int j = 0;
+            for (int i = start; i < end; i++)
+            {
+                selected[j] = audioData[i];
+                j++;
+            }
+
+            DFT = new DFT(selected, GetSampleRate(), NUM_THREADS, WINDOW_TYPE);
             DFT.Owner = this; // Set the owner if needed
             DFT.Show();
         }
 
+
         private void OptionsPanel_Paint(object sender, PaintEventArgs e)
         {
-
         }
 
-        private void menuStrip1_ItemClicked_1(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
 
         private void btnSamples_Click(object sender, EventArgs e)
         {
@@ -461,30 +501,26 @@ namespace Wave3931
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-
+            audioData = new double[0];
+            plotFreqWaveChart(audioData);
+            btnPlay.Enabled = false;
+            btnRecord.Enabled = false;
+            btnDFT.Enabled = false;
+            btnClear.Enabled = false;
+            btnRecord.BackColor = Color.White;
+            btnRecord.ForeColor = Color.Black;
+            btnPlay.BackColor = Color.White;
+            btnPlay.ForeColor = Color.Black;
+            btnDFT.BackColor = Color.White;
+            btnDFT.ForeColor = Color.Black;
+            btnClear.BackColor = Color.White;
+            btnClear.ForeColor = Color.Black;
         }
 
         private void btnNew_Click(object sender, EventArgs e)
         {
             WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm();
             waveAnalyzerForm.Show();
-        }
-
-        // IGNORE
-        private void btnOpenFile_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string selectedFilePath = openFileDialog.FileName;
-                    Info.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
-                    double[] freqs = readingWave(selectedFilePath);
-                    plotFreqWaveChart(freqs);
-                }
-            }
         }
 
         private void btnSaveFile_Click(object sender, EventArgs e)
@@ -584,7 +620,7 @@ namespace Wave3931
         }
 
         // 11025
-        private void hzToolStripMenuItem_Click(object sender, EventArgs e)
+        void hzToolStripMenuItem_Click(object sender, EventArgs e)
         {
             hzToolStripMenuItem1.Checked = false;
             hzToolStripMenuItem2.Checked = false;
@@ -613,6 +649,76 @@ namespace Wave3931
         private void toolStripStatusLabel1_Click_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void toolStripMenuItem2_Click_1(object sender, EventArgs e)
+        {
+            NUM_THREADS = 1;
+            threads_2.Checked = false;
+            threads_4.Checked = false;
+            threads_15.Checked = false;
+            threads_50.Checked = false;
+        }
+
+        private void toolStripMenuItem6_Click(object sender, EventArgs e)
+        {
+            NUM_THREADS = 50;
+            threads_1.Checked = false;
+            threads_2.Checked = false;
+            threads_4.Checked = false;
+            threads_15.Checked = false;
+        }
+
+        private void threads_2_Click(object sender, EventArgs e)
+        {
+            NUM_THREADS = 2;
+            threads_1.Checked = false;
+            threads_4.Checked = false;
+            threads_15.Checked = false;
+            threads_50.Checked = false;
+        }
+
+        private void threads_4_Click(object sender, EventArgs e)
+        {
+            NUM_THREADS = 4;
+            threads_1.Checked = false;
+            threads_2.Checked = false;
+            threads_15.Checked = false;
+            threads_50.Checked = false;
+
+        }
+
+        private void threads_15_Click(object sender, EventArgs e)
+        {
+            NUM_THREADS = 15;
+            threads_1.Checked = false;
+            threads_2.Checked = false;
+            threads_4.Checked = false;
+            threads_50.Checked = false;
+        }
+
+        private void dFTThreadsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            triangleToolStripMenuItem.Checked = false;
+            WINDOW_TYPE = "Rectangle";
+        }
+
+        private void triangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rectangleToolStripMenuItem.Checked = false;
+            WINDOW_TYPE = "Triangle";
+        }
+
+        private void hammingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rectangleToolStripMenuItem.Checked = false;
+            triangleToolStripMenuItem.Checked = false;
+            WINDOW_TYPE = "Hamming";
         }
     }
 }
