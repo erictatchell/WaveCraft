@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -187,16 +188,18 @@ namespace Wave3931
                 LEFT_CHANNEL_CHART.Series[0].Points.AddXY(i, audioData[i]);
             }
 
-            byte[] byteArray = new byte[audioData.Length];
-
-            for (int i = 0; i < audioData.Length; i++)
+            byte[] byteArray = audioData.Select(sample =>
             {
-                double sample = audioData[i];
-                byte byteValue = (byte)sample;
+                // Scale the value to the range [0, 1]
+                double scaledValue = (sample + 1) / 2.0;
 
-                byteArray[i] = byteValue;
-            }
-            IntPtr pSaveBuffer = IntPtr.Zero;
+                // Convert the scaled value to an 8-bit representation
+                byte byteValue = (byte)(scaledValue * 255);
+
+                return byteValue;
+            }).ToArray();
+
+            IntPtr pSaveBuffer;
             pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
             UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);

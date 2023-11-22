@@ -257,23 +257,32 @@ namespace Wave3931
             Complex[] filter = creationOfLowpassFilter(dftRes.Length);
             double[] filtered = inverseDFT(filter);
             double[] audioData = this.main.getAudioData();
-            double maxAbs = audioData.Max(Math.Abs);
-            audioData = audioData.Select(x => x / maxAbs).ToArray();
+
+            // Convolve the filtered signal with the audio data
             convolve(filtered, audioData);
 
-            byte[] byteArray = new byte[audioData.Length];
+            // Adjust the scale and offset to fit the values within 0 to 255 for 8-bit PCM
+            byte[] byteArray = audioData.Select(sample =>
+            {
+                // Scale the value to the range [0, 1]
+                double scaledValue = (sample + 1) / 2.0;
+
+                // Convert the scaled value to an 8-bit representation
+                byte byteValue = (byte)(scaledValue * 255);
+
+                return byteValue;
+            }).ToArray();
+
             IntPtr pSaveBuffer;
             pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
-
-            for (int i = 0; i < audioData.Length; i++)
-            {
-                double sample = audioData[i];
-                Marshal.WriteByte(pSaveBuffer, i * 1, (byte)sample);
-            }
+            Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
             WavePlayer.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
-            Marshal.FreeHGlobal(pSaveBuffer);
+            // Marshal.FreeHGlobal(pSaveBuffer); // Don't free the buffer if it's being used externally
             this.main.plotFreqWaveChart(audioData);
         }
+
+
+
 
     }
 }
