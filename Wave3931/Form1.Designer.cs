@@ -146,14 +146,14 @@
             this.btNewFile.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btNewFile.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btNewFile.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btNewFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btNewFile.Font = new System.Drawing.Font("Constantia", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btNewFile.Location = new System.Drawing.Point(93, 50);
+            this.btNewFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btNewFile.Font = new System.Drawing.Font("Lucida Console", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btNewFile.Location = new System.Drawing.Point(138, 81);
             this.btNewFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btNewFile.Name = "btNewFile";
-            this.btNewFile.Size = new System.Drawing.Size(149, 75);
+            this.btNewFile.Size = new System.Drawing.Size(149, 35);
             this.btNewFile.TabIndex = 0;
-            this.btNewFile.Text = "New File";
+            this.btNewFile.Text = "NEW FILE";
             this.btNewFile.UseVisualStyleBackColor = false;
             this.btNewFile.Click += new System.EventHandler(this.btnNewFile_Click);
             // 
@@ -161,14 +161,15 @@
             // 
             this.btnOpenFile.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnOpenFile.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.btnOpenFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnOpenFile.Font = new System.Drawing.Font("Constantia", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnOpenFile.Location = new System.Drawing.Point(93, 146);
+            this.btnOpenFile.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnOpenFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnOpenFile.Font = new System.Drawing.Font("Lucida Console", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnOpenFile.Location = new System.Drawing.Point(138, 124);
             this.btnOpenFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btnOpenFile.Name = "btnOpenFile";
-            this.btnOpenFile.Size = new System.Drawing.Size(149, 75);
+            this.btnOpenFile.Size = new System.Drawing.Size(149, 35);
             this.btnOpenFile.TabIndex = 1;
-            this.btnOpenFile.Text = "Open File";
+            this.btnOpenFile.Text = "OPEN FILE";
             this.btnOpenFile.UseVisualStyleBackColor = false;
             this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click_1);
             // 
@@ -177,9 +178,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DarkGray;
-            this.BackgroundImage = global::Wave3931.Properties.Resources.StartScreen;
+            this.BackgroundImage = global::Wave3931.Properties.Resources.vaporWaveBG;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(334, 304);
+            this.ClientSize = new System.Drawing.Size(424, 261);
             this.Controls.Add(this.btnOpenFile);
             this.Controls.Add(this.btNewFile);
             this.Font = new System.Drawing.Font("Constantia", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

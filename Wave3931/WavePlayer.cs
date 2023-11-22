@@ -44,7 +44,10 @@ namespace Wave3931
         [DllImport("WaveDLL.dll")]
         public static extern int GetWaveHdrBUFLEN();
         [DllImport("WaveDLL.dll")]
-        public static extern void SetWaveHdr(IntPtr lpData, int dwBufferLength);
+        public static extern void SetWaveHdr(IntPtr lpData, int dwBufferLength, uint dwBytesRecorded, uint dwUser, uint dwFlags, uint dwLoops, uint reserved);
+        [DllImport("WaveDLL.dll")]
+        public static extern void SetWaveformData(int wFormatTag, uint nChannels, uint nSamplesPerSec, uint nAvgBytesPerSec, uint nBlockAlign, uint wBitsPerSample, uint cbSize);
+
         [DllImport("WaveDLL.dll")]
         public static extern int GetSampleRate();
         [DllImport("WaveDLL.dll")]

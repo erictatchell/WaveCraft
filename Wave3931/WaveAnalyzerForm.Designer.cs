@@ -169,6 +169,7 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1304, 568);
             this.panel2.TabIndex = 11;
+            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint_2);
             // 
             // OptionsPanel
             // 
@@ -194,6 +195,7 @@
             // zoomRadio
             // 
             this.zoomRadio.AutoSize = true;
+            this.zoomRadio.Cursor = System.Windows.Forms.Cursors.Hand;
             this.zoomRadio.ForeColor = System.Drawing.SystemColors.Control;
             this.zoomRadio.Location = new System.Drawing.Point(15, 160);
             this.zoomRadio.Name = "zoomRadio";
@@ -207,6 +209,7 @@
             // selectRadio
             // 
             this.selectRadio.AutoSize = true;
+            this.selectRadio.Cursor = System.Windows.Forms.Cursors.Hand;
             this.selectRadio.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.selectRadio.ForeColor = System.Drawing.SystemColors.Control;
             this.selectRadio.Location = new System.Drawing.Point(15, 138);
@@ -226,7 +229,7 @@
             this.btnClear.FlatAppearance.BorderSize = 2;
             this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClear.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(0, 438);
+            this.btnClear.Location = new System.Drawing.Point(2, 519);
             this.btnClear.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(96, 27);
@@ -350,14 +353,14 @@
             chartArea1.AxisY.TitleFont = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea1.AxisY.TitleForeColor = System.Drawing.Color.Gold;
             chartArea1.BackColor = System.Drawing.Color.Black;
-            chartArea1.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea1.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
             chartArea1.CursorX.LineColor = System.Drawing.Color.Black;
             chartArea1.CursorX.SelectionColor = System.Drawing.Color.LightGreen;
             chartArea1.CursorY.LineColor = System.Drawing.Color.Black;
             chartArea1.IsSameFontSizeForAllAxes = true;
             chartArea1.Name = "LeftChannelChartArea";
             this.LEFT_CHANNEL_CHART.ChartAreas.Add(chartArea1);
-            this.LEFT_CHANNEL_CHART.Cursor = System.Windows.Forms.Cursors.SizeAll;
+            this.LEFT_CHANNEL_CHART.Cursor = System.Windows.Forms.Cursors.Cross;
             this.LEFT_CHANNEL_CHART.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LEFT_CHANNEL_CHART.Location = new System.Drawing.Point(0, 0);
             this.LEFT_CHANNEL_CHART.Name = "LEFT_CHANNEL_CHART";
@@ -410,10 +413,11 @@
             chartArea2.AxisY.TitleFont = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisY.TitleForeColor = System.Drawing.Color.Gold;
             chartArea2.BackColor = System.Drawing.Color.Black;
-            chartArea2.BackImage = "C:\\Users\\Eric\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea2.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
             chartArea2.IsSameFontSizeForAllAxes = true;
             chartArea2.Name = "ChartArea1";
             this.RIGHT_CHANNEL_CHART.ChartAreas.Add(chartArea2);
+            this.RIGHT_CHANNEL_CHART.Cursor = System.Windows.Forms.Cursors.Cross;
             this.RIGHT_CHANNEL_CHART.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RIGHT_CHANNEL_CHART.Location = new System.Drawing.Point(0, 0);
             this.RIGHT_CHANNEL_CHART.Name = "RIGHT_CHANNEL_CHART";

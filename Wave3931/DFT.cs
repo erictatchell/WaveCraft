@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -12,8 +15,11 @@ namespace Wave3931
         private readonly object lockObject = new object();
         private double[] threadAmplitude;
         private string windowType;
+        private double[] dftRes;
+        private Complex[] cmplx_dftRes;
+        private WaveAnalyzerForm main = null;
 
-        public DFT(double[] s, double sampleRate, int threads, string windowType)
+        public DFT(double[] s, double sampleRate, int threads, string windowType, Form calling)
         {
             InitializeComponent();
 
@@ -22,17 +28,15 @@ namespace Wave3931
 
             int N = s.Length;
             Complex[] dftResult = threadedDFTFunc(s, N, threads);
-
+            cmplx_dftRes = new Complex[N];
+            cmplx_dftRes = dftResult;
             double[] frequencies = new double[N];
             for (int i = 0; i < N; i++)
             {
                 frequencies[i] = i * sampleRate / N;
             }
-
-            for (int i = 0; i < N; i++)
-            {
-                chart1.Series[0].Points.AddXY(i, dftResult[i].Magnitude);
-            }
+            double threshold = 10000;
+            Plot(dftResult, threshold, N);
 
             chart1.ChartAreas[0].AxisX.Minimum = 0;
 
@@ -45,6 +49,23 @@ namespace Wave3931
             chart1.ChartAreas[0].CursorX.IsUserEnabled = true;
             chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
             chart1.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
+            main = calling as WaveAnalyzerForm;
+        }
+
+        public void Plot(Complex[] dftResult, double threshold, int N)
+        {
+            double max = 0;
+            for (int i = 0; i < N; i++)
+            {
+                if (dftResult[i].Magnitude < threshold)
+                {
+                    chart1.Series[0].Points.AddXY(i, dftResult[i].Magnitude);
+                    if (i > 0 && dftResult[i].Magnitude > max)
+                    {
+                        max = dftResult[i].Magnitude;
+                    }
+                }
+            }
         }
 
         public Complex[] dft(double[] s, int n, int threadNum, int maxThreads)
@@ -69,6 +90,12 @@ namespace Wave3931
                 }
 
                 cmplx[f] = new Complex(re, im);
+
+            }
+            dftRes = new double[n];
+            for (int i = 0; i < cmplx.Length; i++)
+            {
+                dftRes[i] = cmplx[i].Real;
             }
 
             return cmplx;
@@ -149,9 +176,104 @@ namespace Wave3931
             return cmplxResult;
         }
 
+        private Complex[] creationOfLowpassFilter(int N)
+        {
+            Complex[] outComplex = new Complex[N];
+            double start = chart1.ChartAreas[0].CursorX.SelectionStart;
+
+            // create a complex numbers for the selected size, otherwise it is complex zero
+            for (int i = 0; i < (N / 2); i++)
+            {
+                if (N % 2 != 0)
+                {
+                    outComplex[N / 2] = new Complex(0, 0);
+                }
+                if (i < start)
+                {
+                    outComplex[i] = new Complex(1, 1);
+                    outComplex[N - i - 1] = new Complex(1, 1);
+                }
+                else
+                {
+                    outComplex[i] = new Complex(0, 0);
+                    outComplex[N - i - 1] = new Complex(0, 0);
+                }
+            }
+            return outComplex;
+        }
+
+        private void convolve(double[] convolutionData, double[] orgSignal)
+        {
+            int N = orgSignal.Length, WN = convolutionData.Length;
+            double[] newSignal = new double[N];
+            for (int n = 0; n < N; n++)
+            {
+                double temp = 0;
+                for (int wn = 0; wn < WN; wn++)
+                {
+                    if ((n + wn) < (N - 1)) // if we are less than the frequency data size
+                        temp += convolutionData[wn] * orgSignal[n + wn];
+                    else
+                        temp += 0;
+                }
+                newSignal[n] = temp;
+            }
+            this.main.setAudioData(newSignal);
+        }
+
         private void chart1_Click(object sender, EventArgs e)
         {
 
         }
+        public double[] inverseDFT(Complex[] A)
+        {
+            int n = A.Length;
+            Complex[] s = new Complex[n];
+
+            for (int t = 0; t < n; t++)
+            {
+                double re = 0;
+                double im = 0;
+
+                for (int f = 0; f < n; f++)
+                {
+                    double angle = 2 * Math.PI * t * f / n;
+                    re += A[f].Real * Math.Cos(angle) + A[f].Imaginary * Math.Sin(angle);
+                    im += A[f].Imaginary * Math.Cos(angle) - A[f].Real * Math.Sin(angle);
+                }
+
+                s[t] = new Complex(re, im) / n;
+            }
+            double[] real = new double[n];
+            for (int i =0; i < n; i ++)
+            {
+                real[i] = s[i].Real;
+            }
+            return real;
+        }
+
+        private void btnLowpass_Click(object sender, EventArgs e)
+        {
+            Complex[] filter = creationOfLowpassFilter(dftRes.Length);
+            double[] filtered = inverseDFT(filter);
+            double[] audioData = this.main.getAudioData();
+            double maxAbs = audioData.Max(Math.Abs);
+            audioData = audioData.Select(x => x / maxAbs).ToArray();
+            convolve(filtered, audioData);
+
+            byte[] byteArray = new byte[audioData.Length];
+            IntPtr pSaveBuffer;
+            pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
+
+            for (int i = 0; i < audioData.Length; i++)
+            {
+                double sample = audioData[i];
+                Marshal.WriteByte(pSaveBuffer, i * 1, (byte)sample);
+            }
+            WavePlayer.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
+            Marshal.FreeHGlobal(pSaveBuffer);
+            this.main.plotFreqWaveChart(audioData);
+        }
+
     }
 }

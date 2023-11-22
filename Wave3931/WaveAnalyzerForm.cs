@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -23,33 +24,21 @@ namespace Wave3931
         {
             return audioData;
         }
+        public void setAudioData(double[] ad)
+        {
+            audioData = ad;
+        }
+        public void DFT_UpdatePSaveBuffer(IntPtr psb, int dwdl)
+        {
+            UpdatePSaveBuffer(psb, dwdl);
+        }
 
         public WaveAnalyzerForm(String file)
         {
             InitializeComponent();
             this.file = file;
             Box(this.Handle);
-
             header.initialize(11025);
-            double[] freqs = readingWave(file);
-            plotFreqWaveChart(freqs);
-            byte[] byteArray = new byte[audioData.Length];
-
-            for (int i = 0; i < audioData.Length; i++)
-            {
-                double sample = audioData[i];
-                byte byteValue = (byte)((sample + 1) * 127.5);
-
-                byteArray[i] = byteValue;
-            }
-            IntPtr pSaveBuffer = IntPtr.Zero;
-            pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
-            Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
-
-            UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
-
-            Marshal.FreeHGlobal(pSaveBuffer);
-
             titleLeft.Visible = false;
             titleRight.Visible = false;
             hzToolStripMenuItem.Checked = true;
@@ -59,10 +48,7 @@ namespace Wave3931
             WINDOW_TYPE = "Rectangle";
             SELECT = true;
             selectRadio.Checked = true;
-            btnPlay.Enabled = false;
             btnRecord.Enabled = false;
-            btnDFT.Enabled = false;
-            btnClear.Enabled = false;
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
             ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
@@ -71,6 +57,8 @@ namespace Wave3931
             cm.Items.Add(cut);
             cm.Items.Add(paste);
             LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
+            double[] freqs = readingWave(file);
+            plotFreqWaveChart(freqs);
         }
         public WaveAnalyzerForm()
         {
@@ -111,7 +99,11 @@ namespace Wave3931
 
             if (startIndex < 0) { startIndex = 0; }
             if (endIndex >= audioData.Length) { endIndex = audioData.Length - 1; }
-            if (startIndex >= endIndex) { return; }
+            if (startIndex >= endIndex) {
+                int temp = startIndex;
+                startIndex = endIndex;
+                endIndex = temp;
+            }
 
             int selectedDataLength = endIndex - startIndex + 1;
             double[] selectedAudioData = new double[selectedDataLength];
@@ -130,7 +122,12 @@ namespace Wave3931
 
             if (startIndex < 0) { startIndex = 0; }
             if (endIndex >= audioData.Length) { endIndex = audioData.Length - 1; }
-            if (startIndex >= endIndex) { return; }
+            if (startIndex >= endIndex)
+            {
+                int temp = startIndex;
+                startIndex = endIndex;
+                endIndex = temp;
+            }
 
             int selectedDataLength = endIndex - startIndex + 1;
 
@@ -195,7 +192,7 @@ namespace Wave3931
             for (int i = 0; i < audioData.Length; i++)
             {
                 double sample = audioData[i];
-                byte byteValue = (byte)((sample + 1) * 127.5);
+                byte byteValue = (byte)sample;
 
                 byteArray[i] = byteValue;
             }
@@ -223,27 +220,31 @@ namespace Wave3931
             header.BitsPerSample = reader.ReadUInt16();
             header.SubChunk2ID = reader.ReadInt32();
             header.SubChunk2Size = reader.ReadInt32();
-
-            int bytesPerSample = header.BitsPerSample / 8;
+            int counter = 0;
             while (reader.BaseStream.Position < reader.BaseStream.Length)
             {
-                if (bytesPerSample == 1) // 8-bit audio
-                {
-                    byte sample = reader.ReadByte();
-                    outputList.Add(sample / 128.0);
-                }
-                else if (bytesPerSample == 4) // 32-bit audio
-                {
-                    float sample = reader.ReadSingle();
-                    outputList.Add((double)sample);
-                }
-                else
-                {
-                    short sample = reader.ReadInt16(); // 16 bit audio
-                    outputList.Add(sample);
-                }
+                byte sample = reader.ReadByte();
+                outputList.Add(sample);
+                counter++;
             }
             audioData = outputList.ToArray();
+            byte[] byteArray = new byte[counter];
+
+            for (int i = 0; i < audioData.Length; i++)
+            {
+                double sample = audioData[i];
+                byte byteValue = (byte)(sample);
+
+                byteArray[i] = byteValue;
+            }
+            IntPtr pSaveBuffer = IntPtr.Zero;
+            pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
+            Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
+
+            UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
+            SetWaveformData(header.Format, 1, header.SampleRate, header.ByteRate, header.BlockAlign, header.BitsPerSample, 0);
+            SetWaveHdr(pSaveBuffer, byteArray.Length, 0, 0, 0x00000004 | 0x00000008, 0, 0);
+            Marshal.FreeHGlobal(pSaveBuffer);
             return outputList.ToArray();
         }
 
@@ -453,8 +454,8 @@ namespace Wave3931
             int end = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
             if (start >= end)
             {
-                DFT = new DFT(audioData, GetSampleRate(), NUM_THREADS, WINDOW_TYPE);
-                DFT.Owner = this; // Set the owner if needed
+                DFT = new DFT(audioData, GetSampleRate(), NUM_THREADS, WINDOW_TYPE, this);
+                DFT.Owner = this;
                 DFT.Show();
                 return;
             }
@@ -477,7 +478,7 @@ namespace Wave3931
                 j++;
             }
 
-            DFT = new DFT(selected, GetSampleRate(), NUM_THREADS, WINDOW_TYPE);
+            DFT = new DFT(selected, GetSampleRate(), NUM_THREADS, WINDOW_TYPE, this);
             DFT.Owner = this; // Set the owner if needed
             DFT.Show();
         }
@@ -771,6 +772,11 @@ namespace Wave3931
         }
 
         private void zoomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint_2(object sender, PaintEventArgs e)
         {
 
         }
