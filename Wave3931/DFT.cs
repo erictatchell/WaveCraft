@@ -5,20 +5,43 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Wave3931
 {
+    /**
+        Author: Eric Tatchell & Brendan Doyle
+        Date: October & November 2023
+     */
     public partial class DFT : Form
     {
+        // Mutex object for thread sync
         private readonly object lockObject = new object();
+
+        // Thread-specific amplitude array for DFT calculation
         private double[] threadAmplitude;
+
+        // Type of windowing function used for DFT
         private string windowType;
+
+        // Result arrays for DFT calculations, real and full complex
         private double[] dftRes;
         private Complex[] cmplx_dftRes;
+
+        // Reference to the main WaveCraft form, mainly for plotting and getting data
         private WaveAnalyzerForm main = null;
 
+        /**
+        * Constructor for the DFT class.
+        * 
+        * @Param s The input signal.
+        * @Param sampleRate The sample rate of the input signal.
+        * @Param threads The number of threads to use for parallel processing.
+        * @Param windowType The type of windowing function to apply.
+        * @Param calling The calling form.
+        */
         public DFT(double[] s, double sampleRate, int threads, string windowType, Form calling)
         {
             InitializeComponent();
@@ -52,6 +75,13 @@ namespace Wave3931
             main = calling as WaveAnalyzerForm;
         }
 
+        /**
+         * Plots the DFT result on the chart.
+         * 
+         * @Param dftResult The result of the DFT.
+         * @Param threshold The threshold for plotting.
+         * @Param N The size of the DFT result.
+         */
         public void Plot(Complex[] dftResult, double threshold, int N)
         {
             double max = 0;
@@ -68,6 +98,16 @@ namespace Wave3931
             }
         }
 
+        /**
+         * Performs DFT on a signal.
+         * 
+         * @Param s The input signal.
+         * @Param n The size of the input signal.
+         * @Param threadNum The current thread number.
+         * @Param maxThreads The maximum number of threads to use.
+         * 
+         * @Return The complex result of the DFT.
+         */
         public Complex[] dft(double[] s, int n, int threadNum, int maxThreads)
         {
             Complex[] cmplx = new Complex[n];
@@ -101,6 +141,13 @@ namespace Wave3931
             return cmplx;
         }
 
+        /**
+         * Performs windoing on a frequency array based on the specified window type.
+         * 
+         * @Param n The length of the array.
+         * 
+         * @Return The windowed array
+         */
         private double[] GenerateWindow(int n)
         {
             double[] window = new double[n];
@@ -108,7 +155,7 @@ namespace Wave3931
             switch (windowType)
             {
                 case "Rectangle":
-                    // Rectangle window (no windowing)
+                    // Rectangle
                     for (int i = 0; i < n; i++)
                     {
                         window[i] = 1.0;
@@ -122,8 +169,6 @@ namespace Wave3931
                         window[i] = 1.0 - Math.Abs((i - (n - 1) / 2.0) / ((n - 1) / 2.0));
                     }
                     break;
-
-                // Add more cases for other window types if needed
                 case "Hamming":
                     for (int i = 0; i < n; i++)
                     {
@@ -133,7 +178,7 @@ namespace Wave3931
                     break;
 
                 default:
-                    // Default to Rectangle window
+                    // rectangle
                     for (int i = 0; i < n; i++)
                     {
                         window[i] = 1.0;
@@ -144,7 +189,16 @@ namespace Wave3931
             return window;
         }
 
-
+        /**
+         * Performs DFT on a signal using multi-threading.
+         * 
+         * @Param s The input signal.
+         * @Param n The length of the signal.
+         * @Param threadNum The current thread number.
+         * @Param maxThreads The maximum number of threads to use.
+         * 
+         * @Return DFT result
+         */
         public Complex[] threadedDFTFunc(double[] s, int n, int threadNum)
         {
             Thread[] tArray = new Thread[threadNum];
@@ -153,7 +207,7 @@ namespace Wave3931
 
             for (int i = 0; i < threadNum; i++)
             {
-                int threadIndex = i; // Capture the variable to avoid closure issues
+                int threadIndex = i;
                 tArray[i] = new Thread(() =>
                 {
                     Complex[] partialResult = dft(s, n, threadIndex, threadNum);
@@ -176,12 +230,17 @@ namespace Wave3931
             return cmplxResult;
         }
 
+        /**
+         * Creates a lowpass filter for DFT analysis.
+         * 
+         * @Param N The size of the filter.
+         * 
+         * @Return the filter in Comp;ex
+         */
         private Complex[] creationOfLowpassFilter(int N)
         {
             Complex[] outComplex = new Complex[N];
             double start = chart1.ChartAreas[0].CursorX.SelectionStart;
-
-            // create a complex numbers for the selected size, otherwise it is complex zero
             for (int i = 0; i < (N / 2); i++)
             {
                 if (N % 2 != 0)
@@ -199,32 +258,54 @@ namespace Wave3931
                     outComplex[N - i - 1] = new Complex(0, 0);
                 }
             }
-            return outComplex;
+            return outComplex;  
         }
 
-        private void convolve(double[] convolutionData, double[] orgSignal)
+        /**
+         * Performs convolution on a signal with given weights and overwrites the original.
+         * 
+         * @Param convolutionData The weights obtained with inverseDFT(filter).
+         * @Param audioData The original signal data.
+         * 
+         * @Return The convolved signal.
+         */
+        private double[] convolve(double[] convolutionData, double[] audioData)
         {
-            int N = orgSignal.Length, WN = convolutionData.Length;
+            int N = audioData.Length, WN = convolutionData.Length;
             double[] newSignal = new double[N];
             for (int n = 0; n < N; n++)
             {
                 double temp = 0;
                 for (int wn = 0; wn < WN; wn++)
                 {
-                    if ((n + wn) < (N - 1)) // if we are less than the frequency data size
-                        temp += convolutionData[wn] * orgSignal[n + wn];
+                    //Externals.convolveInASM(N, WN, convolutionData, audioData, newSignal);
+                    if ((n + wn) < (N - 1))
+                        temp += convolutionData[wn] * audioData[n + wn];
                     else
                         temp += 0;
                 }
                 newSignal[n] = temp;
             }
             this.main.setAudioData(newSignal);
+            return newSignal;
         }
 
         private void chart1_Click(object sender, EventArgs e)
         {
 
-        }
+        } 
+
+        /** 
+         * inverseDFT
+         * Inverse DFT function that was demonstrated in class. Normalize each s(t) by N.
+         * Sets an instance double[]'s values to the real portions
+         * 
+         * Params: 
+         * Complex[] A is the filter
+         * 
+         * Returns:
+         * double[] The real portions of the inverseDFT. These are weights we can use for convolution
+         */
         public double[] inverseDFT(Complex[] A)
         {
             int n = A.Length;
@@ -244,6 +325,7 @@ namespace Wave3931
 
                 s[t] = new Complex(re, im) / n;
             }
+            // save the real portion in an array
             double[] real = new double[n];
             for (int i =0; i < n; i ++)
             {
@@ -252,37 +334,100 @@ namespace Wave3931
             return real;
         }
 
+        /** 
+         * btnLowpass_Click is used by the lowpass button control. It follows these steps:
+         * 1. Design a lowpass filter based on the user selected cutoff frequency
+         * 2. Perform inverse DFT on the filter to obtain weights
+         * 3. Get the original signal from WaveAnalyser
+         * 4. Perform convolution on the signal with the filter
+         * 5. Lines 269 through 275: Return the signal data to a byte array
+         * 6. Update the pSaveBuffer which in turn filters the audio
+         * 7. Display the changes
+         */
         private void btnLowpass_Click(object sender, EventArgs e)
         {
             Complex[] filter = creationOfLowpassFilter(dftRes.Length);
             double[] filtered = inverseDFT(filter);
             double[] audioData = this.main.getAudioData();
+            audioData = convolve(filtered, audioData);
 
-            // Convolve the filtered signal with the audio data
-            convolve(filtered, audioData);
-
-            // Adjust the scale and offset to fit the values within 0 to 255 for 8-bit PCM
             byte[] byteArray = audioData.Select(sample =>
             {
-                // Scale the value to the range [0, 1]
+                // it just works!
                 double scaledValue = (sample + 1) / 2.0;
-
-                // Convert the scaled value to an 8-bit representation
                 byte byteValue = (byte)(scaledValue * 255);
 
                 return byteValue;
             }).ToArray();
 
-            IntPtr pSaveBuffer;
-            pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
+            IntPtr pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
-            WavePlayer.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
-            // Marshal.FreeHGlobal(pSaveBuffer); // Don't free the buffer if it's being used externally
+            Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             this.main.plotFreqWaveChart(audioData);
         }
 
+        /**
+         * Creates a highpass filter for DFT analysis.
+         * 
+         * @Param N The size of the filter.
+         * 
+         * @Return the filter in Complex
+         */
+        private Complex[] creationOfHighpassFilter(int N)
+        {
+            Complex[] outComplex = new Complex[N];
+            double start = chart1.ChartAreas[0].CursorX.SelectionStart;
+            for (int i = 0; i < (N / 2); i++)
+            {
+                if (N % 2 != 0)
+                {
+                    outComplex[N / 2] = new Complex(0, 0);
+                }
+                if (i >= start)
+                {
+                    outComplex[i] = new Complex(1, 1);
+                    outComplex[N - i - 1] = new Complex(1, 1);
+                }
+                else
+                {
+                    outComplex[i] = new Complex(0, 0);
+                    outComplex[N - i - 1] = new Complex(0, 0);
+                }
+            }
+            return outComplex;
 
+        }
 
+        /** 
+         * btnHighpass_Click is used by the highpass button control. It follows these steps:
+         * 1. Design a highpass filter based on the user selected cutoff frequency
+         * 2. Perform inverse DFT on the filter to obtain weights
+         * 3. Get the original signal from WaveAnalyser
+         * 4. Perform convolution on the signal with the filter
+         * 5. Lines 269 through 275: Return the signal data to a byte array
+         * 6. Update the pSaveBuffer which in turn filters the audio
+         * 7. Plot the changes
+         */
+        private void btnHighpass_Click(object sender, EventArgs e)
+        {
+            Complex[] filter = creationOfHighpassFilter(dftRes.Length);
+            double[] filtered = inverseDFT(filter);
+            double[] audioData = this.main.getAudioData();
+            audioData = convolve(filtered, audioData);
+
+            byte[] byteArray = audioData.Select(sample =>
+            {
+                double scaledValue = (sample + 1) / 2.0;
+                byte byteValue = (byte)(scaledValue * 255);
+
+                return byteValue;
+            }).ToArray();
+
+            IntPtr pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
+            Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
+            Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
+            this.main.plotFreqWaveChart(audioData);
+        }
 
     }
 }

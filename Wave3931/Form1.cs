@@ -42,7 +42,7 @@ namespace Wave3931
                 {
                     string selectedFilePath = openFileDialog.FileName;
                     toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
-                    WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm(selectedFilePath);
+                    WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm(selectedFilePath, Path.GetFileName(selectedFilePath));
                     waveAnalyzerForm.Show();
                 }
             }

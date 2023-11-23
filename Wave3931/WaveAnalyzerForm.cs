@@ -4,11 +4,14 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Wave3931.WavePlayer;
+using System.Windows.Forms.DataVisualization.Charting;
+using static Wave3931.Externals;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Wave3931
 {
@@ -16,9 +19,15 @@ namespace Wave3931
     {
         wave_file_header header = new wave_file_header();
         private double[] audioData;
-        private readonly String file;
+        private String file;
+        private String fileName;
         private string WINDOW_TYPE;
         private bool SELECT;
+
+        private int originalSampleRateIndex;
+        private int originalDFTThreadIndex;
+        private int originalChannelIndex;
+        private int originalWindowingIndex;
 
         private int NUM_THREADS;
         public double[] getAudioData()
@@ -33,23 +42,53 @@ namespace Wave3931
         {
             UpdatePSaveBuffer(psb, dwdl);
         }
+        public int detectSR()
+        {
+            switch (header.SampleRate)
+            {
+                case 11025:
+                    SetSampleRate(11025);
+                    return 0;
+                case 22050:
+                    SetSampleRate(22050);
+                    return 1;
+                case 44100:
+                    SetSampleRate(44100);
+                    return 2;
+            }
+            return 0;
+        }
 
-        public WaveAnalyzerForm(String file)
+        public int detectChannels()
+        {
+            switch (header.NumChannels)
+            {
+                case 1:
+                    SetChannels(1);
+                    return 0;
+                case 2:
+                    SetChannels(2);
+                    return 1;
+            }
+            return 0;
+        }
+
+        public WaveAnalyzerForm(String filePath, String fileName)
         {
             InitializeComponent();
-            this.file = file;
+            this.file = filePath;
+            this.fileName = fileName;
+            this.Text = "WaveCraft - " + fileName;
             Box(this.Handle);
-            header.initialize(11025);
-            titleLeft.Visible = false;
-            titleRight.Visible = false;
-            hzToolStripMenuItem.Checked = true;
-            threads_1.Checked = true;
-            NUM_THREADS = 1;
-            rectangleToolStripMenuItem.Checked = true;
-            WINDOW_TYPE = "Rectangle";
+            leftLabel.Visible = false;
+            rightLabel.Visible = false;
+            DFTThread.SelectedIndex = 0;
+            windowing.SelectedIndex = 0;
+            originalDFTThreadIndex = DFTThread.SelectedIndex;
+            originalWindowingIndex = windowing.SelectedIndex;
+
             SELECT = true;
             selectRadio.Checked = true;
-            btnRecord.Enabled = false;
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
             ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
@@ -58,7 +97,35 @@ namespace Wave3931
             cm.Items.Add(cut);
             cm.Items.Add(paste);
             LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
+
+            header.initialize(11025);
+            header.changeSR(11025);
             double[] freqs = readingWave(file);
+            sampleRate.SelectedIndex = detectSR();
+            originalSampleRateIndex = sampleRate.SelectedIndex;
+            channelsBox.SelectedIndex = detectChannels();
+            originalChannelIndex = channelsBox.SelectedIndex;
+            btnPlay.Enabled = true;
+            btnRecord.Enabled = false;
+            btnStopRecord.Enabled = true;
+            btnDFT.Enabled = true;
+            btnClear.Enabled = true;
+
+            btnPlay.BackColor = Color.FromArgb(250, 14, 79);
+            btnPlay.ForeColor = Color.White;
+
+            btnStopRecord.BackColor = Color.FromArgb(250, 14, 79);
+            btnStopRecord.ForeColor = Color.White;
+
+            btnRecord.BackColor = Color.White;
+            btnRecord.ForeColor = Color.Black;
+
+            btnDFT.BackColor = Color.FromArgb(250, 14, 79);
+            btnDFT.ForeColor = Color.White;
+
+            btnClear.BackColor = Color.FromArgb(250, 14, 79);
+            btnClear.ForeColor = Color.White;
+
             plotFreqWaveChart(freqs);
         }
         public WaveAnalyzerForm()
@@ -66,14 +133,17 @@ namespace Wave3931
             InitializeComponent();
             Box(this.Handle);
 
-            titleLeft.Visible = false;
-            titleRight.Visible = false;
+            leftLabel.Visible = false;
+            rightLabel.Visible = false;
 
-            hzToolStripMenuItem.Checked = true;
-            threads_1.Checked = true;
-            NUM_THREADS = 1;
-            rectangleToolStripMenuItem.Checked = true;
-            WINDOW_TYPE = "Rectangle";
+            sampleRate.SelectedIndex = 0;
+            DFTThread.SelectedIndex = 0;
+            windowing.SelectedIndex = 0;
+            channelsBox.SelectedIndex = 0;
+            originalSampleRateIndex = sampleRate.SelectedIndex;
+            originalDFTThreadIndex = DFTThread.SelectedIndex;
+            originalWindowingIndex = windowing.SelectedIndex;
+            originalChannelIndex = channelsBox.SelectedIndex;
             SELECT = true;
             selectRadio.Checked = true;
             btnPlay.Enabled = false;
@@ -190,8 +260,14 @@ namespace Wave3931
 
             byte[] byteArray = audioData.Select(sample =>
             {
+                double scaledValue = 0;
                 // Scale the value to the range [0, 1]
-                double scaledValue = (sample + 1) / 2.0;
+                if (file == null)
+                {
+                    scaledValue = (sample + 1) / 2.0;
+                }
+                else scaledValue = sample;
+                
 
                 // Convert the scaled value to an 8-bit representation
                 byte byteValue = (byte)(scaledValue * 255);
@@ -207,6 +283,7 @@ namespace Wave3931
         }
         public double[] readingWave(String file)
         {
+            
             List<double> outputList = new List<double>();
             BinaryReader reader = new BinaryReader(File.OpenRead(file));
             header.clear();
@@ -281,7 +358,14 @@ namespace Wave3931
                 LEFT_CHANNEL_CHART.Series[0].Points.AddXY(m, audioData[m]);
             }
             LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.Minimum = 0;
-            toolStripStatusLabel1.Text = string.Format("{0:F2}s at {1} Hz", (double)audioData.Length / GetSampleRate(), GetSampleRate());
+            if (file == null)
+            {
+                toolStripStatusLabel3.Text = string.Format("{0:F2}s at {1} Hz", (double)audioData.Length / GetSampleRate(), GetSampleRate());
+            }
+            else
+            {
+                toolStripStatusLabel3.Text = string.Format("{0}: {1:F2}s at {2} Hz ", fileName, (double)audioData.Length / GetSampleRate(), GetSampleRate());
+            }
             LEFT_CHANNEL_CHART.Visible = true;
             RIGHT_CHANNEL_CHART.Visible = true;
             double[] rightData = new double[audioData.Length];
@@ -290,7 +374,7 @@ namespace Wave3931
                 rightData[m] = 0;
                 RIGHT_CHANNEL_CHART.Series[0].Points.AddXY(m, rightData[m]);
             }
-            titleLeft.Visible = true;
+            leftLabel.Visible = true;
 
         }
 
@@ -538,6 +622,7 @@ namespace Wave3931
 
         private void btnSaveFile_Click(object sender, EventArgs e)
         {
+            
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
                 saveFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
@@ -545,52 +630,97 @@ namespace Wave3931
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string saveFilePath = saveFileDialog.FileName;
-
-                    // Create a BinaryWriter to write the WAV file
-                    using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
+                    if (file == null)
                     {
-                        // Write the WAV header
-                        writer.Write(header.ChunkID);
-                        writer.Write(header.ChunkSize);
-                        writer.Write(header.Format);
-                        writer.Write(header.SubChunk1ID);
-                        writer.Write(header.SubChunk1Size);
-                        writer.Write(header.AudioFormat);
-                        writer.Write(header.NumChannels);
-                        writer.Write(header.SampleRate);
-                        writer.Write(header.ByteRate);
-                        writer.Write(header.BlockAlign);
-                        writer.Write(header.BitsPerSample);
-                        writer.Write(header.SubChunk2ID);
-                        writer.Write(header.SubChunk2Size);
-
-                        // Write the audio data
-                        for (int i = 0; i < audioData.Length; i++)
+                        header.initialize((uint)GetSampleRate());
+                        header.changeSR((uint)GetSampleRate());
+                        // Create a BinaryWriter to write the WAV file
+                        using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
                         {
-                            if (header.BitsPerSample == 8)
+                            // Write the WAV header
+                            // Assuming you have these values available
+                            ushort wFormatTag = GET_wFormatTag();
+                            ushort nChannels = GET_nChannels();
+                            uint nSamplesPerSec = GET_nSamplesPerSec();
+                            ushort wBitsPerSample = GET_wBitsPerSample();
+
+                            // Manually set the missing fields
+                            header.ChunkID = 0x46464952; // "RIFF" in ASCII
+                            header.SubChunk1ID = 0x20746D66; // "fmt " in ASCII
+                            header.SubChunk1Size = 16; // Size of the fmt chunk (16 for PCM)
+                            header.AudioFormat = 1; // PCM format
+                            header.NumChannels = nChannels;
+                            header.SampleRate = nSamplesPerSec;
+                            header.BitsPerSample = wBitsPerSample;
+                            header.SubChunk2ID = 0x61746164; // "data" in ASCII
+
+                            // Calculate other fields
+                            header.ByteRate = (uint)(header.SampleRate * header.NumChannels * (header.BitsPerSample / 8));
+                            header.BlockAlign = (ushort)(header.NumChannels * (header.BitsPerSample / 8));
+
+                            // Now you can write the header to the file
+                            writer.Write(header.ChunkID);
+                            writer.Write(header.ChunkSize);
+                            writer.Write(header.Format);
+                            writer.Write(header.SubChunk1ID);
+                            writer.Write(header.SubChunk1Size);
+                            writer.Write(header.AudioFormat);
+                            writer.Write(header.NumChannels);
+                            writer.Write(header.SampleRate);
+                            writer.Write(header.ByteRate);
+                            writer.Write(header.BlockAlign);
+                            writer.Write(header.BitsPerSample);
+                            writer.Write(header.SubChunk2ID);
+                            writer.Write(header.SubChunk2Size);
+
+                            // Convert audioData to byteArray and write to file
+                            byte[] byteArray = audioData.Select(sample =>
                             {
-                                // 8-bit audio (convert to bytes)
-                                byte sample = (byte)(audioData[i] * 128.0);
-                                writer.Write(sample);
-                            }
-                            else if (header.BitsPerSample == 16)
+                                byte byteValue = (byte)((sample + 1) * 127.5);
+
+                                return byteValue;
+                            }).ToArray();
+
+                            for (int i = 0; i < byteArray.Length; i++)
                             {
-                                // 16-bit audio (short)
-                                short sample = (short)audioData[i];
-                                writer.Write(sample);
+                                writer.Write(byteArray[i]);
                             }
-                            else if (header.BitsPerSample == 32)
+                        }
+                    } else
+                    {
+                        using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
+                        {
+                            writer.Write(header.ChunkID);
+                            writer.Write(header.ChunkSize);
+                            writer.Write(header.Format);
+                            writer.Write(header.SubChunk1ID);
+                            writer.Write(header.SubChunk1Size);
+                            writer.Write(header.AudioFormat);
+                            writer.Write(header.NumChannels);
+                            writer.Write(header.SampleRate);
+                            writer.Write(header.ByteRate);
+                            writer.Write(header.BlockAlign);
+                            writer.Write(header.BitsPerSample);
+                            writer.Write(header.SubChunk2ID);
+                            writer.Write(header.SubChunk2Size);
+                            byte[] byteArray = audioData.Select(sample =>
                             {
-                                // 32-bit audio (float)
-                                float sample = (float)audioData[i];
-                                writer.Write(sample);
+                                byte byteValue = (byte)(sample);
+
+                                return byteValue;
+                            }).ToArray();
+
+                            for (int i = 0; i < byteArray.Length; i++)
+                            {
+                                writer.Write(byteArray[i]);
                             }
-                            // Add support for other bit depths if needed
                         }
                     }
+                    this.Text = "WaveCraft - " + Path.GetFileName(saveFilePath);
                 }
             }
         }
+
 
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
@@ -616,132 +746,6 @@ namespace Wave3931
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
 
-        }
-
-        // 11025
-        void hzToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            sampleRateToolStripMenuItem.Text = "Sample Rate: 11025 Hz";
-            sampleRateToolStripMenuItem.ForeColor = Color.Black;
-            hzToolStripMenuItem1.Checked = false;
-            hzToolStripMenuItem2.Checked = false;
-            hzToolStripMenuItem.Checked = true;
-            SetSampleRate(11025);
-        }
-
-        // 22050
-        private void hzToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            sampleRateToolStripMenuItem.Text = "Sample Rate: 22050 Hz";
-            sampleRateToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
-            hzToolStripMenuItem.Checked = false;
-            hzToolStripMenuItem2.Checked = false;
-            hzToolStripMenuItem1.Checked = true;
-            SetSampleRate(22050);
-        }
-
-        // 44100
-        private void hzToolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            sampleRateToolStripMenuItem.Text = "Sample Rate: 44100 Hz";
-            sampleRateToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
-            hzToolStripMenuItem.Checked = false;
-            hzToolStripMenuItem1.Checked = false;
-            hzToolStripMenuItem2.Checked = true;
-            SetSampleRate(44100);
-        }
-
-        private void toolStripStatusLabel1_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void toolStripMenuItem2_Click_1(object sender, EventArgs e)
-        {
-            NUM_THREADS = 1;
-            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 1";
-            dFTThreadsToolStripMenuItem.ForeColor = Color.Black;
-            threads_2.Checked = false;
-            threads_4.Checked = false;
-            threads_15.Checked = false;
-            threads_50.Checked = false;
-        }
-
-        private void toolStripMenuItem6_Click(object sender, EventArgs e)
-        {
-            NUM_THREADS = 50;
-            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 50";
-            dFTThreadsToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
-            threads_1.Checked = false;
-            threads_2.Checked = false;
-            threads_4.Checked = false;
-            threads_15.Checked = false;
-        }
-
-        private void threads_2_Click(object sender, EventArgs e)
-        {
-            NUM_THREADS = 2;
-            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 2";
-            dFTThreadsToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
-            threads_1.Checked = false;
-            threads_4.Checked = false;
-            threads_15.Checked = false;
-            threads_50.Checked = false;
-        }
-
-        private void threads_4_Click(object sender, EventArgs e)
-        {
-            NUM_THREADS = 4;
-            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 4";
-            dFTThreadsToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
-            threads_1.Checked = false;
-            threads_2.Checked = false;
-            threads_15.Checked = false;
-            threads_50.Checked = false;
-
-        }
-
-        private void threads_15_Click(object sender, EventArgs e)
-        {
-            NUM_THREADS = 15;
-            dFTThreadsToolStripMenuItem.Text = "DFT Threads: 15";
-            dFTThreadsToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
-            threads_1.Checked = false;
-            threads_2.Checked = false;
-            threads_4.Checked = false;
-            threads_50.Checked = false;
-        }
-
-        private void dFTThreadsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            windowingToolStripMenuItem.Text = "Windowing: Rectangle";
-            WINDOW_TYPE = "Rectangle";
-            windowingToolStripMenuItem.ForeColor = Color.Black;
-            triangleToolStripMenuItem.Checked = false;
-            hammingToolStripMenuItem.Checked = false;
-        }
-
-        private void triangleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            windowingToolStripMenuItem.Text = "Windowing: Triangle";
-            WINDOW_TYPE = "Triangle";
-            windowingToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
-            rectangleToolStripMenuItem.Checked = false;
-            hammingToolStripMenuItem.Checked = false;
-        }
-
-        private void hammingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            windowingToolStripMenuItem.Text = "Windowing: Hamming";
-            WINDOW_TYPE = "Hamming";
-            windowingToolStripMenuItem.ForeColor = Color.FromArgb(220, 7, 60);
-            rectangleToolStripMenuItem.Checked = false;
-            triangleToolStripMenuItem.Checked = false;
         }
 
         private void sampleRateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -780,6 +784,96 @@ namespace Wave3931
         }
 
         private void panel2_Paint_2(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void sampleRate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+
+            label1.ForeColor = comboBox.SelectedIndex != originalSampleRateIndex
+                ? Color.FromArgb(250, 44, 109)
+                : Color.White;
+
+            switch (comboBox.SelectedIndex)
+            {
+                case 0:
+                    SetSampleRate(11025);
+                    header.changeSR(11025);
+                    break;
+                case 1:
+                    SetSampleRate(22050);
+                    header.changeSR(22050);
+                    break;
+                case 2:
+                    SetSampleRate(44100);
+                    header.changeSR(44100);
+                    break;
+            }
+        }
+
+        private void DFTThread_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+
+            label2.ForeColor = comboBox.SelectedIndex != originalDFTThreadIndex
+                ? Color.FromArgb(250, 44, 109)
+                : Color.White;
+
+            switch (comboBox.SelectedIndex)
+            {
+                case 0:
+                    NUM_THREADS = 1;
+                    break;
+                case 1:
+                    NUM_THREADS = 2;
+                    break;
+                case 2:
+                    NUM_THREADS = 4;
+                    break;
+                case 3:
+                    NUM_THREADS = 15;
+                    break;
+                case 4:
+                    NUM_THREADS = 50;
+                    break;
+            }
+        }
+
+        private void windowing_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+
+            label3.ForeColor = comboBox.SelectedIndex != originalWindowingIndex
+                ? Color.FromArgb(250, 44, 109)
+                : Color.White;
+
+            switch (comboBox.SelectedIndex)
+            {
+                case 0:
+                    WINDOW_TYPE = "Rectangle";
+                    break;
+                case 1:
+                    WINDOW_TYPE = "Triangle";
+                    break;
+                case 2:
+                    WINDOW_TYPE = "Hamming";
+                    break;
+            }
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void channelsBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

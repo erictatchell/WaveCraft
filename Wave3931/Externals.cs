@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Wave3931
 {
-    public class WavePlayer
+    public class Externals
     {
         [DllImport("WaveDLL.dll")]
         public static extern void InitializeAudio(uint SampleRate, int channels);
@@ -49,38 +49,39 @@ namespace Wave3931
         public static extern void SetWaveformData(int wFormatTag, uint nChannels, uint nSamplesPerSec, uint nAvgBytesPerSec, uint nBlockAlign, uint wBitsPerSample, uint cbSize);
 
         [DllImport("WaveDLL.dll")]
+        public static extern ushort GET_wFormatTag();
+
+        [DllImport("WaveDLL.dll")]
+        public static extern ushort GET_nChannels();
+
+        [DllImport("WaveDLL.dll")]
+        public static extern uint GET_nSamplesPerSec();
+
+        [DllImport("WaveDLL.dll")]
+        public static extern uint GET_nAvgBytesPerSec();
+
+        [DllImport("WaveDLL.dll")]
+        public static extern uint GET_nBlockAlign();
+
+        [DllImport("WaveDLL.dll")]
+        public static extern ushort GET_wBitsPerSample();
+
+        [DllImport("WaveDLL.dll")]
+        public static extern uint GET_cbSize();
+        [DllImport("WaveDLL.dll")]
         public static extern int GetSampleRate();
         [DllImport("WaveDLL.dll")]
         public static extern int SetSampleRate(uint sr);
+        [DllImport("WaveDLL.dll")]
+        public static extern int SetChannels(uint sr);
 
         [DllImport("user32.dll")]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
-        public struct WAVEFORMATEX
-        {
-            public ushort wFormatTag;
-            public ushort nChannels;
-            public uint nSamplesPerSec;
-            public uint nAvgBytesPerSec;
-            public ushort nBlockAlign;
-            public ushort wBitsPerSample;
-            public ushort cbSize;
-        }
 
-        // Define the WAVEHDR structure
-        [StructLayout(LayoutKind.Sequential)]
-        public struct WAVEHDR
-        {
-            public IntPtr lpData;
-            public uint dwBufferLength;
-            public uint dwBytesRecorded;
-            public IntPtr dwUser;
-            public uint dwFlags;
-            public uint dwLoops;
-            public IntPtr lpNext;
-            public IntPtr reserved;
-        }
+        [DllImport("WaveASMDLLFR.dll")]
+        public static extern void convolveInASM(int N, int WN, double[] convolutionData, double[] audioData, double[] newSignal);
 
     }
 }
