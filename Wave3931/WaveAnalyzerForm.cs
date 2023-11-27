@@ -76,7 +76,6 @@ namespace Wave3931
             originalWindowingIndex = windowing.SelectedIndex;
 
             SELECT = true;
-            selectRadio.Checked = true;
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
             ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
@@ -113,6 +112,8 @@ namespace Wave3931
             btnClear.ForeColor = Color.White;
 
             plotFreqWaveChart(freqs);
+            LEFT_CHANNEL_CHART.MouseWheel += Chart_MouseWheel;
+            RIGHT_CHANNEL_CHART.MouseWheel += Chart_MouseWheel;
         }
         public WaveAnalyzerForm()
         {
@@ -129,7 +130,6 @@ namespace Wave3931
             originalDFTThreadIndex = DFTThread.SelectedIndex;
             originalWindowingIndex = windowing.SelectedIndex;
             SELECT = true;
-            selectRadio.Checked = true;
             btnPlay.Enabled = false;
             btnRecord.Enabled = false;
             btnDFT.Enabled = false;
@@ -144,7 +144,8 @@ namespace Wave3931
             cm.Items.Add(paste);
             LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
             RIGHT_CHANNEL_CHART.ContextMenuStrip = cm;
-            
+            LEFT_CHANNEL_CHART.MouseWheel += Chart_MouseWheel;
+            RIGHT_CHANNEL_CHART.MouseWheel += Chart_MouseWheel;
         }
 
         private void CopySelected(object sender, EventArgs e)
@@ -773,6 +774,37 @@ namespace Wave3931
                 RIGHT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
             }
         }
+        private void Chart_MouseWheel(object sender, MouseEventArgs e)
+        {
+            Chart chart = (Chart)sender;
+            Point cursorPos = e.Location;
+            double cursorX = chart.ChartAreas[0].AxisX.PixelPositionToValue(cursorPos.X);
+
+            double zoomFactor = (e.Delta > 0) ? 1.1 : 0.9;
+
+            double xMin = chart.ChartAreas[0].AxisX.ScaleView.ViewMinimum;
+            double xMax = chart.ChartAreas[0].AxisX.ScaleView.ViewMaximum;
+
+            double newXMin = cursorX + (xMin - cursorX) / zoomFactor;
+            double newXMax = cursorX + (xMax - cursorX) / zoomFactor;
+            chart.ChartAreas[0].AxisX.ScaleView.Zoom(newXMin, newXMax);
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "0";
+            if (newXMax - newXMin < 500)
+            {
+                chart.ChartAreas[0].AxisX.MajorGrid.Enabled = true;
+                chart.ChartAreas[0].AxisY.MajorGrid.Enabled = true;
+            }
+            else
+            {
+                chart.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+                chart.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            }
+        }
+
+
+
+
+
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {

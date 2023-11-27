@@ -46,8 +46,6 @@
             this.DFTThread = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.sampleRate = new System.Windows.Forms.ComboBox();
-            this.zoomRadio = new System.Windows.Forms.RadioButton();
-            this.selectRadio = new System.Windows.Forms.RadioButton();
             this.btnClear = new System.Windows.Forms.Button();
             this.BottomStatusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -86,7 +84,7 @@
             this.btnDFT.FlatAppearance.BorderSize = 0;
             this.btnDFT.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDFT.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDFT.Location = new System.Drawing.Point(2, 352);
+            this.btnDFT.Location = new System.Drawing.Point(2, 278);
             this.btnDFT.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnDFT.Name = "btnDFT";
             this.btnDFT.Size = new System.Drawing.Size(95, 20);
@@ -176,8 +174,6 @@
             this.OptionsPanel.Controls.Add(this.DFTThread);
             this.OptionsPanel.Controls.Add(this.label1);
             this.OptionsPanel.Controls.Add(this.sampleRate);
-            this.OptionsPanel.Controls.Add(this.zoomRadio);
-            this.OptionsPanel.Controls.Add(this.selectRadio);
             this.OptionsPanel.Controls.Add(this.btnClear);
             this.OptionsPanel.Controls.Add(this.btnDFT);
             this.OptionsPanel.Controls.Add(this.btnStopRecord);
@@ -197,7 +193,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.Window;
-            this.label3.Location = new System.Drawing.Point(0, 311);
+            this.label3.Location = new System.Drawing.Point(0, 237);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 11);
             this.label3.TabIndex = 18;
@@ -213,7 +209,7 @@
             "Rectangle",
             "Triangle",
             "Hamming"});
-            this.windowing.Location = new System.Drawing.Point(2, 325);
+            this.windowing.Location = new System.Drawing.Point(2, 251);
             this.windowing.Name = "windowing";
             this.windowing.Size = new System.Drawing.Size(95, 20);
             this.windowing.TabIndex = 17;
@@ -225,7 +221,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.Window;
-            this.label2.Location = new System.Drawing.Point(1, 269);
+            this.label2.Location = new System.Drawing.Point(1, 195);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(82, 11);
             this.label2.TabIndex = 16;
@@ -244,7 +240,7 @@
             "4",
             "15",
             "50"});
-            this.DFTThread.Location = new System.Drawing.Point(2, 283);
+            this.DFTThread.Location = new System.Drawing.Point(2, 209);
             this.DFTThread.Name = "DFTThread";
             this.DFTThread.Size = new System.Drawing.Size(95, 20);
             this.DFTThread.TabIndex = 15;
@@ -277,37 +273,6 @@
             this.sampleRate.Sorted = true;
             this.sampleRate.TabIndex = 13;
             this.sampleRate.SelectedIndexChanged += new System.EventHandler(this.sampleRate_SelectedIndexChanged);
-            // 
-            // zoomRadio
-            // 
-            this.zoomRadio.AutoSize = true;
-            this.zoomRadio.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.zoomRadio.ForeColor = System.Drawing.SystemColors.Control;
-            this.zoomRadio.Location = new System.Drawing.Point(14, 431);
-            this.zoomRadio.Name = "zoomRadio";
-            this.zoomRadio.Size = new System.Drawing.Size(53, 17);
-            this.zoomRadio.TabIndex = 12;
-            this.zoomRadio.TabStop = true;
-            this.zoomRadio.Text = "Zoom";
-            this.zoomRadio.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.zoomRadio.UseVisualStyleBackColor = true;
-            this.zoomRadio.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
-            // selectRadio
-            // 
-            this.selectRadio.AutoSize = true;
-            this.selectRadio.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.selectRadio.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.selectRadio.ForeColor = System.Drawing.SystemColors.Control;
-            this.selectRadio.Location = new System.Drawing.Point(13, 410);
-            this.selectRadio.Name = "selectRadio";
-            this.selectRadio.Size = new System.Drawing.Size(65, 15);
-            this.selectRadio.TabIndex = 11;
-            this.selectRadio.TabStop = true;
-            this.selectRadio.Text = "Select";
-            this.selectRadio.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.selectRadio.UseVisualStyleBackColor = true;
-            this.selectRadio.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // btnClear
             // 
@@ -435,7 +400,6 @@
             chartArea1.AxisX.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
             chartArea1.AxisX.LineColor = System.Drawing.Color.Transparent;
             chartArea1.AxisX.MajorGrid.Enabled = false;
-            chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
             chartArea1.AxisX.ScrollBar.BackColor = System.Drawing.Color.Black;
             chartArea1.AxisX.ScrollBar.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(6)))), ((int)(((byte)(83)))));
             chartArea1.AxisX.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
@@ -446,7 +410,7 @@
             chartArea1.AxisY.IsLabelAutoFit = false;
             chartArea1.AxisY.LabelStyle.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
-            chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea1.AxisY.MajorGrid.Enabled = false;
             chartArea1.AxisY.TitleFont = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea1.AxisY.TitleForeColor = System.Drawing.Color.Gold;
             chartArea1.BackColor = System.Drawing.Color.Crimson;
@@ -649,8 +613,6 @@
         private System.Windows.Forms.ToolStripMenuItem newFileMenu;
         private System.Windows.Forms.ToolStripMenuItem saveFileMenu;
         private System.Windows.Forms.MenuStrip TopMenuStrip;
-        private System.Windows.Forms.RadioButton zoomRadio;
-        private System.Windows.Forms.RadioButton selectRadio;
         private System.Windows.Forms.ComboBox sampleRate;
         private System.Windows.Forms.Label leftLabel;
         private System.Windows.Forms.Label rightLabel;
