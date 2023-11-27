@@ -40,8 +40,6 @@
             this.btnRecord = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.OptionsPanel = new System.Windows.Forms.Panel();
-            this.channelsBox = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.windowing = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -106,7 +104,7 @@
             this.btnStopRecord.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStopRecord.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnStopRecord.ForeColor = System.Drawing.Color.White;
-            this.btnStopRecord.Location = new System.Drawing.Point(2, 184);
+            this.btnStopRecord.Location = new System.Drawing.Point(2, 124);
             this.btnStopRecord.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnStopRecord.Name = "btnStopRecord";
             this.btnStopRecord.Size = new System.Drawing.Size(95, 20);
@@ -142,7 +140,7 @@
             this.btnRecord.FlatAppearance.BorderSize = 0;
             this.btnRecord.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRecord.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRecord.Location = new System.Drawing.Point(2, 206);
+            this.btnRecord.Location = new System.Drawing.Point(2, 146);
             this.btnRecord.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnRecord.Name = "btnRecord";
             this.btnRecord.Size = new System.Drawing.Size(95, 20);
@@ -172,8 +170,6 @@
             this.OptionsPanel.AccessibleName = "Options Panel";
             this.OptionsPanel.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu;
             this.OptionsPanel.BackColor = System.Drawing.Color.Black;
-            this.OptionsPanel.Controls.Add(this.channelsBox);
-            this.OptionsPanel.Controls.Add(this.label4);
             this.OptionsPanel.Controls.Add(this.label3);
             this.OptionsPanel.Controls.Add(this.windowing);
             this.OptionsPanel.Controls.Add(this.label2);
@@ -194,32 +190,6 @@
             this.OptionsPanel.Size = new System.Drawing.Size(144, 546);
             this.OptionsPanel.TabIndex = 8;
             this.OptionsPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.OptionsPanel_Paint);
-            // 
-            // channelsBox
-            // 
-            this.channelsBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.channelsBox.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.channelsBox.FormattingEnabled = true;
-            this.channelsBox.Items.AddRange(new object[] {
-            "1 - Mono",
-            "2 - Stereo"});
-            this.channelsBox.Location = new System.Drawing.Point(2, 157);
-            this.channelsBox.Name = "channelsBox";
-            this.channelsBox.Size = new System.Drawing.Size(95, 20);
-            this.channelsBox.TabIndex = 20;
-            this.channelsBox.SelectedIndexChanged += new System.EventHandler(this.channelsBox_SelectedIndexChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.SystemColors.Window;
-            this.label4.Location = new System.Drawing.Point(0, 143);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(61, 11);
-            this.label4.TabIndex = 19;
-            this.label4.Text = "Channels";
             // 
             // label3
             // 
@@ -286,7 +256,7 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.Window;
-            this.label1.Location = new System.Drawing.Point(-2, 100);
+            this.label1.Location = new System.Drawing.Point(-2, 84);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(82, 11);
             this.label1.TabIndex = 14;
@@ -301,9 +271,10 @@
             "11025 Hz",
             "22050 Hz",
             "44100 Hz"});
-            this.sampleRate.Location = new System.Drawing.Point(2, 114);
+            this.sampleRate.Location = new System.Drawing.Point(2, 98);
             this.sampleRate.Name = "sampleRate";
             this.sampleRate.Size = new System.Drawing.Size(95, 20);
+            this.sampleRate.Sorted = true;
             this.sampleRate.TabIndex = 13;
             this.sampleRate.SelectedIndexChanged += new System.EventHandler(this.sampleRate_SelectedIndexChanged);
             // 
@@ -458,24 +429,32 @@
             this.LEFT_CHANNEL_CHART.BorderSkin.PageColor = System.Drawing.Color.Black;
             chartArea1.AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.True;
             chartArea1.AxisX.InterlacedColor = System.Drawing.Color.White;
+            chartArea1.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
             chartArea1.AxisX.IsLabelAutoFit = false;
             chartArea1.AxisX.LabelStyle.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea1.AxisX.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
+            chartArea1.AxisX.LineColor = System.Drawing.Color.Transparent;
+            chartArea1.AxisX.MajorGrid.Enabled = false;
+            chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
             chartArea1.AxisX.ScrollBar.BackColor = System.Drawing.Color.Black;
             chartArea1.AxisX.ScrollBar.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(6)))), ((int)(((byte)(83)))));
             chartArea1.AxisX.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
             chartArea1.AxisX.TitleAlignment = System.Drawing.StringAlignment.Near;
             chartArea1.AxisX.TitleFont = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea1.AxisX.TitleForeColor = System.Drawing.Color.Gold;
+            chartArea1.AxisX2.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
             chartArea1.AxisY.IsLabelAutoFit = false;
             chartArea1.AxisY.LabelStyle.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
+            chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
             chartArea1.AxisY.TitleFont = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea1.AxisY.TitleForeColor = System.Drawing.Color.Gold;
-            chartArea1.BackColor = System.Drawing.Color.Black;
-            chartArea1.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
-            chartArea1.CursorX.LineColor = System.Drawing.Color.Black;
-            chartArea1.CursorX.SelectionColor = System.Drawing.Color.LightGreen;
+            chartArea1.BackColor = System.Drawing.Color.Crimson;
+            chartArea1.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.HorizontalCenter;
+            chartArea1.BackImageTransparentColor = System.Drawing.Color.Transparent;
+            chartArea1.BackSecondaryColor = System.Drawing.Color.PaleVioletRed;
+            chartArea1.CursorX.LineColor = System.Drawing.Color.Gold;
+            chartArea1.CursorX.SelectionColor = System.Drawing.Color.White;
             chartArea1.CursorY.LineColor = System.Drawing.Color.Black;
             chartArea1.IsSameFontSizeForAllAxes = true;
             chartArea1.Name = "LeftChannelChartArea";
@@ -488,6 +467,7 @@
             series1.ChartArea = "LeftChannelChartArea";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series1.Color = System.Drawing.Color.WhiteSmoke;
+            series1.CustomProperties = "LabelStyle=Top";
             series1.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             series1.Name = "Series1";
             this.LEFT_CHANNEL_CHART.Series.Add(series1);
@@ -521,18 +501,25 @@
             this.RIGHT_CHANNEL_CHART.BorderSkin.BackColor = System.Drawing.Color.Black;
             this.RIGHT_CHANNEL_CHART.BorderSkin.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.TopBottom;
             this.RIGHT_CHANNEL_CHART.BorderSkin.PageColor = System.Drawing.Color.Black;
+            chartArea2.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
             chartArea2.AxisX.IsLabelAutoFit = false;
             chartArea2.AxisX.LabelStyle.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisX.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
+            chartArea2.AxisX.MajorGrid.Enabled = false;
             chartArea2.AxisX.Minimum = 0D;
             chartArea2.AxisY.IsLabelAutoFit = false;
             chartArea2.AxisY.LabelStyle.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisY.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
+            chartArea2.AxisY.MajorGrid.Enabled = false;
+            chartArea2.AxisY.Minimum = 0D;
             chartArea2.AxisY.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
             chartArea2.AxisY.TitleFont = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisY.TitleForeColor = System.Drawing.Color.Gold;
-            chartArea2.BackColor = System.Drawing.Color.Black;
-            chartArea2.BackImage = "C:\\Users\\etatc\\source\\repos\\WaveAnalyser\\Wave3931\\Resources\\vaporWaveBG.jpg";
+            chartArea2.BackColor = System.Drawing.Color.Crimson;
+            chartArea2.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.HorizontalCenter;
+            chartArea2.BackSecondaryColor = System.Drawing.Color.PaleVioletRed;
+            chartArea2.CursorX.LineColor = System.Drawing.Color.Gold;
+            chartArea2.CursorX.SelectionColor = System.Drawing.Color.White;
             chartArea2.IsSameFontSizeForAllAxes = true;
             chartArea2.Name = "ChartArea1";
             this.RIGHT_CHANNEL_CHART.ChartAreas.Add(chartArea2);
@@ -677,7 +664,5 @@
         private System.Windows.Forms.ToolStripStatusLabel Info;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
-        private System.Windows.Forms.ComboBox channelsBox;
-        private System.Windows.Forms.Label label4;
     }
 }

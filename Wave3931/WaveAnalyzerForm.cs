@@ -4,14 +4,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using static Wave3931.Externals;
-using Timer = System.Windows.Forms.Timer;
 
 namespace Wave3931
 {
@@ -23,7 +21,8 @@ namespace Wave3931
         private String fileName;
         private string WINDOW_TYPE;
         private bool SELECT;
-
+        double[] leftChannel;
+        double[] rightChannel;
         private int originalSampleRateIndex;
         private int originalDFTThreadIndex;
         private int originalChannelIndex;
@@ -38,39 +37,28 @@ namespace Wave3931
         {
             audioData = ad;
         }
-        public void DFT_UpdatePSaveBuffer(IntPtr psb, int dwdl)
-        {
-            UpdatePSaveBuffer(psb, dwdl);
-        }
         public int detectSR()
         {
-            switch (header.SampleRate)
+            if (file != null)
             {
-                case 11025:
-                    SetSampleRate(11025);
-                    return 0;
-                case 22050:
-                    SetSampleRate(22050);
-                    return 1;
-                case 44100:
-                    SetSampleRate(44100);
-                    return 2;
+                switch (header.SampleRate)
+                {
+                    case 8000:
+                        SetSampleRate(8000);
+                        return 0;
+                    case 11025:
+                        SetSampleRate(11025);
+                        return 1;
+                    case 22050:
+                        SetSampleRate(22050);
+                        return 2;
+                    case 44100:
+                        SetSampleRate(44100);
+                        return 3;
+                }
             }
-            return 0;
-        }
-
-        public int detectChannels()
-        {
-            switch (header.NumChannels)
-            {
-                case 1:
-                    SetChannels(1);
-                    return 0;
-                case 2:
-                    SetChannels(2);
-                    return 1;
-            }
-            return 0;
+            
+            return 1;
         }
 
         public WaveAnalyzerForm(String filePath, String fileName)
@@ -97,14 +85,12 @@ namespace Wave3931
             cm.Items.Add(cut);
             cm.Items.Add(paste);
             LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
+            RIGHT_CHANNEL_CHART.ContextMenuStrip = cm;
 
             header.initialize(11025);
-            header.changeSR(11025);
             double[] freqs = readingWave(file);
             sampleRate.SelectedIndex = detectSR();
             originalSampleRateIndex = sampleRate.SelectedIndex;
-            channelsBox.SelectedIndex = detectChannels();
-            originalChannelIndex = channelsBox.SelectedIndex;
             btnPlay.Enabled = true;
             btnRecord.Enabled = false;
             btnStopRecord.Enabled = true;
@@ -139,11 +125,9 @@ namespace Wave3931
             sampleRate.SelectedIndex = 0;
             DFTThread.SelectedIndex = 0;
             windowing.SelectedIndex = 0;
-            channelsBox.SelectedIndex = 0;
             originalSampleRateIndex = sampleRate.SelectedIndex;
             originalDFTThreadIndex = DFTThread.SelectedIndex;
             originalWindowingIndex = windowing.SelectedIndex;
-            originalChannelIndex = channelsBox.SelectedIndex;
             SELECT = true;
             selectRadio.Checked = true;
             btnPlay.Enabled = false;
@@ -159,18 +143,28 @@ namespace Wave3931
             cm.Items.Add(cut);
             cm.Items.Add(paste);
             LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
-
+            RIGHT_CHANNEL_CHART.ContextMenuStrip = cm;
+            
         }
+
         private void CopySelected(object sender, EventArgs e)
         {
             double start = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
             double end = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
+
+            if (start == -1 || end == -1)
+            {
+                start = RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
+                end = RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
+            }
+
             int startIndex = (int)(start);
             int endIndex = (int)(end);
 
             if (startIndex < 0) { startIndex = 0; }
             if (endIndex >= audioData.Length) { endIndex = audioData.Length - 1; }
-            if (startIndex >= endIndex) {
+            if (startIndex >= endIndex)
+            {
                 int temp = startIndex;
                 startIndex = endIndex;
                 endIndex = temp;
@@ -184,6 +178,7 @@ namespace Wave3931
             string base64Data = Convert.ToBase64String(byteData);
             Clipboard.SetText(base64Data);
         }
+
         private void CutSelected(object sender, EventArgs e)
         {
             double start = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
@@ -201,16 +196,14 @@ namespace Wave3931
             }
 
             int selectedDataLength = endIndex - startIndex + 1;
-
-            // Copy the selected data to the clipboard
             double[] selectedAudioData = new double[selectedDataLength];
             Array.Copy(audioData, startIndex, selectedAudioData, 0, selectedDataLength);
+
             byte[] byteData = new byte[selectedDataLength * sizeof(double)];
             Buffer.BlockCopy(selectedAudioData, 0, byteData, 0, byteData.Length);
             string base64Data = Convert.ToBase64String(byteData);
             Clipboard.SetText(base64Data);
 
-            // Remove the selected data from audioData
             List<double> newDataList = new List<double>(audioData);
             newDataList.RemoveRange(startIndex, selectedDataLength);
             audioData = newDataList.ToArray();
@@ -231,6 +224,12 @@ namespace Wave3931
             string base64Data = Clipboard.GetText();
             byte[] byteData = Convert.FromBase64String(base64Data);
             int pasteIndex = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
+            Chart selected = LEFT_CHANNEL_CHART;
+            if (pasteIndex == -1)
+            {
+                pasteIndex = (int)RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
+                selected = RIGHT_CHANNEL_CHART;
+            }
 
             if (pasteIndex < 0)
             {
@@ -252,24 +251,20 @@ namespace Wave3931
                 audioData[pasteIndex + i] = copiedAudioData[i];
             }
 
-            LEFT_CHANNEL_CHART.Series[0].Points.Clear();
+            selected.Series[0].Points.Clear();
             for (int i = 0; i < audioData.Length; i++)
             {
-                LEFT_CHANNEL_CHART.Series[0].Points.AddXY(i, audioData[i]);
+                selected.Series[0].Points.AddXY(i, audioData[i]);
             }
 
             byte[] byteArray = audioData.Select(sample =>
             {
                 double scaledValue = 0;
-                // Scale the value to the range [0, 1]
                 if (file == null)
                 {
                     scaledValue = (sample + 1) / 2.0;
                 }
                 else scaledValue = sample;
-                
-
-                // Convert the scaled value to an 8-bit representation
                 byte byteValue = (byte)(scaledValue * 255);
 
                 return byteValue;
@@ -281,9 +276,10 @@ namespace Wave3931
             UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             Marshal.FreeHGlobal(pSaveBuffer);
         }
+
         public double[] readingWave(String file)
         {
-            
+
             List<double> outputList = new List<double>();
             BinaryReader reader = new BinaryReader(File.OpenRead(file));
             header.clear();
@@ -322,92 +318,100 @@ namespace Wave3931
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
 
             UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
-            SetWaveformData(header.Format, 1, header.SampleRate, header.ByteRate, header.BlockAlign, header.BitsPerSample, 0);
-            SetWaveHdr(pSaveBuffer, byteArray.Length, 0, 0, 0x00000004 | 0x00000008, 0, 0);
+            SetChannels(header.NumChannels);
+            SetSampleRate(header.SampleRate);
             Marshal.FreeHGlobal(pSaveBuffer);
             return outputList.ToArray();
         }
 
+        private void DemuxStereoData(double[] stereoData, out double[] leftChannel, out double[] rightChannel)
+        {
+            int numSamples = stereoData.Length / 2;
+            leftChannel = new double[numSamples];
+            rightChannel = new double[numSamples];
+
+            for (int i = 0; i < numSamples; i++)
+            {
+                leftChannel[i] = stereoData[2 * i];
+                rightChannel[i] = stereoData[2 * i + 1];
+            }
+        }
+
+        private double[] MuxStereoData(double[] leftChannel, double[] rightChannel)
+        {
+            int numSamples = leftChannel.Length;
+            double[] stereoData = new double[2 * numSamples];
+
+            for (int i = 0; i < numSamples; i++)
+            {
+                stereoData[2 * i] = leftChannel[i];
+                stereoData[2 * i + 1] = rightChannel[i];
+            }
+
+            return stereoData;
+        }
+
         private DFT DFT;
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void splitContainer2_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
         public void plotFreqWaveChart(double[] audioData)
         {
 
             LEFT_CHANNEL_CHART.Series[0].Points.Clear();
-            for (int m = 0; m < audioData.Length; m++)
+            RIGHT_CHANNEL_CHART.Series[0].Points.Clear();
+
+            if (header.NumChannels == 1 || header.NumChannels == 0)
             {
-                LEFT_CHANNEL_CHART.Series[0].Points.AddXY(m, audioData[m]);
+                // Mono audio data
+                for (int m = 0; m < audioData.Length; m++)
+                {
+                    LEFT_CHANNEL_CHART.Series[0].Points.AddXY(m, audioData[m]);
+                }
+
+                LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.Minimum = 0;
+                leftLabel.Visible = true;
             }
-            LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.Minimum = 0;
+            else if (header.NumChannels == 2)
+            {
+                // Stereo audio data
+                int numSamples = audioData.Length / 2;
+
+                leftChannel = new double[numSamples];
+                rightChannel = new double[numSamples];
+                    
+                for (int m = 0; m < numSamples; m++)
+                {
+                    leftChannel[m] = audioData[2 * m];
+                    rightChannel[m] = audioData[2 * m + 1];
+
+                    LEFT_CHANNEL_CHART.Series[0].Points.AddXY(m, leftChannel[m]);
+                    RIGHT_CHANNEL_CHART.Series[0].Points.AddXY(m, rightChannel[m]);
+                }
+
+                LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.Minimum = 0;
+                RIGHT_CHANNEL_CHART.ChartAreas[0].AxisX.Minimum = 0;
+
+                leftLabel.Visible = true;
+                rightLabel.Visible = true;
+            }
+
             if (file == null)
             {
-                toolStripStatusLabel3.Text = string.Format("{0:F2}s at {1} Hz", (double)audioData.Length / GetSampleRate(), GetSampleRate());
+                toolStripStatusLabel3.Text = string.Format("{0:F2}s  -  {1} Hz  -  Channels: {2}", (double)audioData.Length / GetSampleRate(), GetSampleRate(), header.NumChannels != 0 ? header.NumChannels : 1);
             }
             else
             {
-                toolStripStatusLabel3.Text = string.Format("{0}: {1:F2}s at {2} Hz ", fileName, (double)audioData.Length / GetSampleRate(), GetSampleRate());
+                toolStripStatusLabel3.Text = string.Format("{0}: {1:F2}s  -  {2} Hz  -  Channels: {3}", fileName, (double)audioData.Length / GetSampleRate(), GetSampleRate(), header.NumChannels);
             }
+
             LEFT_CHANNEL_CHART.Visible = true;
             RIGHT_CHANNEL_CHART.Visible = true;
-            double[] rightData = new double[audioData.Length];
-            for (int m = 0; m < audioData.Length; m++)
-            {
-                rightData[m] = 0;
-                RIGHT_CHANNEL_CHART.Series[0].Points.AddXY(m, rightData[m]);
-            }
-            leftLabel.Visible = true;
-
         }
 
 
-
-        private void statusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
-
-
-        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
-
-        private void panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel2_Paint_1(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void chart2_Click(object sender, EventArgs e)
         {
+            RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart = -1;
+            RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd = -1;
             LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserEnabled = true;
             LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
             if (!SELECT)
@@ -448,6 +452,8 @@ namespace Wave3931
             double[] data = await WaitForDataAsync();
             audioData = data;
             plotFreqWaveChart(data);
+
+
             btnPlay.Enabled = true;
             btnRecord.Enabled = false;
             btnStopRecord.Enabled = true;
@@ -535,18 +541,69 @@ namespace Wave3931
             btnClear.ForeColor = Color.Black;
         }
 
+        private void BenchmarkDFT(double[] data, int numThreads)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            Stopwatch stopwatch1Thread = new Stopwatch();
+
+            if (numThreads == 1)
+            {
+                stopwatch.Start();
+                Task.Run(() =>
+                {
+                    stopwatch1Thread.Start();
+                    DFT = new DFT(data, GetSampleRate(), numThreads, WINDOW_TYPE, this);
+                    DFT.Owner = this;
+                    Invoke(new Action(() =>
+                    {
+                        DFT.Show();
+                        stopwatch.Stop();
+                        stopwatch1Thread.Stop();
+                        DFT.UpdateBenchmarkLabel(stopwatch.Elapsed, stopwatch1Thread.Elapsed, numThreads);
+                    }));
+                });
+            }
+            else
+            {
+                stopwatch.Start();
+                Task.Run(() =>
+                {
+                    DFT = new DFT(data, GetSampleRate(), numThreads, WINDOW_TYPE, this);
+                    DFT.Owner = this;
+                    Invoke(new Action(() =>
+                    {
+                        DFT.Show();
+                        stopwatch.Stop();
+                    }));
+                });
+
+                Task.Run(() =>
+                {
+                    stopwatch1Thread.Start();
+                    DFT oneThreadDFT = new DFT(data, GetSampleRate(), 1, WINDOW_TYPE, this);
+                    Thread.Sleep(20); // allow UI to update
+                    Invoke(new Action(() =>
+                    {
+                        stopwatch1Thread.Stop();
+                        DFT.UpdateBenchmarkLabel(stopwatch.Elapsed, stopwatch1Thread.Elapsed, numThreads);
+                    }));
+                });
+            }
+        }
+
+
+
+
         private void btnDFT_Click(object sender, EventArgs e)
         {
             int start = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
             int end = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
+
             if (start >= end)
             {
-                DFT = new DFT(audioData, GetSampleRate(), NUM_THREADS, WINDOW_TYPE, this);
-                DFT.Owner = this;
-                DFT.Show();
+                BenchmarkDFT(audioData, NUM_THREADS);
                 return;
             }
-            
 
             if (start < 0) start = 0;
             if (end >= audioData.Length) end = audioData.Length - 1;
@@ -565,35 +622,14 @@ namespace Wave3931
                 j++;
             }
 
-            DFT = new DFT(selected, GetSampleRate(), NUM_THREADS, WINDOW_TYPE, this);
-            DFT.Owner = this; // Set the owner if needed
-            DFT.Show();
+            BenchmarkDFT(selected, NUM_THREADS);
         }
+
+
 
 
         private void OptionsPanel_Paint(object sender, PaintEventArgs e)
         {
-        }
-
-
-        private void btnSamples_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnLength_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnThreading_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnFilter_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -634,31 +670,25 @@ namespace Wave3931
                     {
                         header.initialize((uint)GetSampleRate());
                         header.changeSR((uint)GetSampleRate());
-                        // Create a BinaryWriter to write the WAV file
                         using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
                         {
-                            // Write the WAV header
-                            // Assuming you have these values available
                             ushort wFormatTag = GET_wFormatTag();
                             ushort nChannels = GET_nChannels();
                             uint nSamplesPerSec = GET_nSamplesPerSec();
                             ushort wBitsPerSample = GET_wBitsPerSample();
 
-                            // Manually set the missing fields
                             header.ChunkID = 0x46464952; // "RIFF" in ASCII
                             header.SubChunk1ID = 0x20746D66; // "fmt " in ASCII
-                            header.SubChunk1Size = 16; // Size of the fmt chunk (16 for PCM)
+                            header.SubChunk1Size = 8; // Size of the fmt chunk (16 for PCM)
                             header.AudioFormat = 1; // PCM format
                             header.NumChannels = nChannels;
                             header.SampleRate = nSamplesPerSec;
                             header.BitsPerSample = wBitsPerSample;
                             header.SubChunk2ID = 0x61746164; // "data" in ASCII
 
-                            // Calculate other fields
                             header.ByteRate = (uint)(header.SampleRate * header.NumChannels * (header.BitsPerSample / 8));
                             header.BlockAlign = (ushort)(header.NumChannels * (header.BitsPerSample / 8));
 
-                            // Now you can write the header to the file
                             writer.Write(header.ChunkID);
                             writer.Write(header.ChunkSize);
                             writer.Write(header.Format);
@@ -673,7 +703,6 @@ namespace Wave3931
                             writer.Write(header.SubChunk2ID);
                             writer.Write(header.SubChunk2Size);
 
-                            // Convert audioData to byteArray and write to file
                             byte[] byteArray = audioData.Select(sample =>
                             {
                                 byte byteValue = (byte)((sample + 1) * 127.5);
@@ -730,37 +759,19 @@ namespace Wave3931
 
         private void LeftChannelChart_Click(object sender, EventArgs e)
         {
+            LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart = -1;
+            LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd = -1;
 
-        }
-
-        private void selectionOptionsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void resetZoomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.ZoomReset();
-        }
-
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void sampleRateToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void windowingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
+            RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserEnabled = true;
+            RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
+            if (!SELECT)
+            {
+                RIGHT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+            }
+            else
+            {
+                RIGHT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
+            }
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -771,16 +782,6 @@ namespace Wave3931
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             SELECT = true;
-        }
-
-        private void selectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void zoomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void panel2_Paint_2(object sender, PaintEventArgs e)
@@ -859,7 +860,7 @@ namespace Wave3931
                     break;
                 case 2:
                     WINDOW_TYPE = "Hamming";
-                    break;
+                    break;  
             }
         }
 
@@ -869,11 +870,6 @@ namespace Wave3931
         }
 
         private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void channelsBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

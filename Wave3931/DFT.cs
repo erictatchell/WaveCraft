@@ -17,6 +17,8 @@ namespace Wave3931
      */
     public partial class DFT : Form
     {
+        private static int threads;
+
         // Mutex object for thread sync
         private readonly object lockObject = new object();
 
@@ -33,6 +35,34 @@ namespace Wave3931
         // Reference to the main WaveCraft form, mainly for plotting and getting data
         private WaveAnalyzerForm main = null;
 
+        public Label GetBenchmarkLabel()
+        {
+            return benchmark;
+        }
+
+        public void UpdateBenchmarkLabel(TimeSpan timeSpan, TimeSpan timeSpan2, int numThreads)
+        {
+            double ratio = (double)timeSpan2.TotalMilliseconds / (double)timeSpan.TotalMilliseconds;
+            if (numThreads == 1)
+            {
+                benchmark.Text = $"Benchmark (1 thread): {timeSpan.TotalMilliseconds} ms";
+                label1.Text = "";
+                label2.Text = "";
+            }
+            else if (ratio <= 1)
+            {
+                benchmark.Text = $"Benchmark: {numThreads} threads is {ratio:f2}x slower than 1 thread";
+                label1.Text = $"1 thread: {timeSpan2.TotalMilliseconds} ms";
+                label2.Text = $"{numThreads} threads: {timeSpan.TotalMilliseconds} ms";
+            } else
+            {
+                benchmark.Text = $"Benchmark: {numThreads} threads is {ratio:f2}x faster than 1 thread";
+                label1.Text = $"1 thread: {timeSpan2.TotalMilliseconds} ms";
+                label2.Text = $"{numThreads} threads: {timeSpan.TotalMilliseconds} ms";
+            }
+        }
+
+
         /**
         * Constructor for the DFT class.
         * 
@@ -46,6 +76,8 @@ namespace Wave3931
         {
             InitializeComponent();
 
+            DFT.threads = threads;
+            label2.Text = $"{threads} threads: ... ";
             this.windowType = windowType;
             this.Text = "DFT - " + windowType + " Windowing";
 
@@ -429,5 +461,9 @@ namespace Wave3931
             this.main.plotFreqWaveChart(audioData);
         }
 
+        private void DFT_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

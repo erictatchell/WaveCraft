@@ -73,7 +73,13 @@ namespace Wave3931
         [DllImport("WaveDLL.dll")]
         public static extern int SetSampleRate(uint sr);
         [DllImport("WaveDLL.dll")]
+
         public static extern int SetChannels(uint sr);
+        [DllImport("WaveDLL.dll")]
+        public static extern void UpdatePSaveBufferStereo(IntPtr leftChannelData, IntPtr rightChannelData, int leftChannelDataLength,
+                                                int rightChannelDataLength);
+        [DllImport("WaveDLL.dll")]
+        public static extern void SetBlockAlign(uint ba);
 
         [DllImport("user32.dll")]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);

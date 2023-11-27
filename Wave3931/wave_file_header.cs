@@ -49,7 +49,7 @@ namespace Wave3931
             SubChunk1ID = mmioStringToFOURCC("fmt ", 0);
             SubChunk1Size = 16;
             AudioFormat = 1;
-            NumChannels = 1;
+            NumChannels = 2;
             SampleRate = sampUpDown;
             BitsPerSample = 8; 
             ByteRate = (uint)(SampleRate * NumChannels * (BitsPerSample / 8));
