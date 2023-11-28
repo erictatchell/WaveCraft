@@ -266,13 +266,9 @@ namespace Wave3931
 
             byte[] byteArray = audioData.Select(sample =>
             {
-                double scaledValue = 0;
-                if (file == null)
-                {
-                    scaledValue = (sample + 1) / 2.0;
-                }
-                else scaledValue = sample;
-                byte byteValue = (byte)(scaledValue * 255);
+                double scaledValue = (sample + 1) * 127.5;
+                scaledValue = Math.Max(0, Math.Min(255, scaledValue));
+                byte byteValue = (byte)scaledValue;
 
                 return byteValue;
             }).ToArray();

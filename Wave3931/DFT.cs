@@ -130,6 +130,14 @@ namespace Wave3931
             }
         }
 
+        public void Plot(double[] dftResult, double threshold, int N)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                chart1.Series[0].Points.AddXY(i, dftResult[i]);
+            }
+        }
+
         /**
          * Performs DFT on a signal.
          * 
@@ -401,6 +409,7 @@ namespace Wave3931
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
             Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             this.main.plotFreqWaveChart(audioData);
+            Plot(audioData, 1, cmplx_dftRes.Length);
         }
 
 
@@ -463,6 +472,7 @@ namespace Wave3931
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
             Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             this.main.plotFreqWaveChart(audioData);
+            Plot(cmplx_dftRes, 1, cmplx_dftRes.Length);
         }
 
         private void DFT_Load(object sender, EventArgs e)
