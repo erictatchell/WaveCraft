@@ -47,7 +47,7 @@ namespace Wave3931
             ChunkSize = 0;
             Format = mmioStringToFOURCC("WAVE", 0);
             SubChunk1ID = mmioStringToFOURCC("fmt ", 0);
-            SubChunk1Size = 16;
+            SubChunk1Size = 8;
             AudioFormat = 1;
             NumChannels = 2;
             SampleRate = sampUpDown;

@@ -88,7 +88,7 @@ namespace Wave3931
 
             header.initialize(11025);
             double[] freqs = readingWave(file);
-            sampleRate.SelectedIndex = detectSR();
+            sampleRate.SelectedIndex = 0;
             originalSampleRateIndex = sampleRate.SelectedIndex;
             btnPlay.Enabled = true;
             btnRecord.Enabled = false;
@@ -659,7 +659,7 @@ namespace Wave3931
 
         private void btnSaveFile_Click(object sender, EventArgs e)
         {
-            
+
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
                 saveFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
@@ -671,16 +671,20 @@ namespace Wave3931
                     {
                         header.initialize((uint)GetSampleRate());
                         header.changeSR((uint)GetSampleRate());
+                        // Create a BinaryWriter to write the WAV file
                         using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
                         {
+                            // Write the WAV header
+                            // Assuming you have these values available
                             ushort wFormatTag = GET_wFormatTag();
                             ushort nChannels = GET_nChannels();
                             uint nSamplesPerSec = GET_nSamplesPerSec();
                             ushort wBitsPerSample = GET_wBitsPerSample();
 
+                            // Manually set the missing fields
                             header.ChunkID = 0x46464952; // "RIFF" in ASCII
                             header.SubChunk1ID = 0x20746D66; // "fmt " in ASCII
-                            header.SubChunk1Size = 8; // Size of the fmt chunk (16 for PCM)
+                            header.SubChunk1Size = 16; // Size of the fmt chunk (16 for PCM)
                             header.AudioFormat = 1; // PCM format
                             header.NumChannels = nChannels;
                             header.SampleRate = nSamplesPerSec;
@@ -706,8 +710,8 @@ namespace Wave3931
 
                             byte[] byteArray = audioData.Select(sample =>
                             {
-                                byte byteValue = (byte)((sample + 1) * 127.5);
-
+                                // Assuming audio samples range from -0.5 to 0.5
+                                byte byteValue = (byte)((sample + 0.5) * 255);
                                 return byteValue;
                             }).ToArray();
 
@@ -716,7 +720,8 @@ namespace Wave3931
                                 writer.Write(byteArray[i]);
                             }
                         }
-                    } else
+                    }
+                    else
                     {
                         using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
                         {
