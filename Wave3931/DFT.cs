@@ -385,9 +385,14 @@ namespace Wave3931
 
             byte[] byteArray = audioData.Select(sample =>
             {
-                // it just works!
-                double scaledValue = (sample + 1) / 2.0;
-                byte byteValue = (byte)(scaledValue * 255);
+                // Scale the sample from [-1, 1] to [0, 255]
+                double scaledValue = (sample + 1) * 127.5;
+
+                // Ensure the value is within the valid byte range [0, 255]
+                scaledValue = Math.Max(0, Math.Min(255, scaledValue));
+
+                // Convert to byte
+                byte byteValue = (byte)scaledValue;
 
                 return byteValue;
             }).ToArray();
@@ -397,6 +402,7 @@ namespace Wave3931
             Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             this.main.plotFreqWaveChart(audioData);
         }
+
 
         /**
          * Creates a highpass filter for DFT analysis.
@@ -436,7 +442,6 @@ namespace Wave3931
          * 2. Perform inverse DFT on the filter to obtain weights
          * 3. Get the original signal from WaveAnalyser
          * 4. Perform convolution on the signal with the filter
-         * 5. Lines 269 through 275: Return the signal data to a byte array
          * 6. Update the pSaveBuffer which in turn filters the audio
          * 7. Plot the changes
          */
@@ -449,8 +454,7 @@ namespace Wave3931
 
             byte[] byteArray = audioData.Select(sample =>
             {
-                double scaledValue = (sample + 1) / 2.0;
-                byte byteValue = (byte)(scaledValue * 255);
+                byte byteValue = (byte)(sample + 1);
 
                 return byteValue;
             }).ToArray();

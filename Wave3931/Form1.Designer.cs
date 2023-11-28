@@ -148,7 +148,7 @@
             this.btNewFile.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btNewFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btNewFile.Font = new System.Drawing.Font("Lucida Console", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btNewFile.Location = new System.Drawing.Point(138, 81);
+            this.btNewFile.Location = new System.Drawing.Point(42, 40);
             this.btNewFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btNewFile.Name = "btNewFile";
             this.btNewFile.Size = new System.Drawing.Size(149, 35);
@@ -164,7 +164,7 @@
             this.btnOpenFile.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnOpenFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnOpenFile.Font = new System.Drawing.Font("Lucida Console", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnOpenFile.Location = new System.Drawing.Point(138, 124);
+            this.btnOpenFile.Location = new System.Drawing.Point(42, 83);
             this.btnOpenFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(149, 35);
@@ -179,7 +179,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Crimson;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(424, 261);
+            this.ClientSize = new System.Drawing.Size(233, 179);
             this.Controls.Add(this.btnOpenFile);
             this.Controls.Add(this.btNewFile);
             this.Font = new System.Drawing.Font("Constantia", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

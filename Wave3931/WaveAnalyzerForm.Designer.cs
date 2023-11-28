@@ -62,6 +62,7 @@
             this.newFileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.TopMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2.SuspendLayout();
             this.OptionsPanel.SuspendLayout();
             this.BottomStatusStrip.SuspendLayout();
@@ -470,7 +471,6 @@
             chartArea2.AxisX.LabelStyle.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisX.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
             chartArea2.AxisX.MajorGrid.Enabled = false;
-            chartArea2.AxisX.Minimum = 0D;
             chartArea2.AxisY.IsLabelAutoFit = false;
             chartArea2.AxisY.LabelStyle.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             chartArea2.AxisY.LabelStyle.ForeColor = System.Drawing.Color.WhiteSmoke;
@@ -514,7 +514,8 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newFileMenu,
-            this.saveFileMenu});
+            this.saveFileMenu,
+            this.openToolStripMenuItem});
             this.fileToolStripMenuItem.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(45, 22);
@@ -523,14 +524,14 @@
             // newFileMenu
             // 
             this.newFileMenu.Name = "newFileMenu";
-            this.newFileMenu.Size = new System.Drawing.Size(98, 22);
+            this.newFileMenu.Size = new System.Drawing.Size(180, 22);
             this.newFileMenu.Text = "New";
             this.newFileMenu.Click += new System.EventHandler(this.btnNew_Click);
             // 
             // saveFileMenu
             // 
             this.saveFileMenu.Name = "saveFileMenu";
-            this.saveFileMenu.Size = new System.Drawing.Size(98, 22);
+            this.saveFileMenu.Size = new System.Drawing.Size(180, 22);
             this.saveFileMenu.Text = "Save";
             this.saveFileMenu.Click += new System.EventHandler(this.btnSaveFile_Click);
             // 
@@ -552,6 +553,13 @@
             this.TopMenuStrip.TabIndex = 10;
             this.TopMenuStrip.Text = "TopMenuStrip";
             this.TopMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.TopMenuStrip_ItemClicked);
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // WaveAnalyzerForm
             // 
@@ -626,5 +634,6 @@
         private System.Windows.Forms.ToolStripStatusLabel Info;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
     }
 }

@@ -15,19 +15,19 @@ namespace Wave3931
 {
     public partial class WaveAnalyzerForm : Form
     {
-        wave_file_header header = new wave_file_header();
+        private wave_file_header header = new wave_file_header();
+        private Chart selected;
         private double[] audioData;
         private String file;
         private String fileName;
         private string WINDOW_TYPE;
         private bool SELECT;
-        double[] leftChannel;
-        double[] rightChannel;
+        private double[] leftChannel;
+        private double[] rightChannel;
         private int originalSampleRateIndex;
         private int originalDFTThreadIndex;
         private int originalChannelIndex;
         private int originalWindowingIndex;
-
         private int NUM_THREADS;
         public double[] getAudioData()
         {
@@ -86,7 +86,7 @@ namespace Wave3931
             LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
             RIGHT_CHANNEL_CHART.ContextMenuStrip = cm;
 
-            header.initialize(11025);
+            header.initialize(11025, 1);
             double[] freqs = readingWave(file);
             sampleRate.SelectedIndex = 0;
             originalSampleRateIndex = sampleRate.SelectedIndex;
@@ -152,7 +152,6 @@ namespace Wave3931
         {
             double start = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
             double end = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
-
             if (start == -1 || end == -1)
             {
                 start = RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
@@ -184,12 +183,19 @@ namespace Wave3931
         {
             double start = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
             double end = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
+            selected = LEFT_CHANNEL_CHART;
+            if (start == -1 || end == -1)
+            {
+                selected = RIGHT_CHANNEL_CHART;
+                start = RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
+                end = RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd;
+            }
             int startIndex = (int)(start);
             int endIndex = (int)(end);
 
             if (startIndex < 0) { startIndex = 0; }
             if (endIndex >= audioData.Length) { endIndex = audioData.Length - 1; }
-            if (startIndex >= endIndex)
+            if (startIndex >= endIndex) 
             {
                 int temp = startIndex;
                 startIndex = endIndex;
@@ -211,10 +217,10 @@ namespace Wave3931
 
 
             // Clear the chart and update it with the modified data
-            LEFT_CHANNEL_CHART.Series[0].Points.Clear();
+            selected.Series[0].Points.Clear();
             for (int i = 0; i < audioData.Length; i++)
             {
-                LEFT_CHANNEL_CHART.Series[0].Points.AddXY(i, audioData[i]);
+                selected.Series[0].Points.AddXY(i, audioData[i]);
             }
         }
 
@@ -225,7 +231,7 @@ namespace Wave3931
             string base64Data = Clipboard.GetText();
             byte[] byteData = Convert.FromBase64String(base64Data);
             int pasteIndex = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
-            Chart selected = LEFT_CHANNEL_CHART;
+            selected = LEFT_CHANNEL_CHART;
             if (pasteIndex == -1)
             {
                 pasteIndex = (int)RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
@@ -282,6 +288,7 @@ namespace Wave3931
         {
 
             List<double> outputList = new List<double>();
+            List<byte> byteList = new List<byte>();
             BinaryReader reader = new BinaryReader(File.OpenRead(file));
             header.clear();
             header.ChunkID = reader.ReadInt32();
@@ -301,19 +308,12 @@ namespace Wave3931
             while (reader.BaseStream.Position < reader.BaseStream.Length)
             {
                 byte sample = reader.ReadByte();
-                outputList.Add(sample);
+                outputList.Add((sample / 127.5) - 1);
+                byteList.Add(sample);
                 counter++;
             }
             audioData = outputList.ToArray();
-            byte[] byteArray = new byte[counter];
-
-            for (int i = 0; i < audioData.Length; i++)
-            {
-                double sample = audioData[i];
-                byte byteValue = (byte)(sample);
-
-                byteArray[i] = byteValue;
-            }
+            byte[] byteArray = byteList.ToArray();
             IntPtr pSaveBuffer = IntPtr.Zero;
             pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
@@ -324,6 +324,7 @@ namespace Wave3931
             Marshal.FreeHGlobal(pSaveBuffer);
             return outputList.ToArray();
         }
+
 
         private void DemuxStereoData(double[] stereoData, out double[] leftChannel, out double[] rightChannel)
         {
@@ -481,26 +482,26 @@ namespace Wave3931
         {
             return Task.Run(() =>
             {
-                int maxAttempts = 10;
+            int maxAttempts = 10;
 
-                IntPtr pb;
-                int dl;
+            IntPtr pb;
+            int dl;
 
-                for (int attempt = 0; attempt < maxAttempts; attempt++)
+            for (int attempt = 0; attempt < maxAttempts; attempt++)
+            {
+                dl = GetDataLength();
+
+                if (dl > 0)
                 {
-                    dl = GetDataLength();
-
-                    if (dl > 0)
+                    // normal
+                    pb = GetPBuffer();
+                    double[] data = new double[dl];
+                    for (int i = 0; i < dl; i++)
                     {
-                        // normal
-                        pb = GetPBuffer();
-                        double[] data = new double[dl];
-                        for (int i = 0; i < dl; i++)
-                        {
-                            byte sample = Marshal.ReadByte(pb, i);
-                            data[i] = (((double)sample / 127.5) - 1);
-                        }
-                        return data;
+                        byte sample = Marshal.ReadByte(pb, i);
+                        data[i] = (double)(sample / 127.5) - 1;
+                    }
+                    return data;
                     }
                     Thread.Sleep(1);
                 }
@@ -669,12 +670,11 @@ namespace Wave3931
                     string saveFilePath = saveFileDialog.FileName;
                     if (file == null)
                     {
-                        header.initialize((uint)GetSampleRate());
+                        header.initialize((uint)GetSampleRate(), 1);
                         header.changeSR((uint)GetSampleRate());
                         // Create a BinaryWriter to write the WAV file
                         using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
                         {
-                            // Write the WAV header
                             // Assuming you have these values available
                             ushort wFormatTag = GET_wFormatTag();
                             ushort nChannels = GET_nChannels();
@@ -682,14 +682,14 @@ namespace Wave3931
                             ushort wBitsPerSample = GET_wBitsPerSample();
 
                             // Manually set the missing fields
-                            header.ChunkID = 0x46464952; // "RIFF" in ASCII
-                            header.SubChunk1ID = 0x20746D66; // "fmt " in ASCII
-                            header.SubChunk1Size = 16; // Size of the fmt chunk (16 for PCM)
-                            header.AudioFormat = 1; // PCM format
+                            header.ChunkID = wave_file_header.mmioStringToFOURCC("RIFF", 0);
+                            header.SubChunk1ID = wave_file_header.mmioStringToFOURCC("fmt ", 0);
+                            header.SubChunk1Size = 8;
+                            header.Format = wave_file_header.mmioStringToFOURCC("WAVE", 0);
                             header.NumChannels = nChannels;
                             header.SampleRate = nSamplesPerSec;
                             header.BitsPerSample = wBitsPerSample;
-                            header.SubChunk2ID = 0x61746164; // "data" in ASCII
+                            header.SubChunk2ID = wave_file_header.mmioStringToFOURCC("data", 0);
 
                             header.ByteRate = (uint)(header.SampleRate * header.NumChannels * (header.BitsPerSample / 8));
                             header.BlockAlign = (ushort)(header.NumChannels * (header.BitsPerSample / 8));
@@ -711,7 +711,7 @@ namespace Wave3931
                             byte[] byteArray = audioData.Select(sample =>
                             {
                                 // Assuming audio samples range from -0.5 to 0.5
-                                byte byteValue = (byte)((sample + 0.5) * 255);
+                                byte byteValue = (byte)((sample + 1) * 127.5);
                                 return byteValue;
                             }).ToArray();
 
@@ -910,5 +910,34 @@ namespace Wave3931
         {
 
         }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (audioData != null)
+            {
+                DialogResult result = MessageBox.Show("Do you want to save before opening a new file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    btnSaveFile_Click(sender, e);
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                }
+            }
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFilePath = openFileDialog.FileName;
+                    WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm(selectedFilePath, Path.GetFileName(selectedFilePath));
+                    this.Close();
+                    waveAnalyzerForm.Show();
+                }
+            }
+        }
+
     }
 }

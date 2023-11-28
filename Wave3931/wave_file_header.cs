@@ -39,7 +39,7 @@ namespace Wave3931
             SubChunk2Size = 0;
         }
 
-        public void initialize(uint sampUpDown)
+        public void initialize(uint sampUpDown, int channels)
         {
             clear();
 
@@ -47,9 +47,9 @@ namespace Wave3931
             ChunkSize = 0;
             Format = mmioStringToFOURCC("WAVE", 0);
             SubChunk1ID = mmioStringToFOURCC("fmt ", 0);
-            SubChunk1Size = 8;
+            SubChunk1Size = 16;
             AudioFormat = 1;
-            NumChannels = 2;
+            NumChannels = (ushort)channels;
             SampleRate = sampUpDown;
             BitsPerSample = 8; 
             ByteRate = (uint)(SampleRate * NumChannels * (BitsPerSample / 8));
