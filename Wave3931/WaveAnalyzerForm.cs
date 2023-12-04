@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -15,20 +16,48 @@ namespace Wave3931
 {
     public partial class WaveAnalyzerForm : Form
     {
+        // for reading files and saving
         private wave_file_header header = new wave_file_header();
+
+        // instance checking which chart is selected, mainly for stereo
         private Chart selected;
+
+        // instance array for signal data/samples
         private double[] audioData;
-        private String file;
-        private String fileName;
+
+        // instance string for just the file name
+        private string fileName;
+
+        // instance string for the full file path
+        private string filePath;
+
+        // instance string checking the window selection
         private string WINDOW_TYPE;
-        private bool SELECT;
+
+        // instance array for left channel audioData
         private double[] leftChannel;
+
+        // instance array for right channel audioData
         private double[] rightChannel;
+
+        // instance int tracking the original index for sample rate selection
         private int originalSampleRateIndex;
+
+        // instance int tracking the original index for thread selection
         private int originalDFTThreadIndex;
-        private int originalChannelIndex;
+
+        // instance int tracking the original index for windowing selection
         private int originalWindowingIndex;
+
+        // instance int tracking the user selected # of threads
         private int NUM_THREADS;
+
+        // instance boolean checking if the current file is edited
+        public static bool EDITED;
+
+        // instance boolean checking if the current file is saved
+        public static bool SAVED;
+
         public double[] getAudioData()
         {
             return audioData;
@@ -39,7 +68,7 @@ namespace Wave3931
         }
         public int detectSR()
         {
-            if (file != null)
+            if (fileName != null)
             {
                 switch (header.SampleRate)
                 {
@@ -48,13 +77,13 @@ namespace Wave3931
                         return 0;
                     case 11025:
                         SetSampleRate(11025);
-                        return 1;
+                        return 0;
                     case 22050:
                         SetSampleRate(22050);
-                        return 2;
+                        return 1;
                     case 44100:
                         SetSampleRate(44100);
-                        return 3;
+                        return 2;
                 }
             }
             
@@ -64,8 +93,8 @@ namespace Wave3931
         public WaveAnalyzerForm(String filePath, String fileName)
         {
             InitializeComponent();
-            this.file = filePath;
-            this.fileName = fileName;
+            this.fileName = filePath;
+            this.filePath = fileName;
             this.Text = "WaveCraft - " + fileName;
             Box(this.Handle);
             leftLabel.Visible = false;
@@ -75,7 +104,8 @@ namespace Wave3931
             originalDFTThreadIndex = DFTThread.SelectedIndex;
             originalWindowingIndex = windowing.SelectedIndex;
 
-            SELECT = true;
+            EDITED = false;
+
             ContextMenuStrip cm = new ContextMenuStrip();
             ToolStripMenuItem copy = new ToolStripMenuItem("Copy", null, CopySelected);
             ToolStripMenuItem cut = new ToolStripMenuItem("Cut", null, CutSelected);
@@ -87,8 +117,8 @@ namespace Wave3931
             RIGHT_CHANNEL_CHART.ContextMenuStrip = cm;
 
             header.initialize(11025, 1);
-            double[] freqs = readingWave(file);
-            sampleRate.SelectedIndex = 0;
+            double[] freqs = readingWave(this.fileName);
+            sampleRate.SelectedIndex = detectSR();
             originalSampleRateIndex = sampleRate.SelectedIndex;
             btnPlay.Enabled = true;
             btnRecord.Enabled = false;
@@ -129,7 +159,8 @@ namespace Wave3931
             originalSampleRateIndex = sampleRate.SelectedIndex;
             originalDFTThreadIndex = DFTThread.SelectedIndex;
             originalWindowingIndex = windowing.SelectedIndex;
-            SELECT = true;
+
+            EDITED = false;
             btnPlay.Enabled = false;
             btnRecord.Enabled = false;
             btnDFT.Enabled = false;
@@ -146,6 +177,7 @@ namespace Wave3931
             RIGHT_CHANNEL_CHART.ContextMenuStrip = cm;
             LEFT_CHANNEL_CHART.MouseWheel += Chart_MouseWheel;
             RIGHT_CHANNEL_CHART.MouseWheel += Chart_MouseWheel;
+            SAVED = false;
         }
 
         private void CopySelected(object sender, EventArgs e)
@@ -278,6 +310,9 @@ namespace Wave3931
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
             UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             Marshal.FreeHGlobal(pSaveBuffer);
+
+            EDITED = true;
+            SAVED = false;
         }
 
         public double[] readingWave(String file)
@@ -391,13 +426,13 @@ namespace Wave3931
                 rightLabel.Visible = true;
             }
 
-            if (file == null)
+            if (fileName == null)
             {
                 toolStripStatusLabel3.Text = string.Format("{0:F2}s  -  {1} Hz  -  Channels: {2}", (double)audioData.Length / GetSampleRate(), GetSampleRate(), header.NumChannels != 0 ? header.NumChannels : 1);
             }
             else
             {
-                toolStripStatusLabel3.Text = string.Format("{0}: {1:F2}s  -  {2} Hz  -  Channels: {3}", fileName, (double)audioData.Length / GetSampleRate(), GetSampleRate(), header.NumChannels);
+                toolStripStatusLabel3.Text = string.Format("{0}: {1:F2}s  -  {2} Hz  -  Channels: {3}", filePath, (double)audioData.Length / header.SampleRate, header.SampleRate, header.NumChannels);
             }
 
             LEFT_CHANNEL_CHART.Visible = true;
@@ -412,13 +447,7 @@ namespace Wave3931
             RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionEnd = -1;
             LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserEnabled = true;
             LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            if (!SELECT)
-            {
-                LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
-            } else
-            {
-                LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
-            }
+            LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
         }
 
 
@@ -472,6 +501,9 @@ namespace Wave3931
 
             btnClear.BackColor = Color.FromArgb(250, 14, 79);
             btnClear.ForeColor = Color.White;
+
+            EDITED = true;
+            SAVED = false;
         }
 
         private Task<double[]> WaitForDataAsync()
@@ -646,6 +678,8 @@ namespace Wave3931
             btnDFT.ForeColor = Color.Black;
             btnClear.BackColor = Color.White;
             btnClear.ForeColor = Color.Black;
+            EDITED = false;
+            SAVED = false;
         }
 
         private void btnNew_Click(object sender, EventArgs e)
@@ -664,20 +698,17 @@ namespace Wave3931
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string saveFilePath = saveFileDialog.FileName;
-                    if (file == null)
+                    if (fileName == null)
                     {
                         header.initialize((uint)GetSampleRate(), 1);
                         header.changeSR((uint)GetSampleRate());
-                        // Create a BinaryWriter to write the WAV file
                         using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
                         {
-                            // Assuming you have these values available
                             ushort wFormatTag = GET_wFormatTag();
                             ushort nChannels = GET_nChannels();
                             uint nSamplesPerSec = GET_nSamplesPerSec();
                             ushort wBitsPerSample = GET_wBitsPerSample();
 
-                            // Manually set the missing fields
                             header.ChunkID = wave_file_header.mmioStringToFOURCC("RIFF", 0);
                             header.SubChunk1ID = wave_file_header.mmioStringToFOURCC("fmt ", 0);
                             header.SubChunk1Size = 8;
@@ -710,7 +741,7 @@ namespace Wave3931
                                 byte byteValue = (byte)((sample + 1) * 127.5);
                                 return byteValue;
                             }).ToArray();
-
+                            //byte[] byteArray = CompressMRLE(audioData);
                             for (int i = 0; i < byteArray.Length; i++)
                             {
                                 writer.Write(byteArray[i]);
@@ -740,6 +771,7 @@ namespace Wave3931
 
                                 return byteValue;
                             }).ToArray();
+                            //byte[] byteArray = CompressMRLE(audioData);
 
                             for (int i = 0; i < byteArray.Length; i++)
                             {
@@ -748,10 +780,36 @@ namespace Wave3931
                         }
                     }
                     this.Text = "WaveCraft - " + Path.GetFileName(saveFilePath);
+                    this.fileName = saveFilePath;
+                    SAVED = true;
                 }
             }
         }
+        private byte[] CompressMRLE(double[] inputArray)
+        {
+            List<byte> compressedList = new List<byte>();
 
+            int count = 1;
+            for (int i = 1; i < inputArray.Length; i++)
+            {
+                if (inputArray[i] == inputArray[i - 1])
+                {
+                    count++;
+                }
+                else
+                {
+                    compressedList.Add((byte)count);
+                    compressedList.Add((byte)inputArray[i - 1]);
+                    count = 1;
+                }
+            }
+
+            // Add the last run
+            compressedList.Add((byte)count);
+            compressedList.Add((byte)inputArray[inputArray.Length - 1]);
+
+            return compressedList.ToArray();
+        }
 
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
@@ -766,14 +824,7 @@ namespace Wave3931
 
             RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserEnabled = true;
             RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            if (!SELECT)
-            {
-                RIGHT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
-            }
-            else
-            {
-                RIGHT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
-            }
+            RIGHT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
         }
         private void Chart_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -800,21 +851,6 @@ namespace Wave3931
                 chart.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
                 chart.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
             }
-        }
-
-
-
-
-
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            SELECT = false;
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            SELECT = true;
         }
 
         private void panel2_Paint_2(object sender, PaintEventArgs e)
@@ -909,18 +945,34 @@ namespace Wave3931
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (audioData != null)
+            if (EDITED && !SAVED) // already saved or opened another file
             {
-                DialogResult result = MessageBox.Show("Do you want to save before opening a new file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                if (audioData != null)
+                {
+                    DialogResult result = MessageBox.Show("Do you want to save before opening a new file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
-                if (result == DialogResult.Yes)
-                {
-                    btnSaveFile_Click(sender, e);
-                }
-                else if (result == DialogResult.Cancel)
-                {
+                    if (result == DialogResult.Yes)
+                    {
+                        btnSaveFile_Click(sender, e);
+                    }
+                    else if (result == DialogResult.No)
+                    {
+                        openFile();
+                    }
+                    else if (result == DialogResult.Cancel)
+                    {
+                        openFile();
+                    }
                 }
             }
+            else 
+            {
+                openFile();
+            }
+            
+        }
+        private void openFile()
+        {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Filter = "MS-WAVE Files (*.wav)|*.wav|All Files (*.*)|*.*";

@@ -410,6 +410,7 @@ namespace Wave3931
             Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             this.main.plotFreqWaveChart(audioData);
             Plot(audioData, 1, cmplx_dftRes.Length);
+            WaveAnalyzerForm.EDITED = true;
         }
 
 
@@ -473,6 +474,7 @@ namespace Wave3931
             Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             this.main.plotFreqWaveChart(audioData);
             Plot(cmplx_dftRes, 1, cmplx_dftRes.Length);
+            WaveAnalyzerForm.EDITED = true;
         }
 
         private void DFT_Load(object sender, EventArgs e)

@@ -61,8 +61,8 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.TopMenuStrip = new System.Windows.Forms.MenuStrip();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TopMenuStrip = new System.Windows.Forms.MenuStrip();
             this.panel2.SuspendLayout();
             this.OptionsPanel.SuspendLayout();
             this.BottomStatusStrip.SuspendLayout();
@@ -271,7 +271,6 @@
             this.sampleRate.Location = new System.Drawing.Point(2, 98);
             this.sampleRate.Name = "sampleRate";
             this.sampleRate.Size = new System.Drawing.Size(95, 20);
-            this.sampleRate.Sorted = true;
             this.sampleRate.TabIndex = 13;
             this.sampleRate.SelectedIndexChanged += new System.EventHandler(this.sampleRate_SelectedIndexChanged);
             // 
@@ -524,16 +523,23 @@
             // newFileMenu
             // 
             this.newFileMenu.Name = "newFileMenu";
-            this.newFileMenu.Size = new System.Drawing.Size(180, 22);
+            this.newFileMenu.Size = new System.Drawing.Size(98, 22);
             this.newFileMenu.Text = "New";
             this.newFileMenu.Click += new System.EventHandler(this.btnNew_Click);
             // 
             // saveFileMenu
             // 
             this.saveFileMenu.Name = "saveFileMenu";
-            this.saveFileMenu.Size = new System.Drawing.Size(180, 22);
+            this.saveFileMenu.Size = new System.Drawing.Size(98, 22);
             this.saveFileMenu.Text = "Save";
             this.saveFileMenu.Click += new System.EventHandler(this.btnSaveFile_Click);
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // TopMenuStrip
             // 
@@ -553,13 +559,6 @@
             this.TopMenuStrip.TabIndex = 10;
             this.TopMenuStrip.Text = "TopMenuStrip";
             this.TopMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.TopMenuStrip_ItemClicked);
-            // 
-            // openToolStripMenuItem
-            // 
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openToolStripMenuItem.Text = "Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // WaveAnalyzerForm
             // 
