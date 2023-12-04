@@ -43,6 +43,9 @@ namespace Wave3931
         // instance int tracking the original index for sample rate selection
         private int originalSampleRateIndex;
 
+        // instance int tracking the original index for bps selection
+        private int originalBitsPerSampleIndex;
+
         // instance int tracking the original index for thread selection
         private int originalDFTThreadIndex;
 
@@ -52,11 +55,20 @@ namespace Wave3931
         // instance int tracking the user selected # of threads
         private int NUM_THREADS;
 
+        // instance tracking bits per sample
+        private ushort BPS;
+
         // instance boolean checking if the current file is edited
         public static bool EDITED;
 
         // instance boolean checking if the current file is saved
         public static bool SAVED;
+
+        
+
+        private DateTime startTime;
+        private VerticalLineAnnotation verticalLine;
+        private double animationDuration;
 
         public double[] getAudioData()
         {
@@ -90,13 +102,34 @@ namespace Wave3931
             return 1;
         }
 
+        public int detectBPS()
+        {
+            if (fileName != null)
+            {
+                switch (header.SampleRate)
+                {
+                    case 8:
+                        SetBitsPerSample(8);
+                        return 0;
+                    case 16:
+                        SetBitsPerSample(16);
+                        return 1;
+                }
+            }
+
+            return 0;
+        }
+
         public WaveAnalyzerForm(String filePath, String fileName)
         {
             InitializeComponent();
+            initPlayLine();
             this.fileName = filePath;
             this.filePath = fileName;
             this.Text = "WaveCraft - " + fileName;
+
             Box(this.Handle);
+
             leftLabel.Visible = false;
             rightLabel.Visible = false;
             DFTThread.SelectedIndex = 0;
@@ -116,10 +149,12 @@ namespace Wave3931
             LEFT_CHANNEL_CHART.ContextMenuStrip = cm;
             RIGHT_CHANNEL_CHART.ContextMenuStrip = cm;
 
-            header.initialize(11025, 1);
+            header.initialize(11025, 1, 8);
             double[] freqs = readingWave(this.fileName);
             sampleRate.SelectedIndex = detectSR();
+            comboBox1.SelectedIndex = detectBPS();
             originalSampleRateIndex = sampleRate.SelectedIndex;
+            originalBitsPerSampleIndex = comboBox1.SelectedIndex;
             btnPlay.Enabled = true;
             btnRecord.Enabled = false;
             btnStopRecord.Enabled = true;
@@ -148,15 +183,18 @@ namespace Wave3931
         public WaveAnalyzerForm()
         {
             InitializeComponent();
-            Box(this.Handle);
-
+            initPlayLine();
             leftLabel.Visible = false;
             rightLabel.Visible = false;
 
+            Box(this.Handle);
+
             sampleRate.SelectedIndex = 0;
+            comboBox1.SelectedIndex = 0;
             DFTThread.SelectedIndex = 0;
             windowing.SelectedIndex = 0;
             originalSampleRateIndex = sampleRate.SelectedIndex;
+            originalBitsPerSampleIndex = comboBox1.SelectedIndex;
             originalDFTThreadIndex = DFTThread.SelectedIndex;
             originalWindowingIndex = windowing.SelectedIndex;
 
@@ -387,14 +425,14 @@ namespace Wave3931
         private DFT DFT;
         public void plotFreqWaveChart(double[] audioData)
         {
-
+            int length = BPS == 8 ? audioData.Length : audioData.Length / 2;
             LEFT_CHANNEL_CHART.Series[0].Points.Clear();
             RIGHT_CHANNEL_CHART.Series[0].Points.Clear();
 
             if (header.NumChannels == 1 || header.NumChannels == 0)
             {
                 // Mono audio data
-                for (int m = 0; m < audioData.Length; m++)
+                for (int m = 0; m < length; m++)
                 {
                     LEFT_CHANNEL_CHART.Series[0].Points.AddXY(m, audioData[m]);
                 }
@@ -405,7 +443,7 @@ namespace Wave3931
             else if (header.NumChannels == 2)
             {
                 // Stereo audio data
-                int numSamples = audioData.Length / 2;
+                int numSamples = length / 2;
 
                 leftChannel = new double[numSamples];
                 rightChannel = new double[numSamples];
@@ -428,11 +466,11 @@ namespace Wave3931
 
             if (fileName == null)
             {
-                toolStripStatusLabel3.Text = string.Format("{0:F2}s  -  {1} Hz  -  Channels: {2}", (double)audioData.Length / GetSampleRate(), GetSampleRate(), header.NumChannels != 0 ? header.NumChannels : 1);
+                toolStripStatusLabel3.Text = string.Format("{0:F2}s  -  {1} Hz  -  Channels: {2}", (double)length / GetSampleRate(), GetSampleRate(), header.NumChannels != 0 ? header.NumChannels : 1);
             }
             else
             {
-                toolStripStatusLabel3.Text = string.Format("{0}: {1:F2}s  -  {2} Hz  -  Channels: {3}", filePath, (double)audioData.Length / header.SampleRate, header.SampleRate, header.NumChannels);
+                toolStripStatusLabel3.Text = string.Format("{0}: {1:F2}s  -  {2} Hz  -  Channels: {3}", filePath, (double)length / header.SampleRate, header.SampleRate, header.NumChannels);
             }
 
             LEFT_CHANNEL_CHART.Visible = true;
@@ -456,7 +494,20 @@ namespace Wave3931
 
         }
 
-        private void btnPlay_Click(object sender, EventArgs e)
+        private void initPlayLine()
+        {
+            verticalLine = new VerticalLineAnnotation();
+            verticalLine.AxisX = LEFT_CHANNEL_CHART.ChartAreas[0].AxisX;
+            verticalLine.AllowMoving = false;
+            verticalLine.IsInfinitive = true;
+            verticalLine.ClipToChartArea = LEFT_CHANNEL_CHART.ChartAreas[0].Name;
+            verticalLine.LineColor = System.Drawing.Color.Gold;
+            verticalLine.LineWidth = 2;
+            verticalLine.X = 0;
+            LEFT_CHANNEL_CHART.Annotations.Add(verticalLine);
+        }
+
+        private async void btnPlay_ClickAsync(object sender, EventArgs e)
         {
             IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
 
@@ -464,8 +515,28 @@ namespace Wave3931
             {
                 SendMessage(hWnd, 0x0111, 1002, 0);
             }
-        }
+            animationDuration = BPS == 8 ? (double)audioData.Length / GetSampleRate() : ((double)audioData.Length / 2) / GetSampleRate();
 
+            startTime = DateTime.Now;
+            await AnimateVerticalLine();
+        }
+        private async Task AnimateVerticalLine()
+        {
+            while (true)
+            {
+                double elapsedSeconds = (DateTime.Now - startTime).TotalSeconds;
+
+                if (elapsedSeconds >= animationDuration)
+                {
+                    break;
+                }
+
+                double position = (elapsedSeconds / animationDuration) * LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.Maximum;
+                verticalLine.X = position;
+                LEFT_CHANNEL_CHART.Invalidate();
+                await Task.Delay(15);
+            }
+        }
 
 
 
@@ -476,10 +547,9 @@ namespace Wave3931
             {
                 SendMessage(hWnd, 0x0111, 1001, 0);
             }
-            double[] data = await WaitForDataAsync();
+            double[] data = await WaitForDataAsync(BPS);
             audioData = data;
             plotFreqWaveChart(data);
-
 
             btnPlay.Enabled = true;
             btnRecord.Enabled = false;
@@ -506,37 +576,50 @@ namespace Wave3931
             SAVED = false;
         }
 
-        private Task<double[]> WaitForDataAsync()
+        private Task<double[]> WaitForDataAsync(int BPS)
         {
             return Task.Run(() =>
             {
-            int maxAttempts = 10;
+                int maxAttempts = 10;
+                IntPtr pb;
+                int dl;
 
-            IntPtr pb;
-            int dl;
-
-            for (int attempt = 0; attempt < maxAttempts; attempt++)
-            {
-                dl = GetDataLength();
-
-                if (dl > 0)
+                for (int attempt = 0; attempt < maxAttempts; attempt++)
                 {
-                    // normal
-                    pb = GetPBuffer();
-                    double[] data = new double[dl];
-                    for (int i = 0; i < dl; i++)
+                    dl = GetDataLength();
+
+                    if (dl > 0)
                     {
-                        byte sample = Marshal.ReadByte(pb, i);
-                        data[i] = (double)(sample / 127.5) - 1;
-                    }
-                    return data;
+                        pb = GetPBuffer();
+                        double[] data = new double[dl];
+
+                        if (BPS == 8)
+                        {
+                            for (int i = 0; i < dl; i++)
+                            {
+                                byte sample = Marshal.ReadByte(pb, i);
+                                data[i] = (double)(sample / 127.5) - 1;
+                            }
+                        }
+                        else if (BPS == 16)
+                        {
+                            for (int i = 0; i < dl / 2; i++)
+                            {
+                                short sample = Marshal.ReadInt16(pb, i * 2);
+                                data[i] = (double)sample / 32767.0; // Assuming signed 16-bit PCM
+                            }
+                        }
+
+
+                        return data;
                     }
                     Thread.Sleep(1);
                 }
-                // worst case
+
                 return new double[0];
             });
         }
+
 
 
 
@@ -700,7 +783,7 @@ namespace Wave3931
                     string saveFilePath = saveFileDialog.FileName;
                     if (fileName == null)
                     {
-                        header.initialize((uint)GetSampleRate(), 1);
+                        header.initialize((uint)GetSampleRate(), 1, BPS);
                         header.changeSR((uint)GetSampleRate());
                         using (BinaryWriter writer = new BinaryWriter(File.Create(saveFilePath)))
                         {
@@ -987,5 +1070,20 @@ namespace Wave3931
             }
         }
 
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+            switch (comboBox.SelectedIndex)
+            {
+                case 0:
+                    BPS = 8;
+                    SetBitsPerSample(BPS);
+                    break;
+                case 1:
+                    BPS = 16;
+                    SetBitsPerSample(BPS);
+                    break;
+            }
+        }
     }
 }

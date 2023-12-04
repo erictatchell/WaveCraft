@@ -31,8 +31,6 @@ namespace Wave3931
         [DllImport("WaveDLL.dll")]
         public static extern void PausePlaying();
         [DllImport("WaveDLL.dll")]
-        public static extern void Box(IntPtr hwnd);
-        [DllImport("WaveDLL.dll")]
         public static extern void SetPSaveBuffer(IntPtr ps);
         [DllImport("WaveDLL.dll")]
         public static extern void SetDWDataLength(uint dl);
@@ -71,10 +69,11 @@ namespace Wave3931
         [DllImport("WaveDLL.dll")]
         public static extern int GetSampleRate();
         [DllImport("WaveDLL.dll")]
-        public static extern int SetSampleRate(uint sr);
+        public static extern void SetSampleRate(uint sr);
         [DllImport("WaveDLL.dll")]
-
-        public static extern int SetChannels(uint sr);
+        public static extern void SetChannels(uint sr);
+        [DllImport("WaveDLL.dll")]
+        public static extern void SetBitsPerSample(ushort bps);
         [DllImport("WaveDLL.dll")]
         public static extern void UpdatePSaveBufferStereo(IntPtr leftChannelData, IntPtr rightChannelData, int leftChannelDataLength,
                                                 int rightChannelDataLength);
@@ -88,6 +87,46 @@ namespace Wave3931
 
         [DllImport("WaveASMDLLFR.dll")]
         public static extern void convolveInASM(int N, int WN, double[] convolutionData, double[] audioData, double[] newSignal);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr LoadLibrary(string dllToLoad);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool FreeLibrary(IntPtr hModule);
+
+        [DllImport("WaveDLL.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr getConfig();
+
+        [DllImport("WaveDLL.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Box(IntPtr hwnd);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct AUDIO_CONFIG
+        {
+            [MarshalAs(UnmanagedType.Bool)]
+            public bool bRecording, bPlaying, bPaused, bEnding, bTerminating;
+            public uint dwDataLength, dwRepetitions;
+            public IntPtr hWaveIn;
+            public IntPtr hWaveOut;
+            public IntPtr pBuffer1, pBuffer2, pSaveBuffer, pNewBuffer;
+            public IntPtr pWaveHdr1, pWaveHdr2;
+            public WAVEFORMATEX waveform;
+            public ushort CHANNELS;
+            public uint SR;
+            public ushort BLOCKALIGN;
+        }
+
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WAVEFORMATEX
+        {
+            public ushort wFormatTag;
+            public ushort nChannels;
+            public uint nSamplesPerSec;
+            public uint nAvgBytesPerSec;
+            public ushort nBlockAlign;
+            public ushort wBitsPerSample;
+            public ushort cbSize;
+        }
     }
 }

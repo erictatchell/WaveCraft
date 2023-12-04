@@ -39,7 +39,7 @@ namespace Wave3931
             SubChunk2Size = 0;
         }
 
-        public void initialize(uint sampUpDown, int channels)
+        public void initialize(uint sampUpDown, int channels, ushort bitspersample)
         {
             clear();
 
@@ -51,7 +51,7 @@ namespace Wave3931
             AudioFormat = 1;
             NumChannels = (ushort)channels;
             SampleRate = sampUpDown;
-            BitsPerSample = 8; 
+            BitsPerSample = bitspersample;
             ByteRate = (uint)(SampleRate * NumChannels * (BitsPerSample / 8));
             BlockAlign = (ushort)(NumChannels * (BitsPerSample / 8));
             SubChunk2ID = mmioStringToFOURCC("data", 0);

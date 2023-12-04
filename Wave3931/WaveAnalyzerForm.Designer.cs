@@ -63,6 +63,8 @@
             this.saveFileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TopMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.label4 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.panel2.SuspendLayout();
             this.OptionsPanel.SuspendLayout();
             this.BottomStatusStrip.SuspendLayout();
@@ -85,7 +87,7 @@
             this.btnDFT.FlatAppearance.BorderSize = 0;
             this.btnDFT.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDFT.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDFT.Location = new System.Drawing.Point(2, 278);
+            this.btnDFT.Location = new System.Drawing.Point(2, 336);
             this.btnDFT.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnDFT.Name = "btnDFT";
             this.btnDFT.Size = new System.Drawing.Size(95, 20);
@@ -103,7 +105,7 @@
             this.btnStopRecord.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStopRecord.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnStopRecord.ForeColor = System.Drawing.Color.White;
-            this.btnStopRecord.Location = new System.Drawing.Point(2, 124);
+            this.btnStopRecord.Location = new System.Drawing.Point(2, 167);
             this.btnStopRecord.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnStopRecord.Name = "btnStopRecord";
             this.btnStopRecord.Size = new System.Drawing.Size(95, 20);
@@ -129,7 +131,7 @@
             this.btnPlay.TabIndex = 0;
             this.btnPlay.Text = "PLAY";
             this.btnPlay.UseVisualStyleBackColor = false;
-            this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
+            this.btnPlay.Click += new System.EventHandler(this.btnPlay_ClickAsync);
             // 
             // btnRecord
             // 
@@ -139,7 +141,7 @@
             this.btnRecord.FlatAppearance.BorderSize = 0;
             this.btnRecord.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRecord.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRecord.Location = new System.Drawing.Point(2, 146);
+            this.btnRecord.Location = new System.Drawing.Point(2, 189);
             this.btnRecord.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.btnRecord.Name = "btnRecord";
             this.btnRecord.Size = new System.Drawing.Size(95, 20);
@@ -169,6 +171,8 @@
             this.OptionsPanel.AccessibleName = "Options Panel";
             this.OptionsPanel.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu;
             this.OptionsPanel.BackColor = System.Drawing.Color.Black;
+            this.OptionsPanel.Controls.Add(this.label4);
+            this.OptionsPanel.Controls.Add(this.comboBox1);
             this.OptionsPanel.Controls.Add(this.label3);
             this.OptionsPanel.Controls.Add(this.windowing);
             this.OptionsPanel.Controls.Add(this.label2);
@@ -194,7 +198,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.Window;
-            this.label3.Location = new System.Drawing.Point(0, 237);
+            this.label3.Location = new System.Drawing.Point(0, 295);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 11);
             this.label3.TabIndex = 18;
@@ -210,7 +214,7 @@
             "Rectangle",
             "Triangle",
             "Hamming"});
-            this.windowing.Location = new System.Drawing.Point(2, 251);
+            this.windowing.Location = new System.Drawing.Point(2, 309);
             this.windowing.Name = "windowing";
             this.windowing.Size = new System.Drawing.Size(95, 20);
             this.windowing.TabIndex = 17;
@@ -222,7 +226,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.Window;
-            this.label2.Location = new System.Drawing.Point(1, 195);
+            this.label2.Location = new System.Drawing.Point(1, 253);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(82, 11);
             this.label2.TabIndex = 16;
@@ -241,7 +245,7 @@
             "4",
             "15",
             "50"});
-            this.DFTThread.Location = new System.Drawing.Point(2, 209);
+            this.DFTThread.Location = new System.Drawing.Point(2, 267);
             this.DFTThread.Name = "DFTThread";
             this.DFTThread.Size = new System.Drawing.Size(95, 20);
             this.DFTThread.TabIndex = 15;
@@ -560,6 +564,32 @@
             this.TopMenuStrip.Text = "TopMenuStrip";
             this.TopMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.TopMenuStrip_ItemClicked);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.BackColor = System.Drawing.Color.Transparent;
+            this.label4.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.SystemColors.Window;
+            this.label4.Location = new System.Drawing.Point(-2, 127);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(33, 11);
+            this.label4.TabIndex = 20;
+            this.label4.Text = "Bits";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "8 bits",
+            "16 bits"});
+            this.comboBox1.Location = new System.Drawing.Point(2, 141);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(95, 20);
+            this.comboBox1.TabIndex = 19;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
             // WaveAnalyzerForm
             // 
             this.AccessibleDescription = "Charts to analyze sound waves";
@@ -634,5 +664,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }

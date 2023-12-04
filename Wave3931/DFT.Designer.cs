@@ -47,6 +47,7 @@
             chartArea1.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.HorizontalCenter;
             chartArea1.BackSecondaryColor = System.Drawing.Color.PaleVioletRed;
             chartArea1.BorderColor = System.Drawing.Color.White;
+            chartArea1.CursorX.LineColor = System.Drawing.Color.Gold;
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Cursor = System.Windows.Forms.Cursors.Default;
