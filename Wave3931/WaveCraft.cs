@@ -18,22 +18,19 @@ using static Wave3931.Externals;
 
 /***********************************************************************************************************************************************************
  *
- * File: WaveAnalyzerForm.cs
+ * File: WaveCraft.cs
  *
- * Purpose: This file defines the WaveAnalyzerForm class, which is the main form of the Wave3931 application. It is responsible for the user interface and
+ * Purpose: This file defines the WaveCraft class, which is the main form of the WaveCraft app. It is responsible for the user interface and
  *          the creation of new wave analyzer forms and the opening of existing wave files through a user interface. It also contains the methods for
  *          cutting, copying, and pasting audio data, as well as the methods for playing back audio data and performing a Discrete Fourier Transform (DFT).
- *          
- ***********************************************************************************************************************************************************/
+ * 
+ * Authors: Eric Tatchell & Brendan Doyle
+ * 
+ * ***********************************************************************************************************************************************************/
 
 
 namespace Wave3931
 {
-    /**
-     * WaveCraft.cs
-     * Display and manipulate signaal data recorded from a Win32 DLL
-     * Author: Eric Tatchell
-     */
     public partial class WaveCraft : Form
     {
         // Class members declaration with descriptions
@@ -173,7 +170,7 @@ namespace Wave3931
          * @param filePath The full file path of the wave file.
          * @param fileName The name of the wave file.
          */
-        public WaveAnalyzerForm(String filePath, String fileName)
+        public WaveCraft(String filePath, String fileName)
         {
             InitializeComponent();
             initPlayLine(); // creates the playback line
