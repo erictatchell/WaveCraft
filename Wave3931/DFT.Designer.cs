@@ -56,6 +56,7 @@ namespace Wave3931
             // chart1
             // Initialization and configuration of chart1 including its style, data source, and event handler.
             this.chart1.BackColor = System.Drawing.Color.Black;
+            chartArea1.AxisY.Minimum = 0D;
             chartArea1.BackColor = System.Drawing.Color.Crimson;
             chartArea1.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.HorizontalCenter;
             chartArea1.BackSecondaryColor = System.Drawing.Color.PaleVioletRed;

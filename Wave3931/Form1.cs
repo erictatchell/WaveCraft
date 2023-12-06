@@ -49,7 +49,7 @@ namespace Wave3931
         */
         private void btnNewFile_Click(object sender, EventArgs e)
         {
-            WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm();
+            WaveCraft waveAnalyzerForm = new WaveCraft();
             waveAnalyzerForm.Show();
         }
 
@@ -81,9 +81,8 @@ namespace Wave3931
                 {
                     string selectedFilePath = openFileDialog.FileName;
                     toolStripStatusLabel1.Text = "Selected File: " + System.IO.Path.GetFileName(selectedFilePath);
-
                     // Create and show a new instance of WaveAnalyzerForm with the selected file
-                    WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm(selectedFilePath, Path.GetFileName(selectedFilePath));
+                    WaveCraft waveAnalyzerForm = new WaveCraft(selectedFilePath, Path.GetFileName(selectedFilePath));
                     waveAnalyzerForm.Show();
                 }
             }
