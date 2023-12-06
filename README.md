@@ -1,4 +1,6 @@
-WaveCraft
+<h1 align="center">
+  WaveCraft
+</h1>
 
 Description
 -----------
