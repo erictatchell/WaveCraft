@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+    Author: Eric Tatchell & Brendan Doyle
+    Date: October & November 2023
+ */
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -9,12 +13,22 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
+/***********************************************************************************************************************************************************
+ *
+ * File: DFT.cs
+ *
+ * Purpose: This file defines the DFT class, which is responsible for performing Discrete Fourier Transform (DFT) analysis on a given signal.
+ *          By default, the DFT class uses a rectangular windowing function, but the user can choose between a rectangular, triangular, or Hamming window.
+ *          Once the DFT is performed, the user can apply a lowpass or highpass filter to the signal.
+ ***********************************************************************************************************************************************************/
+
+
 namespace Wave3931
 {
     /**
-        Author: Eric Tatchell
-        Date: October & November 2023
-     */
+    * Class DFT, inheriting from Form. This class represents a form for performing Discrete Fourier Transform (DFT) on audio data,
+    * with functionalities for lowpass and highpass filtering.
+    */
     public partial class DFT : Form
     {
         private static int threads;
@@ -35,11 +49,21 @@ namespace Wave3931
         // Reference to the main WaveCraft form, mainly for plotting and getting data
         private WaveCraft main = null;
 
+        /**
+         * Retrieves the benchmark label.
+         */
         public Label GetBenchmarkLabel()
         {
             return benchmark;
         }
 
+        /**
+         * Updates the benchmark label with the given performance metrics.
+         * 
+         * @Param timeSpan The time span to display.
+         * @Param timeSpan2 The time span to compare to.
+         * @Param numThreads The number of threads used.
+         */
         public void UpdateBenchmarkLabel(TimeSpan timeSpan, TimeSpan timeSpan2, int numThreads)
         {
             double ratio = (double)timeSpan2.TotalMilliseconds / (double)timeSpan.TotalMilliseconds;
@@ -130,6 +154,13 @@ namespace Wave3931
             }
         }
 
+        /**
+         * Plots the DFT result on the chart.
+         * 
+         * @Param dftResult The result of the DFT.
+         * @Param threshold The threshold for plotting.
+         * @Param N The size of the DFT result.
+         */
         public void Plot(double[] dftResult, double threshold, int N)
         {
             for (int i = 0; i < N; i++)
@@ -275,7 +306,7 @@ namespace Wave3931
          * 
          * @Param N The size of the filter.
          * 
-         * @Return the filter in Comp;ex
+         * @Return the filter in Complex
          */
         private Complex[] creationOfLowpassFilter(int N)
         {
@@ -383,6 +414,9 @@ namespace Wave3931
          * 5. Lines 269 through 275: Return the signal data to a byte array
          * 6. Update the pSaveBuffer which in turn filters the audio
          * 7. Display the changes
+         * 
+         * @Param sender The object that triggered the event.
+         * @Param e The event arguments.
          */
         private void btnLowpass_Click(object sender, EventArgs e)
         {
@@ -471,7 +505,10 @@ namespace Wave3931
          * 4. Perform convolution on the signal with the filter
          * 6. Update the pSaveBuffer which in turn filters the audio
          * 7. Plot the changes
-         */
+         * 
+         * @param sender The object that triggered the event.
+         * @param e The event arguments.
+        */
         private void btnHighpass_Click(object sender, EventArgs e)
         {
             Complex[] filter = creationOfHighpassFilter(dftRes.Length);
@@ -494,6 +531,12 @@ namespace Wave3931
             WaveCraft.EDITED = true;
         }
 
+        /**
+        * Event handler for the Load event of DFT. Triggered when the DFT form is loaded.
+        * 
+        * @Param sender The source of the event.
+        * @Param e Contains the event data.
+        */
         private void DFT_Load(object sender, EventArgs e)
         {
 
