@@ -37,9 +37,26 @@ Usage
 3. Utilize the graphical interface to view and edit wave files.
 4. Access various features like zoom, sample rate selection, and DFT through the options panel.
 
+To-Do After Demo
+------
+1. Read me of all changes post check and how to run
+2. More welcoming start? Not sure if being sarcastic
+3. X-axis to seconds.
+4. Click and drag for the filters instead of just clicking
+5. Need a big zero line for the middle of the DFT
+6. Fix DFT reloading window when using filter.
+6. Read 16bit files for selectable sample rate. (16bit reading is quantization)
+7. cut/copy/paste with stereo
+8. Save 16bit
+9. playing in different programs
+10. More performance, Use a floating point version or an mmx equivalent, switch to x86 and benchmark.
+
+Completed After Demo
+---------------------
+
 Support
 --------
-For support, please contact the software team at support@waveanalyzer.com.
+For support, please contact the team at b.j.e.doyle@gmail.com or erictatch@gmail.com.
 
 License
 --------
