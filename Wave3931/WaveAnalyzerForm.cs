@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+    Author: Eric Tatchell & Brendan Doyle
+    Date: October & November 2023
+ */
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,72 +16,105 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using static Wave3931.Externals;
 
+/***********************************************************************************************************************************************************
+ *
+ * File: WaveAnalyzerForm.cs
+ *
+ * Purpose: This file defines the WaveAnalyzerForm class, which is the main form of the Wave3931 application. It is responsible for the user interface and
+ *          the creation of new wave analyzer forms and the opening of existing wave files through a user interface. It also contains the methods for
+ *          cutting, copying, and pasting audio data, as well as the methods for playing back audio data and performing a Discrete Fourier Transform (DFT).
+ *          
+ ***********************************************************************************************************************************************************/
+
+
 namespace Wave3931
 {
     public partial class WaveAnalyzerForm : Form
     {
-        // for reading files and saving
+        // Class members declaration with descriptions
+
+        // Instance for reading files and saving
         private wave_file_header header = new wave_file_header();
 
-        // instance checking which chart is selected, mainly for stereo
+        // Instance checking which chart is selected, mainly for stereo
         private Chart selected;
 
-        // instance array for signal data/samples
+        // Instance array for signal data/samples
         private double[] audioData;
 
-        // instance string for just the file name
+        // Instance string for just the file name
         private string fileName;
 
-        // instance string for the full file path
+        // Instance string for the full file path
         private string filePath;
 
-        // instance string checking the window selection
+        // Instance string checking the window selection
         private string WINDOW_TYPE;
 
-        // instance array for left channel audioData
+        // Instance array for left channel audioData
         private double[] leftChannel;
 
-        // instance array for right channel audioData
+        // Instance array for right channel audioData
         private double[] rightChannel;
 
-        // instance int tracking the original index for sample rate selection
+        // Instance int tracking the original index for sample rate selection
         private int originalSampleRateIndex;
 
-        // instance int tracking the original index for bps selection
+        // Instance int tracking the original index for bps selection
         private int originalBitsPerSampleIndex;
 
-        // instance int tracking the original index for thread selection
+        // Instance int tracking the original index for thread selection
         private int originalDFTThreadIndex;
 
-        // instance int tracking the original index for windowing selection
+        // Instance int tracking the original index for windowing selection
         private int originalWindowingIndex;
 
-        // instance int tracking the user selected # of threads
+        // Instance int tracking the user selected # of threads
         private int NUM_THREADS;
 
-        // instance tracking bits per sample
+        // Instance tracking bits per sample
         private ushort BPS;
 
-        // instance boolean checking if the current file is edited
+        // Instance boolean checking if the current file is edited
         public static bool EDITED;
 
-        // instance boolean checking if the current file is saved
+        // Instance boolean checking if the current file is saved
         public static bool SAVED;
 
-        
-
+        // Insance for the start time used for benchmarking
         private DateTime startTime;
+
+        // Instance for the vertical line animation
         private VerticalLineAnnotation verticalLine;
+
+        // Instance for the animation duration
         private double animationDuration;
 
+        /**
+         * Method to get the sample rate of the audio file.
+         * 
+         * @return The sample rate of the audio file.
+         */
         public double[] getAudioData()
         {
             return audioData;
         }
+
+        /**
+        * Method to get the sample rate of the audio file.
+        *
+        * @return The sample rate of the audio file.
+        */
         public void setAudioData(double[] ad)
         {
             audioData = ad;
         }
+
+        /**
+         * Method to get the sample rate of the audio file, 4 available.
+         *
+         * @return The sample rate of the audio file.
+         */
         public int detectSR()
         {
             if (fileName != null)
@@ -102,6 +139,11 @@ namespace Wave3931
             return 1;
         }
 
+        /**
+        * Method to get the bits per sample of the audio file, 2 choices available.
+        *         *
+        * @return The bits per sample of the audio file.
+        */
         public int detectBPS()
         {
             if (fileName != null)
@@ -120,6 +162,12 @@ namespace Wave3931
             return 0;
         }
 
+        /**
+         * Initializes components and sets up the form with default values for the sample rate, bits per sample, and number of threads.
+         *
+         * @param filePath The full file path of the wave file.
+         * @param fileName The name of the wave file.
+         */
         public WaveAnalyzerForm(String filePath, String fileName)
         {
             InitializeComponent();
@@ -180,6 +228,10 @@ namespace Wave3931
             LEFT_CHANNEL_CHART.MouseWheel += Chart_MouseWheel;
             RIGHT_CHANNEL_CHART.MouseWheel += Chart_MouseWheel;
         }
+        
+        /**
+         * Initializes components and sets up the form with default values for the sample rate, bits per sample, and number of threads.
+         */
         public WaveAnalyzerForm()
         {
             InitializeComponent();
@@ -218,6 +270,12 @@ namespace Wave3931
             SAVED = false;
         }
 
+        /**
+         * Method that handles the click and drag event of the mouse cursor on the chart for selecting an area to be copied.
+         * 
+         * @param sender The source of the event.
+         * @param e Contains the event data.
+         */
         private void CopySelected(object sender, EventArgs e)
         {
             double start = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
@@ -249,6 +307,12 @@ namespace Wave3931
             Clipboard.SetText(base64Data);
         }
 
+        /**
+         * Method that handles the click and drag event of the mouse cursor on the chart for selecting an area to be cut.
+         * 
+         * @param sender The source of the event.
+         * @param e Contains the event data.
+         */
         private void CutSelected(object sender, EventArgs e)
         {
             double start = LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
@@ -295,7 +359,12 @@ namespace Wave3931
         }
 
 
-
+        /**
+        * Method that handles the click and drag event of the mouse cursor on the chart for selecting an area to be pasted.
+        * 
+        * @param sender The source of the event.
+        * @param e Contains the event data.
+        */
         private void PasteSelected(object sender, EventArgs e)
         {
             string base64Data = Clipboard.GetText();
@@ -353,6 +422,14 @@ namespace Wave3931
             SAVED = false;
         }
 
+        /**
+         * Method that handles reading the wave file and updating the chart with the audio data.
+         *
+         * @param sender The source of the event.
+         * @param e Contains the event data.
+         * 
+         * @return The audio data.
+         */
         public double[] readingWave(String file)
         {
 
@@ -391,10 +468,17 @@ namespace Wave3931
             SetChannels(header.NumChannels);
             SetSampleRate(header.SampleRate);
             Marshal.FreeHGlobal(pSaveBuffer);
+
             return outputList.ToArray();
         }
 
-
+        /**
+         * Method that handles demuxing the stereo audio data for both left and right channels.
+         * 
+         * @param stereoData The stereo audio data.
+         * @param leftChannel The left channel audio data.
+         * @param rightChannel The right channel audio data.
+         */
         private void DemuxStereoData(double[] stereoData, out double[] leftChannel, out double[] rightChannel)
         {
             int numSamples = stereoData.Length / 2;
@@ -408,6 +492,12 @@ namespace Wave3931
             }
         }
 
+        /**
+         * Method for Muxing the left and right channel audio data into stereo audio data.
+         * 
+         * @param leftChannel The left channel audio data.
+         * @param rightChannel The right channel audio data.
+         */
         private double[] MuxStereoData(double[] leftChannel, double[] rightChannel)
         {
             int numSamples = leftChannel.Length;
@@ -422,7 +512,14 @@ namespace Wave3931
             return stereoData;
         }
 
+        // Instance for Descrete Fourier Transform
         private DFT DFT;
+
+        /**
+         * Method for plotting the frequency and waveform charts.
+         * 
+         * @param audioData The audio data.
+         */
         public void plotFreqWaveChart(double[] audioData)
         {
             int length = BPS == 8 ? audioData.Length : audioData.Length / 2;
@@ -477,8 +574,12 @@ namespace Wave3931
             RIGHT_CHANNEL_CHART.Visible = true;
         }
 
-
-
+        /**
+         * Method for clicking on the frequency chart.
+         * 
+         * @param sender The source of the event.
+         * @param e Contains the event data.
+         */
         private void chart2_Click(object sender, EventArgs e)
         {
             RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart = -1;
@@ -488,7 +589,9 @@ namespace Wave3931
             LEFT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
         }
 
-
+        /**
+         * 
+         */
         private void TopMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
