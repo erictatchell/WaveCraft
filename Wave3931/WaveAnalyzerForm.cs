@@ -272,9 +272,6 @@ namespace Wave3931
 
         /**
          * Method that handles the click and drag event of the mouse cursor on the chart for selecting an area to be copied.
-         * 
-         * @param sender The source of the event.
-         * @param e Contains the event data.
          */
         private void CopySelected(object sender, EventArgs e)
         {
@@ -309,9 +306,6 @@ namespace Wave3931
 
         /**
          * Method that handles the click and drag event of the mouse cursor on the chart for selecting an area to be cut.
-         * 
-         * @param sender The source of the event.
-         * @param e Contains the event data.
          */
         private void CutSelected(object sender, EventArgs e)
         {
@@ -361,9 +355,6 @@ namespace Wave3931
 
         /**
         * Method that handles the click and drag event of the mouse cursor on the chart for selecting an area to be pasted.
-        * 
-        * @param sender The source of the event.
-        * @param e Contains the event data.
         */
         private void PasteSelected(object sender, EventArgs e)
         {
@@ -576,9 +567,6 @@ namespace Wave3931
 
         /**
          * Method for clicking on the frequency chart.
-         * 
-         * @param sender The source of the event.
-         * @param e Contains the event data.
          */
         private void chart2_Click(object sender, EventArgs e)
         {
@@ -590,13 +578,16 @@ namespace Wave3931
         }
 
         /**
-         * 
+         * method for clicking on the menu strip located in the top of the form.
          */
         private void TopMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
         }
 
+        /**
+         * Method for creating a vertical line annotation for the wave form line. (the lines you see you going up and down)
+         */
         private void initPlayLine()
         {
             verticalLine = new VerticalLineAnnotation();
@@ -610,6 +601,9 @@ namespace Wave3931
             LEFT_CHANNEL_CHART.Annotations.Add(verticalLine);
         }
 
+        /**
+         * Method for play button and triggers playback line.
+         */
         private async void btnPlay_ClickAsync(object sender, EventArgs e)
         {
             IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
@@ -623,6 +617,10 @@ namespace Wave3931
             startTime = DateTime.Now;
             await AnimateVerticalLine();
         }
+
+        /**
+         * Async method for animating the playback line.
+         */
         private async Task AnimateVerticalLine()
         {
             while (true)
@@ -642,7 +640,9 @@ namespace Wave3931
         }
 
 
-
+        /**
+         * Async method for stopping the playback.
+         */
         private async void btnStop_Click(object sender, EventArgs e)
         {
             IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
@@ -679,6 +679,13 @@ namespace Wave3931
             SAVED = false;
         }
 
+        /**
+         * Asynchronously waits for audio data to be available and processes it based on bits per sample (BPS).
+         * 
+         * @param BPS: The bits per sample to determine how the audio data should be processed.
+         * 
+         * @return: Returns a Task containing the processed audio data as an array of doubles.
+         */
         private Task<double[]> WaitForDataAsync(int BPS)
         {
             return Task.Run(() =>
@@ -723,10 +730,9 @@ namespace Wave3931
             });
         }
 
-
-
-
-
+        /**
+         * Method for the record button to start recording audio.
+         */
         private void btnRecord_Click(object sender, EventArgs e)
         {
             IntPtr hWnd = FindWindow(null, "Waveform Audio Recorder");
@@ -757,6 +763,12 @@ namespace Wave3931
             btnClear.ForeColor = Color.Black;
         }
 
+        /**
+         * Method for benchmarking the Discrete Fourier Transform (DFT), changes based on the amount of threads selected by user.
+         * 
+         * @param data: The audio data to be processed.
+         * @param numThreads: The number of threads to use for processing.
+         */
         private void BenchmarkDFT(double[] data, int numThreads)
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -807,9 +819,9 @@ namespace Wave3931
             }
         }
 
-
-
-
+        /**
+         * Event handler for the DFT button, executes DFT on selected or entire audio data. 
+         */
         private void btnDFT_Click(object sender, EventArgs e)
         {
             int start = (int)LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart;
@@ -841,13 +853,16 @@ namespace Wave3931
             BenchmarkDFT(selected, NUM_THREADS);
         }
 
-
-
-
+        /**
+         * Event handler for painting the options panel.
+         */
         private void OptionsPanel_Paint(object sender, PaintEventArgs e)
         {
         }
 
+        /**
+         * Event handler for the clear button, clears the audio data from the form.
+         */
         private void btnClear_Click(object sender, EventArgs e)
         {
             audioData = new double[0];
@@ -868,12 +883,18 @@ namespace Wave3931
             SAVED = false;
         }
 
+        /**
+         * Method for clicking the new file button, opens a new wave file.
+         */
         private void btnNew_Click(object sender, EventArgs e)
         {
             WaveAnalyzerForm waveAnalyzerForm = new WaveAnalyzerForm();
             waveAnalyzerForm.Show();
         }
 
+        /**
+        * Event handler for the save file button, saves the current wave file.         
+        */
         private void btnSaveFile_Click(object sender, EventArgs e)
         {
 
@@ -971,6 +992,13 @@ namespace Wave3931
                 }
             }
         }
+
+        /**
+        * Compresses the input array using Modified Run-Length Encoding (MRLE).
+        * 
+        * @param inputArray The array of double values to be compressed.
+        * @return An array of bytes representing the compressed data.
+        */
         private byte[] CompressMRLE(double[] inputArray)
         {
             List<byte> compressedList = new List<byte>();
@@ -997,12 +1025,18 @@ namespace Wave3931
             return compressedList.ToArray();
         }
 
-
+        /**
+         * Event handler for clicking the exit button. Exits the application.
+         */
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
         {
 
         }
 
+        /**
+         * Event handler for clicking on the Left Channel Chart.
+         * Resets selection and enables cursor functionality.
+         */
         private void LeftChannelChart_Click(object sender, EventArgs e)
         {
             LEFT_CHANNEL_CHART.ChartAreas[0].CursorX.SelectionStart = -1;
@@ -1012,6 +1046,11 @@ namespace Wave3931
             RIGHT_CHANNEL_CHART.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
             RIGHT_CHANNEL_CHART.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
         }
+
+        /**
+         * Event handler for mouse wheel action on charts.
+         * Implements zooming functionality based on the cursor's position.
+         */
         private void Chart_MouseWheel(object sender, MouseEventArgs e)
         {
             Chart chart = (Chart)sender;
@@ -1039,11 +1078,18 @@ namespace Wave3931
             }
         }
 
+        /**
+         * Panel for the options menu.
+         */
         private void panel2_Paint_2(object sender, PaintEventArgs e)
         {
 
         }
 
+        /**
+         * Event handler for changing the sample rate selection.
+         * Updates the UI and sets the new sample rate in the header.
+         */
         private void sampleRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
@@ -1069,6 +1115,10 @@ namespace Wave3931
             }
         }
 
+        /**
+         * Event handler for changing the DFT thread count selection.
+         * Updates the UI and sets the new thread count.
+         */
         private void DFTThread_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
@@ -1097,6 +1147,10 @@ namespace Wave3931
             }
         }
 
+        /**
+         * Event handler for changing the windowing selection.
+         * Updates the UI and sets the new windowing type.
+         */
         private void windowing_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
@@ -1129,6 +1183,10 @@ namespace Wave3931
 
         }
 
+        /**
+         * Event handler for the 'Open' menu item click.
+         * Opens a file dialog to select and open a new wave file.
+         */
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (EDITED && !SAVED) // already saved or opened another file
@@ -1157,6 +1215,10 @@ namespace Wave3931
             }
             
         }
+
+        /**
+         * Helper method to open a wave file using a file dialog.
+         */
         private void openFile()
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -1173,6 +1235,10 @@ namespace Wave3931
             }
         }
 
+        /**
+         * Event handler for changing the bits per sample selection.
+         * Updates the UI and sets the new bits per sample.
+         */
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
