@@ -1,5 +1,4 @@
-Wave Analyzer Application
-=========================
+WaveCraft
 
 Description
 -----------
