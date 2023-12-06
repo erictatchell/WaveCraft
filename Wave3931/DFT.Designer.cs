@@ -1,16 +1,24 @@
 ﻿namespace Wave3931
 {
+    /***********************************************************************************************************************************************************
+     *
+     * File:       DFT.Designer.cs
+     *
+     * Purpose:    Provides the user interface for the Discrete Fourier Transform (DFT) operations.
+     *
+     ***********************************************************************************************************************************************************/
+
     partial class DFT
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+        /*
+        * Required designer variable.
+        */
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        /*
+        * Clean up any resources being used.
+        * @param disposing Indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).
+        */
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,12 +30,12 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+        /*
+        * Required method for Designer support - do not modify the contents of this method with the code editor.
+        */
         private void InitializeComponent()
         {
+            // Component initialization and layout code here.
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DFT));
@@ -39,9 +47,9 @@
             this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
-            // 
+
             // chart1
-            // 
+            // Initialization and configuration of chart1 including its style, data source, and event handler.
             this.chart1.BackColor = System.Drawing.Color.Black;
             chartArea1.BackColor = System.Drawing.Color.Crimson;
             chartArea1.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.HorizontalCenter;
@@ -68,9 +76,9 @@
             this.chart1.TabIndex = 1;
             this.chart1.Text = "chart1";
             this.chart1.Click += new System.EventHandler(this.chart1_Click);
-            // 
+            
             // btnLowpass
-            // 
+            // Initialization and configuration of the Lowpass Filter button including its style and event handler.
             this.btnLowpass.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(14)))), ((int)(((byte)(79)))));
             this.btnLowpass.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnLowpass.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(0)))), ((int)(((byte)(79)))));
@@ -86,9 +94,9 @@
             this.btnLowpass.Text = "LOWPASS FILTER";
             this.btnLowpass.UseVisualStyleBackColor = false;
             this.btnLowpass.Click += new System.EventHandler(this.btnLowpass_Click);
-            // 
+
             // btnHighpass
-            // 
+            // Initialization and configuration of the Highpass Filter button including its style and event handler.
             this.btnHighpass.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(14)))), ((int)(((byte)(79)))));
             this.btnHighpass.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnHighpass.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(0)))), ((int)(((byte)(79)))));
@@ -104,9 +112,9 @@
             this.btnHighpass.Text = "HIGHPASS FILTER";
             this.btnHighpass.UseVisualStyleBackColor = false;
             this.btnHighpass.Click += new System.EventHandler(this.btnHighpass_Click);
-            // 
+
             // benchmark
-            // 
+            // Initialization and configuration of labels for displaying benchmarking.
             this.benchmark.AutoSize = true;
             this.benchmark.ForeColor = System.Drawing.SystemColors.Window;
             this.benchmark.Location = new System.Drawing.Point(12, 9);
@@ -114,9 +122,9 @@
             this.benchmark.Size = new System.Drawing.Size(143, 13);
             this.benchmark.TabIndex = 8;
             this.benchmark.Text = "Benchmarking, please wait...";
-            // 
+
             // label1
-            // 
+            // Initialization and configuration of labels for displaying thread information.
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.SystemColors.Window;
             this.label1.Location = new System.Drawing.Point(12, 28);
@@ -124,9 +132,9 @@
             this.label1.Size = new System.Drawing.Size(61, 13);
             this.label1.TabIndex = 9;
             this.label1.Text = "1 thread: ...";
-            // 
+
             // label2
-            // 
+            // // Initialization and configuration of labels for displaying thread information.
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.SystemColors.Window;
             this.label2.Location = new System.Drawing.Point(12, 47);
@@ -134,9 +142,9 @@
             this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 10;
             this.label2.Text = "threads:\r\n";
-            // 
-            // DFT
-            // 
+
+            // DFT (Form)
+            // Configuration of the DFT form including its appearance and added controls.
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
@@ -158,7 +166,7 @@
         }
 
         #endregion
-
+        // Private variables for the form's controls (chart1, buttons, labels) are defined here.
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.Button btnLowpass;
         private System.Windows.Forms.Button btnHighpass;

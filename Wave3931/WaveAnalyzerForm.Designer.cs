@@ -1,16 +1,25 @@
-﻿namespace Wave3931
+﻿/***********************************************************************************************************************************************************
+ *
+ * File: WaveAnalyzerForm.Designer.cs
+ *
+ * Purpose: This file contains the definition of the main form for the wave analyzer application.
+ *
+ ***********************************************************************************************************************************************************/
+
+namespace Wave3931
 {
+    /* 
+    * This class represents the main form for the wave analyzer application.
+    */
     partial class WaveAnalyzerForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+        /* Required designer variable */
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        /* 
+         * Method to clean up any resources being used.
+         * @param disposing true if managed resources should be disposed; otherwise, false.
+         */
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,14 +29,15 @@
             base.Dispose(disposing);
         }
 
+        /* Region indicating the beginning of Windows Form Designer generated code */
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+        /* 
+         * Required method for Designer support - do not modify the contents of this method with the code editor.
+         */
         private void InitializeComponent()
         {
+            // Initialize components
             System.Windows.Forms.DataVisualization.Charting.VerticalLineAnnotation verticalLineAnnotation1 = new System.Windows.Forms.DataVisualization.Charting.VerticalLineAnnotation();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -78,9 +88,8 @@
             this.splitContainer1.SuspendLayout();
             this.TopMenuStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // btnDFT
-            // 
+
+            // btnDFT: Button for performing Discrete Fourier Transform
             this.btnDFT.BackColor = System.Drawing.Color.White;
             this.btnDFT.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnDFT.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(0)))), ((int)(((byte)(79)))));
@@ -95,9 +104,8 @@
             this.btnDFT.Text = "DFT";
             this.btnDFT.UseVisualStyleBackColor = false;
             this.btnDFT.Click += new System.EventHandler(this.btnDFT_Click);
-            // 
-            // btnStopRecord
-            // 
+
+            // btnStopRecord: Button to stop the recording
             this.btnStopRecord.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(14)))), ((int)(((byte)(79)))));
             this.btnStopRecord.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnStopRecord.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(0)))), ((int)(((byte)(79)))));
@@ -113,9 +121,8 @@
             this.btnStopRecord.Text = "RECORD";
             this.btnStopRecord.UseVisualStyleBackColor = false;
             this.btnStopRecord.Click += new System.EventHandler(this.btnRecord_Click);
-            // 
-            // btnPlay
-            // 
+
+            // btnPlay: Button to play the audio
             this.btnPlay.AccessibleDescription = "Play currently open sound file";
             this.btnPlay.AccessibleName = "Play Button";
             this.btnPlay.BackColor = System.Drawing.Color.White;
@@ -132,9 +139,8 @@
             this.btnPlay.Text = "PLAY";
             this.btnPlay.UseVisualStyleBackColor = false;
             this.btnPlay.Click += new System.EventHandler(this.btnPlay_ClickAsync);
-            // 
-            // btnRecord
-            // 
+
+            // btnRecord: Button to start recording
             this.btnRecord.BackColor = System.Drawing.Color.White;
             this.btnRecord.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnRecord.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(0)))), ((int)(((byte)(79)))));
@@ -149,9 +155,8 @@
             this.btnRecord.Text = "STOP";
             this.btnRecord.UseVisualStyleBackColor = false;
             this.btnRecord.Click += new System.EventHandler(this.btnStop_Click);
-            // 
-            // panel2
-            // 
+
+            // panel2: Main panel for the form
             this.panel2.AutoScroll = true;
             this.panel2.AutoSize = true;
             this.panel2.Controls.Add(this.OptionsPanel);
@@ -164,9 +169,8 @@
             this.panel2.Size = new System.Drawing.Size(1304, 568);
             this.panel2.TabIndex = 11;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint_2);
-            // 
-            // OptionsPanel
-            // 
+
+            // OptionsPanel: Panel containing various options and controls
             this.OptionsPanel.AccessibleDescription = "Right options panel ";
             this.OptionsPanel.AccessibleName = "Options Panel";
             this.OptionsPanel.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu;
@@ -191,9 +195,8 @@
             this.OptionsPanel.Size = new System.Drawing.Size(144, 546);
             this.OptionsPanel.TabIndex = 8;
             this.OptionsPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.OptionsPanel_Paint);
-            // 
-            // label3
-            // 
+
+            // label3: Label for the DFT Windowing option
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -204,9 +207,8 @@
             this.label3.TabIndex = 18;
             this.label3.Text = "DFT Windowing";
             this.label3.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // windowing
-            // 
+
+            // windowing: ComboBox for selecting the windowing method in DFT
             this.windowing.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.windowing.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.windowing.FormattingEnabled = true;
@@ -219,9 +221,8 @@
             this.windowing.Size = new System.Drawing.Size(95, 20);
             this.windowing.TabIndex = 17;
             this.windowing.SelectedIndexChanged += new System.EventHandler(this.windowing_SelectedIndexChanged);
-            // 
-            // label2
-            // 
+
+            // label2: Label for DFT Threads option
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -233,9 +234,8 @@
             this.label2.Text = "DFT Threads";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // DFTThread
-            // 
+
+            // DFTThread: ComboBox for selecting the number of threads for DFT
             this.DFTThread.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DFTThread.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DFTThread.FormattingEnabled = true;
@@ -250,9 +250,8 @@
             this.DFTThread.Size = new System.Drawing.Size(95, 20);
             this.DFTThread.TabIndex = 15;
             this.DFTThread.SelectedIndexChanged += new System.EventHandler(this.DFTThread_SelectedIndexChanged);
-            // 
-            // label1
-            // 
+
+            // label1: Label for Sample Rate option
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -262,9 +261,8 @@
             this.label1.Size = new System.Drawing.Size(82, 11);
             this.label1.TabIndex = 14;
             this.label1.Text = "Sample Rate";
-            // 
-            // sampleRate
-            // 
+
+            // sampleRate: ComboBox for selecting the sample rate
             this.sampleRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.sampleRate.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.sampleRate.FormattingEnabled = true;
@@ -277,9 +275,8 @@
             this.sampleRate.Size = new System.Drawing.Size(95, 20);
             this.sampleRate.TabIndex = 13;
             this.sampleRate.SelectedIndexChanged += new System.EventHandler(this.sampleRate_SelectedIndexChanged);
-            // 
-            // btnClear
-            // 
+
+            // btnClear: Button to clear the chart or reset settings
             this.btnClear.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btnClear.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnClear.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(0)))), ((int)(((byte)(79)))));
@@ -294,9 +291,8 @@
             this.btnClear.Text = "CLEAR";
             this.btnClear.UseVisualStyleBackColor = false;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // BottomStatusStrip
-            // 
+
+            // BottomStatusStrip: StatusStrip at the bottom of the form
             this.BottomStatusStrip.AccessibleDescription = "Bottom window status strip";
             this.BottomStatusStrip.AccessibleName = "StatusStrip";
             this.BottomStatusStrip.AccessibleRole = System.Windows.Forms.AccessibleRole.StatusBar;
@@ -316,35 +312,30 @@
             this.BottomStatusStrip.Size = new System.Drawing.Size(1304, 22);
             this.BottomStatusStrip.TabIndex = 9;
             this.BottomStatusStrip.Text = "bottomStatusStrip";
-            // 
-            // toolStripStatusLabel2
-            // 
+
+            // toolStripStatusLabel2: Status label for displaying various messages
             this.toolStripStatusLabel2.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
-            // 
-            // Info
-            // 
+
+            // Info: Status label for displaying additional information
             this.Info.Name = "Info";
             this.Info.Size = new System.Drawing.Size(0, 17);
             this.Info.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
-            // 
-            // toolStripStatusLabel1
-            // 
+
+            // toolStripStatusLabel1: Another status label for displaying messages
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
-            // 
-            // toolStripStatusLabel3
-            // 
+
+            // toolStripStatusLabel3: Status label with a static message
             this.toolStripStatusLabel3.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.toolStripStatusLabel3.ForeColor = System.Drawing.SystemColors.Control;
             this.toolStripStatusLabel3.Margin = new System.Windows.Forms.Padding(50, 3, 0, 2);
             this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
             this.toolStripStatusLabel3.Size = new System.Drawing.Size(147, 17);
             this.toolStripStatusLabel3.Text = "RECORD or OPEN";
-            // 
-            // splitContainer2
-            // 
+
+            // splitContainer2: SplitContainer to divide the form into two parts
             this.splitContainer2.AccessibleDescription = "Split container with 2 charts.";
             this.splitContainer2.AccessibleName = "Split Container";
             this.splitContainer2.AccessibleRole = System.Windows.Forms.AccessibleRole.Pane;
@@ -353,23 +344,20 @@
             this.splitContainer2.Location = new System.Drawing.Point(0, 19);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
+
             // splitContainer2.Panel1
-            // 
             this.splitContainer2.Panel1.Controls.Add(this.leftLabel);
             this.splitContainer2.Panel1.Controls.Add(this.LEFT_CHANNEL_CHART);
-            // 
+
             // splitContainer2.Panel2
-            // 
             this.splitContainer2.Panel2.Controls.Add(this.rightLabel);
             this.splitContainer2.Panel2.Controls.Add(this.RIGHT_CHANNEL_CHART);
             this.splitContainer2.Size = new System.Drawing.Size(1154, 527);
             this.splitContainer2.SplitterDistance = 263;
             this.splitContainer2.SplitterWidth = 1;
             this.splitContainer2.TabIndex = 10;
-            // 
-            // leftLabel
-            // 
+
+            // leftLabel: Label for the left channel chart
             this.leftLabel.AutoSize = true;
             this.leftLabel.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.leftLabel.ForeColor = System.Drawing.Color.Gold;
@@ -378,9 +366,8 @@
             this.leftLabel.Size = new System.Drawing.Size(20, 19);
             this.leftLabel.TabIndex = 2;
             this.leftLabel.Text = "L";
-            // 
-            // LEFT_CHANNEL_CHART
-            // 
+
+            // LEFT_CHANNEL_CHART: Chart for displaying the left audio channel
             this.LEFT_CHANNEL_CHART.AccessibleDescription = "Left Channel";
             this.LEFT_CHANNEL_CHART.AccessibleName = "Left Channel";
             this.LEFT_CHANNEL_CHART.AccessibleRole = System.Windows.Forms.AccessibleRole.Chart;
@@ -443,9 +430,8 @@
             this.LEFT_CHANNEL_CHART.TabIndex = 1;
             this.LEFT_CHANNEL_CHART.Text = "Left Channel";
             this.LEFT_CHANNEL_CHART.Click += new System.EventHandler(this.chart2_Click);
-            // 
-            // rightLabel
-            // 
+
+            // rightLabel: Label for the right channel chart
             this.rightLabel.AutoSize = true;
             this.rightLabel.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rightLabel.ForeColor = System.Drawing.Color.Gold;
@@ -454,9 +440,8 @@
             this.rightLabel.Size = new System.Drawing.Size(20, 19);
             this.rightLabel.TabIndex = 3;
             this.rightLabel.Text = "R";
-            // 
-            // RIGHT_CHANNEL_CHART
-            // 
+
+            // RIGHT_CHANNEL_CHART: Chart for displaying the right audio channel
             this.RIGHT_CHANNEL_CHART.AccessibleDescription = "Right Channel";
             this.RIGHT_CHANNEL_CHART.AccessibleName = "Right Channel";
             this.RIGHT_CHANNEL_CHART.AccessibleRole = System.Windows.Forms.AccessibleRole.Chart;
@@ -503,18 +488,16 @@
             this.RIGHT_CHANNEL_CHART.TabIndex = 0;
             this.RIGHT_CHANNEL_CHART.Text = "Right Channel";
             this.RIGHT_CHANNEL_CHART.Click += new System.EventHandler(this.LeftChannelChart_Click);
-            // 
-            // splitContainer1
-            // 
+
+            // splitContainer1: Another SplitContainer (unused in this context)
             this.splitContainer1.Location = new System.Drawing.Point(-23, -67);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Size = new System.Drawing.Size(120, 80);
             this.splitContainer1.SplitterDistance = 40;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 9;
-            // 
-            // fileToolStripMenuItem
-            // 
+
+            // fileToolStripMenuItem: ToolStripMenuItem for the File menu
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newFileMenu,
             this.saveFileMenu,
@@ -523,30 +506,26 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(45, 22);
             this.fileToolStripMenuItem.Text = "File";
-            // 
-            // newFileMenu
-            // 
+
+            // newFileMenu: ToolStripMenuItem for creating a new file
             this.newFileMenu.Name = "newFileMenu";
             this.newFileMenu.Size = new System.Drawing.Size(98, 22);
             this.newFileMenu.Text = "New";
             this.newFileMenu.Click += new System.EventHandler(this.btnNew_Click);
-            // 
-            // saveFileMenu
-            // 
+
+            // saveFileMenu: ToolStripMenuItem for saving a file
             this.saveFileMenu.Name = "saveFileMenu";
             this.saveFileMenu.Size = new System.Drawing.Size(98, 22);
             this.saveFileMenu.Text = "Save";
             this.saveFileMenu.Click += new System.EventHandler(this.btnSaveFile_Click);
-            // 
-            // openToolStripMenuItem
-            // 
+
+            // openToolStripMenuItem: ToolStripMenuItem for opening a file
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-            // 
-            // TopMenuStrip
-            // 
+
+            // TopMenuStrip: MenuStrip at the top of the form
             this.TopMenuStrip.AccessibleDescription = "Menu bar at the top of the wave analyzer window";
             this.TopMenuStrip.AccessibleName = "Top menu bar";
             this.TopMenuStrip.AccessibleRole = System.Windows.Forms.AccessibleRole.MenuBar;
@@ -563,9 +542,8 @@
             this.TopMenuStrip.TabIndex = 10;
             this.TopMenuStrip.Text = "TopMenuStrip";
             this.TopMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.TopMenuStrip_ItemClicked);
-            // 
-            // label4
-            // 
+
+            // label4: Label for bits selection
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -575,9 +553,8 @@
             this.label4.Size = new System.Drawing.Size(33, 11);
             this.label4.TabIndex = 20;
             this.label4.Text = "Bits";
-            // 
-            // comboBox1
-            // 
+
+            // comboBox1: ComboBox for selecting the number of bits
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBox1.FormattingEnabled = true;
@@ -589,9 +566,8 @@
             this.comboBox1.Size = new System.Drawing.Size(95, 20);
             this.comboBox1.TabIndex = 19;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-            // 
-            // WaveAnalyzerForm
-            // 
+
+            // WaveAnalyzerForm properties and initialization...
             this.AccessibleDescription = "Charts to analyze sound waves";
             this.AccessibleName = "Wave Analyzer";
             this.AccessibleRole = System.Windows.Forms.AccessibleRole.Application;
@@ -634,6 +610,7 @@
 
         }
 
+        // Definition of private fields and components of WaveAnalyzerForm.
         #endregion
         private System.Windows.Forms.Button btnDFT;
         private System.Windows.Forms.Button btnStopRecord;
