@@ -12,7 +12,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace Wave3931
 {
     /**
-        Author: Eric Tatchell & Brendan Doyle
+        Author: Eric Tatchell
         Date: October & November 2023
      */
     public partial class DFT : Form
@@ -33,7 +33,7 @@ namespace Wave3931
         private Complex[] cmplx_dftRes;
 
         // Reference to the main WaveCraft form, mainly for plotting and getting data
-        private WaveAnalyzerForm main = null;
+        private WaveCraft main = null;
 
         public Label GetBenchmarkLabel()
         {
@@ -104,7 +104,7 @@ namespace Wave3931
             chart1.ChartAreas[0].CursorX.IsUserEnabled = true;
             chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = false;
             chart1.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            main = calling as WaveAnalyzerForm;
+            main = calling as WaveCraft;
         }
 
         /**
@@ -391,27 +391,44 @@ namespace Wave3931
             double[] audioData = this.main.getAudioData();
             audioData = convolve(filtered, audioData);
 
-            byte[] byteArray = audioData.Select(sample =>
+            byte[] byteArray = null;
+            if (WaveCraft.BPS == 16)
             {
-                // Scale the sample from [-1, 1] to [0, 255]
-                double scaledValue = (sample + 1) * 127.5;
+                byteArray = audioData.Select(sample =>
+                {
+                    double scaledValue = (sample + 1.0) * 32767.0;
 
-                // Ensure the value is within the valid byte range [0, 255]
-                scaledValue = Math.Max(0, Math.Min(255, scaledValue));
+                    scaledValue = Math.Max(-32768, Math.Min(32767, scaledValue));
 
-                // Convert to byte
-                byte byteValue = (byte)scaledValue;
+                    byte[] bytes = BitConverter.GetBytes((short)scaledValue);
+                    return bytes;
+                }).SelectMany(bytes => bytes).ToArray();
+            }
+            else
+            {
+                byteArray = audioData.Select(sample =>
+                {
+                    // Scale the sample from [-1, 1] to [0, 255]
+                    double scaledValue = (sample + 1.0) * 127.5;
 
-                return byteValue;
-            }).ToArray();
+                    // Ensure the value is within the valid byte range [0, 255]
+                    scaledValue = Math.Max(0, Math.Min(255, scaledValue));
+
+                    // Convert to byte
+                    byte byteValue = (byte)scaledValue;
+
+                    return byteValue;
+                }).ToArray();
+            }
 
             IntPtr pSaveBuffer = Marshal.AllocHGlobal(byteArray.Length);
             Marshal.Copy(byteArray, 0, pSaveBuffer, byteArray.Length);
             Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             this.main.plotFreqWaveChart(audioData);
             Plot(audioData, 1, cmplx_dftRes.Length);
-            WaveAnalyzerForm.EDITED = true;
+            WaveCraft.EDITED = true;
         }
+
 
 
         /**
@@ -474,7 +491,7 @@ namespace Wave3931
             Externals.UpdatePSaveBuffer(pSaveBuffer, byteArray.Length);
             this.main.plotFreqWaveChart(audioData);
             Plot(cmplx_dftRes, 1, cmplx_dftRes.Length);
-            WaveAnalyzerForm.EDITED = true;
+            WaveCraft.EDITED = true;
         }
 
         private void DFT_Load(object sender, EventArgs e)
