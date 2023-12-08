@@ -58,95 +58,111 @@ namespace Wave3931
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.btNewFile = new System.Windows.Forms.Button();
             this.btnOpenFile = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
-            
-            // Initialization and configuration of statusStrip1.
+            // 
+            // statusStrip1
+            // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Location = new System.Drawing.Point(0, 0);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(200, 22);
             this.statusStrip1.TabIndex = 0;
-
-            // Initialization and configuration of toolStripStatusLabel2
+            // 
+            // toolStripStatusLabel2
+            // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.Size = new System.Drawing.Size(23, 23);
-
-            // Initialization and configuration of toolStripStatusLabel1
+            // 
+            // toolStripStatusLabel1
+            // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(23, 23);
-
-            // Initialization and configuration of menuStrip1
+            // 
+            // menuStrip1
+            // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(200, 24);
             this.menuStrip1.TabIndex = 0;
-
-            // Initialization and configuration of fileToolStripMenuItem
+            // 
+            // fileToolStripMenuItem
+            // 
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
-
-            // Initialization and configuration of openToolStripMenuItem
+            // 
+            // openToolStripMenuItem
+            // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
-
-            // Initialization and configuration of button2
+            // 
+            // button2
+            // 
             this.button2.Location = new System.Drawing.Point(0, 0);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 0;
-
-            // Initialization and configuration of button1
+            // 
+            // button1
+            // 
             this.button1.Location = new System.Drawing.Point(0, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
-
-            // Initialization and configuration of  button4
+            // 
+            // button4
+            // 
             this.button4.Location = new System.Drawing.Point(0, 0);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 0;
-
-            // Initialization and configuration of button3
+            // 
+            // button3
+            // 
             this.button3.Location = new System.Drawing.Point(0, 0);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 0;
-
-            // Initialization and configuration of panel1
+            // 
+            // panel1
+            // 
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(200, 100);
             this.panel1.TabIndex = 0;
-
-            // Initialization and configuration of panel2
+            // 
+            // panel2
+            // 
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(200, 100);
             this.panel2.TabIndex = 0;
-
-            // Initialization and configuration of chart2
+            // 
+            // chart2
+            // 
             this.chart2.Location = new System.Drawing.Point(0, 0);
             this.chart2.Name = "chart2";
             this.chart2.Size = new System.Drawing.Size(300, 300);
             this.chart2.TabIndex = 0;
-
-            // Initialization and configuration of chart1
+            // 
+            // chart1
+            // 
             this.chart1.Location = new System.Drawing.Point(0, 0);
             this.chart1.Name = "chart1";
             this.chart1.Size = new System.Drawing.Size(300, 300);
             this.chart1.TabIndex = 0;
-
-            // Initialization and configuration of btNewFile
+            // 
+            // btNewFile
+            // 
             this.btNewFile.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btNewFile.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btNewFile.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btNewFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btNewFile.Font = new System.Drawing.Font("Lucida Console", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btNewFile.Location = new System.Drawing.Point(42, 40);
+            this.btNewFile.Location = new System.Drawing.Point(77, 61);
             this.btNewFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btNewFile.Name = "btNewFile";
             this.btNewFile.Size = new System.Drawing.Size(149, 35);
@@ -154,14 +170,15 @@ namespace Wave3931
             this.btNewFile.Text = "NEW FILE";
             this.btNewFile.UseVisualStyleBackColor = false;
             this.btNewFile.Click += new System.EventHandler(this.btnNewFile_Click);
-
-            // Initialization and configuration of btnOpenFile
+            // 
+            // btnOpenFile
+            // 
             this.btnOpenFile.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnOpenFile.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btnOpenFile.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnOpenFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnOpenFile.Font = new System.Drawing.Font("Lucida Console", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnOpenFile.Location = new System.Drawing.Point(42, 83);
+            this.btnOpenFile.Location = new System.Drawing.Point(77, 104);
             this.btnOpenFile.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(149, 35);
@@ -169,17 +186,31 @@ namespace Wave3931
             this.btnOpenFile.Text = "OPEN FILE";
             this.btnOpenFile.UseVisualStyleBackColor = false;
             this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click_1);
-
-            // Initialization and configuration of Form1
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.SystemColors.Menu;
+            this.label1.Location = new System.Drawing.Point(38, 22);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(229, 19);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Welcome to WaveCraft";
+            // 
+            // Form1
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Crimson;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(233, 179);
+            this.ClientSize = new System.Drawing.Size(303, 156);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.btnOpenFile);
             this.Controls.Add(this.btNewFile);
             this.Font = new System.Drawing.Font("Constantia", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
@@ -189,6 +220,7 @@ namespace Wave3931
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -211,6 +243,7 @@ namespace Wave3931
         private System.Windows.Forms.Button btnNewFile;
         private System.Windows.Forms.Button btNewFile;
         private System.Windows.Forms.Button btnOpenFile;
+        private System.Windows.Forms.Label label1;
     }
 }
 

@@ -92,6 +92,9 @@ namespace Wave3931
         // Instance for the animation duration
         private double animationDuration;
 
+        // Instance to track sample rate while pasting
+        private int sample_rate;
+
         /**
          * Method to get the sample rate of the audio file.
          * 
@@ -337,6 +340,7 @@ namespace Wave3931
             {
                 return;
             }
+            this.sample_rate = GetSampleRate();
             
             // save data to clipboard
             string base64Data = Convert.ToBase64String(byteData);
@@ -360,6 +364,7 @@ namespace Wave3931
             int startIndex = (int)(start);
             int endIndex = (int)(end);
 
+            // pretty much every edge case
             if (startIndex < 0) { startIndex = 0; }
             if (endIndex >= audioData.Length) { endIndex = audioData.Length - 1; }
             if (startIndex >= endIndex)
@@ -369,12 +374,14 @@ namespace Wave3931
                 endIndex = temp;
             }
 
+            // get the selected portion of audioData
             int selectedDataLength = endIndex - startIndex + 1;
             double[] selectedAudioData = new double[selectedDataLength];
             Array.Copy(audioData, startIndex, selectedAudioData, 0, selectedDataLength);
 
             byte[] byteData;
 
+            // check bit depth
             if (BPS == 8)
             {
                 byteData = selectedAudioData.Select(sample =>
@@ -436,17 +443,24 @@ namespace Wave3931
             }
             UpdatePSaveBuffer(pSaveBuffer, BPS == 8 ? byteArray.Length : audioData.Length * sizeof(short));
 
-            // Clear the chart and update it with the modified data
+            // update the points
             selected.Series[0].Points.Clear();
             for (int i = 0; i < audioData.Length / (BPS / 8); i++)
             {
                 selected.Series[0].Points.AddXY(i, audioData[i]);
             }
+            this.sample_rate = GetSampleRate();
+
         }
 
 
         /**
         * Method that handles the click and drag event of the mouse cursor on the chart for selecting an area to be pasted.
+        * 
+        * 
+        * -------------------- NOTE ----------------------------------------- *
+        * Pasting 8 bit audio does NOT WORK AT THE MOMENT, only 16 bit works  *
+        * ------------------------------------------------------------------- *
         */
         private void PasteSelected(object sender, EventArgs e)
         {
