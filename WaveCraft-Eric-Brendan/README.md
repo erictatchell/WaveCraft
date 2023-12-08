@@ -40,7 +40,7 @@ Usage
 To-Do After Demo
 ------
 1. Read me of all changes post check and how to run
-2. More welcoming start? Not sure if being sarcastic
+2. More welcoming start?
 3. X-axis to seconds.
 4. Click and drag for the filters instead of just clicking
 5. Need a big zero line for the middle of the DFT
@@ -53,6 +53,17 @@ To-Do After Demo
 
 Completed After Demo
 ---------------------
+- More welcoming start!
+- Read 16 bit files (RECORDED ONLY, Dennis I still can't correctly read your 16 bit sample file)
+- Save 16 bit
+- Filter in 16 bit
+- Playing in different program (eg. Windows Media Player)
+
+NOTES
+---------------------
+- YOU CANNOT CUT COPY AND PASTE 8 BIT RECORDED WAV FILES, only 16 bit
+- Switching the whole project to x86 was going to be a larger undertaking than I anticipated
+- X axis to seconds is very difficult in C# windows forms
 
 Support
 --------
